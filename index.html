@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fearsom's Calculator — Skill Output</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+/* ── LAYOUT SWITCHER ── */
+.layout-switcher {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: #0a0a0a;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0;
+}
+
+.layout-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 14px 28px;
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+  border: none;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.layout-btn:last-child { border-right: none; }
+.layout-btn:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.04); }
+.layout-btn.active { color: #c9a84c; background: rgba(201,168,76,0.08); border-bottom: 2px solid #c9a84c; }
+
+.layout-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.2);
+  padding: 0 24px;
+  text-transform: uppercase;
+}
+
+/* ── LAYOUTS ── */
+.layout { display: none; min-height: 100vh; padding-top: 49px; }
+.layout.active { display: block; }
+
+/* ═══════════════════════════════════════════
+   LAYOUT A — COMMAND TERMINAL
+   Dark, dense, data-forward. Like a game HUD.
+═══════════════════════════════════════════ */
+.layout-a {
+  background: #080c0a;
+  color: #c8e0d0;
+  font-family: 'DM Mono', monospace;
+}
+
+.layout-a .page-header {
+  border-bottom: 1px solid rgba(46,180,100,0.15);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0,0,0,0.4);
+}
+
+.layout-a .page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.15em;
+  color: #2eb464;
+}
+
+.layout-a .page-path {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(200,224,208,0.4);
+}
+
+.layout-a .stat-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(46,180,100,0.1);
+  overflow-x: auto;
+}
+
+.layout-a .stat-pill {
+  padding: 10px 20px;
+  border-right: 1px solid rgba(46,180,100,0.1);
+  flex-shrink: 0;
+}
+
+.layout-a .stat-pill-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: rgba(200,224,208,0.4);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.layout-a .stat-pill-val {
+  font-size: 0.85rem;
+  color: #2eb464;
+  font-weight: 500;
+}
+
+.layout-a .main-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 0;
+  min-height: calc(100vh - 120px);
+}
+
+.layout-a .skills-panel {
+  border-right: 1px solid rgba(46,180,100,0.1);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.layout-a .skill-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 120px 120px 80px;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.layout-a .skill-row:hover,
+.layout-a .skill-row.selected {
+  background: rgba(46,180,100,0.06);
+  border-color: rgba(46,180,100,0.2);
+}
+
+.layout-a .skill-row-header {
+  display: grid;
+  grid-template-columns: 200px 1fr 120px 120px 80px;
+  gap: 16px;
+  padding: 6px 16px 10px;
+  border-bottom: 1px solid rgba(46,180,100,0.15);
+  margin-bottom: 4px;
+}
+
+.layout-a .col-label {
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: rgba(200,224,208,0.3);
+  text-transform: uppercase;
+}
+
+.layout-a .skill-name {
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: #c8e0d0;
+}
+
+.layout-a .skill-weapon {
+  font-size: 0.6rem;
+  color: rgba(200,224,208,0.4);
+  margin-top: 2px;
+}
+
+.layout-a .hps-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.layout-a .hps-track {
+  flex: 1; height: 3px;
+  background: rgba(46,180,100,0.1);
+}
+.layout-a .hps-fill {
+  height: 100%;
+  background: #2eb464;
+  transition: width 0.6s ease;
+}
+
+.layout-a .hps-val {
+  font-size: 0.75rem;
+  color: #2eb464;
+  min-width: 55px;
+  text-align: right;
+}
+
+.layout-a .avg-val {
+  font-size: 0.75rem;
+  color: rgba(200,224,208,0.6);
+}
+
+.layout-a .cd-val {
+  font-size: 0.75rem;
+  color: rgba(200,224,208,0.4);
+  text-align: right;
+}
+
+.layout-a .type-badge {
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  text-transform: uppercase;
+}
+
+.layout-a .type-badge.heal {
+  background: rgba(46,180,100,0.12);
+  color: #2eb464;
+  border: 1px solid rgba(46,180,100,0.3);
+}
+
+.layout-a .type-badge.dmg {
+  background: rgba(192,57,43,0.12);
+  color: #e05555;
+  border: 1px solid rgba(192,57,43,0.3);
+}
+
+.layout-a .side-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.layout-a .side-section-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: rgba(200,224,208,0.3);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(46,180,100,0.1);
+}
+
+.layout-a .sw-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.layout-a .sw-name {
+  font-size: 0.72rem;
+  color: rgba(200,224,208,0.7);
+  min-width: 140px;
+}
+
+.layout-a .sw-track {
+  flex: 1; height: 3px;
+  background: rgba(46,180,100,0.08);
+}
+
+.layout-a .sw-fill {
+  height: 100%;
+  background: linear-gradient(to right, #1a6b3a, #2eb464);
+}
+
+.layout-a .sw-tier {
+  font-size: 0.65rem;
+  min-width: 30px;
+  text-align: right;
+}
+
+.layout-a .sw-tier.s { color: #e05555; }
+.layout-a .sw-tier.a { color: #c9a84c; }
+.layout-a .sw-tier.b { color: #2eb464; }
+.layout-a .sw-tier.c { color: rgba(200,224,208,0.35); }
+
+.layout-a .total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 12px 0;
+  border-top: 1px solid rgba(46,180,100,0.15);
+  border-bottom: 1px solid rgba(46,180,100,0.15);
+}
+
+.layout-a .total-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: rgba(200,224,208,0.4);
+  text-transform: uppercase;
+}
+
+.layout-a .total-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  color: #2eb464;
+  letter-spacing: 0.1em;
+}
+
+.layout-a .hit-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layout-a .hit-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  padding: 4px 0;
+}
+
+.layout-a .hit-type { color: rgba(200,224,208,0.5); }
+.layout-a .hit-chance { color: rgba(200,224,208,0.8); }
+.layout-a .hit-output { color: #2eb464; }
+
+/* ═══════════════════════════════════════════
+   LAYOUT B — CARD DASHBOARD
+   Clean, modern, card-based. Accessible.
+═══════════════════════════════════════════ */
+.layout-b {
+  background: #f0ede8;
+  color: #1a1510;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.layout-b .page-header {
+  background: #1a1510;
+  padding: 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.layout-b .page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 0.12em;
+  color: #c9a84c;
+}
+
+.layout-b .page-path {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+}
+
+.layout-b .stat-strip {
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.layout-b .stat-item {
+  padding: 14px 24px;
+  border-right: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+
+.layout-b .stat-item-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: rgba(26,21,16,0.4);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.layout-b .stat-item-val {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1a1510;
+}
+
+.layout-b .stat-item-val.gold { color: #b8740a; }
+
+.layout-b .content {
+  padding: 32px 40px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.layout-b .section-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(26,21,16,0.4);
+  margin-bottom: 16px;
+}
+
+.layout-b .skill-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.layout-b .skill-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 20px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.layout-b .skill-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: #2eaa64;
+  transform: scaleY(0);
+  transition: transform 0.2s;
+}
+
+.layout-b .skill-card.dmg::before { background: #c0392b; }
+
+.layout-b .skill-card:hover::before,
+.layout-b .skill-card.selected::before { transform: scaleY(1); }
+
+.layout-b .skill-card:hover {
+  border-color: rgba(0,0,0,0.15);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.layout-b .skill-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.layout-b .skill-card-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a1510;
+  margin-bottom: 3px;
+}
+
+.layout-b .skill-card-weapon {
+  font-size: 0.8rem;
+  color: rgba(26,21,16,0.45);
+}
+
+.layout-b .skill-card-hps {
+  text-align: right;
+}
+
+.layout-b .skill-card-hps-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1a7a40;
+}
+
+.layout-b .skill-card-hps-val.dmg { color: #c0392b; }
+
+.layout-b .skill-card-hps-label {
+  font-size: 0.7rem;
+  color: rgba(26,21,16,0.4);
+}
+
+.layout-b .skill-bar-track {
+  height: 4px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.layout-b .skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #1a7a40, #2eaa64);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+.layout-b .skill-bar-fill.dmg {
+  background: linear-gradient(to right, #8b1a1a, #c0392b);
+}
+
+.layout-b .skill-card-meta {
+  display: flex;
+  gap: 16px;
+}
+
+.layout-b .skill-meta-item {
+  font-size: 0.78rem;
+  color: rgba(26,21,16,0.5);
+}
+
+.layout-b .skill-meta-item strong {
+  color: rgba(26,21,16,0.8);
+  font-weight: 500;
+}
+
+.layout-b .side-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.layout-b .side-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 20px;
+}
+
+.layout-b .total-display {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.layout-b .total-big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  color: #1a7a40;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.layout-b .total-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: rgba(26,21,16,0.35);
+  text-transform: uppercase;
+}
+
+.layout-b .sw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.layout-b .sw-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.layout-b .sw-item-name {
+  font-size: 0.82rem;
+  color: rgba(26,21,16,0.7);
+  min-width: 130px;
+}
+
+.layout-b .sw-item-track {
+  flex: 1;
+  height: 5px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.layout-b .sw-item-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #2eaa64;
+}
+
+.layout-b .sw-item-tier {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  min-width: 28px;
+  text-align: right;
+}
+
+.layout-b .sw-item-tier.s { color: #c0392b; font-weight: 500; }
+.layout-b .sw-item-tier.a { color: #b8740a; }
+.layout-b .sw-item-tier.b { color: #1a7a40; }
+.layout-b .sw-item-tier.c { color: rgba(26,21,16,0.3); }
+
+.layout-b .crit-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.layout-b .crit-display:last-child { border-bottom: none; }
+
+.layout-b .crit-label {
+  font-size: 0.82rem;
+  color: rgba(26,21,16,0.6);
+}
+
+.layout-b .crit-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: #1a1510;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT C — EDITORIAL MAGAZINE
+   High contrast, typographic, dramatic.
+═══════════════════════════════════════════ */
+.layout-c {
+  background: #0d0d0d;
+  color: #f0ede8;
+  font-family: 'Crimson Pro', Georgia, serif;
+}
+
+.layout-c .page-header {
+  padding: 32px 48px 28px;
+  border-bottom: 1px solid rgba(240,237,232,0.08);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 24px;
+}
+
+.layout-c .page-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #f0ede8;
+  line-height: 1;
+}
+
+.layout-c .page-title span { color: #c9a84c; }
+
+.layout-c .page-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: rgba(240,237,232,0.3);
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 2;
+}
+
+.layout-c .stat-ribbon {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid rgba(240,237,232,0.08);
+  border-bottom: 1px solid rgba(240,237,232,0.08);
+  background: rgba(240,237,232,0.03);
+  overflow-x: auto;
+}
+
+.layout-c .stat-ribbon-item {
+  padding: 12px 28px;
+  border-right: 1px solid rgba(240,237,232,0.06);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.layout-c .srb-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  color: rgba(240,237,232,0.3);
+  text-transform: uppercase;
+}
+
+.layout-c .srb-val {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: #c9a84c;
+}
+
+.layout-c .content {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  min-height: calc(100vh - 180px);
+}
+
+.layout-c .skills-col {
+  padding: 0;
+  border-right: 1px solid rgba(240,237,232,0.06);
+}
+
+.layout-c .skills-col-header {
+  padding: 20px 40px;
+  border-bottom: 1px solid rgba(240,237,232,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.layout-c .skills-col-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(240,237,232,0.3);
+}
+
+.layout-c .total-hps-inline {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  color: rgba(240,237,232,0.5);
+}
+
+.layout-c .total-hps-inline strong {
+  color: #c9a84c;
+  font-size: 1.1rem;
+}
+
+.layout-c .skill-entry {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 0;
+  border-bottom: 1px solid rgba(240,237,232,0.04);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.layout-c .skill-entry:hover { background: rgba(240,237,232,0.02); }
+.layout-c .skill-entry.selected { background: rgba(201,168,76,0.04); }
+
+.layout-c .skill-entry-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(240,237,232,0.15);
+  border-right: 1px solid rgba(240,237,232,0.04);
+}
+
+.layout-c .skill-entry-body {
+  padding: 18px 24px;
+}
+
+.layout-c .skill-entry-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: #f0ede8;
+  margin-bottom: 4px;
+}
+
+.layout-c .skill-entry-weapon {
+  font-size: 0.82rem;
+  color: rgba(240,237,232,0.35);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.layout-c .skill-entry-bar {
+  height: 2px;
+  background: rgba(240,237,232,0.06);
+  margin-bottom: 8px;
+}
+
+.layout-c .skill-entry-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #8a6f2e, #c9a84c);
+  transition: width 0.6s ease;
+}
+
+.layout-c .skill-entry-bar-fill.dmg {
+  background: linear-gradient(to right, #6b1a1a, #c0392b);
+}
+
+.layout-c .skill-entry-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 0.78rem;
+  color: rgba(240,237,232,0.4);
+}
+
+.layout-c .skill-entry-right {
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  min-width: 130px;
+}
+
+.layout-c .skill-entry-hps {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: #c9a84c;
+}
+
+.layout-c .skill-entry-hps.dmg { color: #e05555; }
+
+.layout-c .skill-entry-hps-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: rgba(240,237,232,0.25);
+  text-transform: uppercase;
+}
+
+.layout-c .skill-entry-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(240,237,232,0.3);
+}
+
+.layout-c .side-col {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.layout-c .side-block-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(240,237,232,0.25);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(240,237,232,0.06);
+}
+
+.layout-c .big-number {
+  font-family: 'Cinzel', serif;
+  font-size: 2.8rem;
+  color: #c9a84c;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.layout-c .big-number-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: rgba(240,237,232,0.25);
+  text-transform: uppercase;
+}
+
+.layout-c .sw-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+}
+
+.layout-c .sw-entry-name {
+  font-size: 0.85rem;
+  color: rgba(240,237,232,0.65);
+  min-width: 120px;
+}
+
+.layout-c .sw-entry-track {
+  flex: 1;
+  height: 2px;
+  background: rgba(240,237,232,0.06);
+}
+
+.layout-c .sw-entry-fill {
+  height: 100%;
+  background: #c9a84c;
+}
+
+.layout-c .sw-entry-tier {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  min-width: 24px;
+  text-align: right;
+}
+
+.layout-c .sw-entry-tier.s { color: #e05555; }
+.layout-c .sw-entry-tier.a { color: #c9a84c; }
+.layout-c .sw-entry-tier.b { color: #2eb464; }
+.layout-c .sw-entry-tier.c { color: rgba(240,237,232,0.2); }
+
+.layout-c .hit-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.layout-c .hit-entry {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(240,237,232,0.04);
+}
+
+.layout-c .hit-entry:last-child { border-bottom: none; }
+.layout-c .hit-entry-type { color: rgba(240,237,232,0.4); font-style: italic; }
+.layout-c .hit-entry-chance { color: rgba(240,237,232,0.6); }
+.layout-c .hit-entry-val { color: #c9a84c; font-family: 'DM Mono', monospace; font-size: 0.75rem; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .layout-a .main-grid,
+  .layout-b .content,
+  .layout-c .content { grid-template-columns: 1fr; }
+  .layout-a .skill-row,
+  .layout-a .skill-row-header { grid-template-columns: 1fr 1fr 100px; }
+  .layout-a .skill-row > :nth-child(4),
+  .layout-a .skill-row-header > :nth-child(4) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- LAYOUT SWITCHER -->
+<div class="layout-switcher">
+  <span class="layout-label">Choose Layout:</span>
+  <button class="layout-btn active" onclick="switchLayout('a')">A — Terminal</button>
+  <button class="layout-btn" onclick="switchLayout('b')">B — Dashboard</button>
+  <button class="layout-btn" onclick="switchLayout('c')">C — Editorial</button>
+</div>
+
+<!-- ═══════ LAYOUT A — TERMINAL ═══════ -->
+<div class="layout layout-a active" id="layout-a">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Silkbind · Deluge</div>
+      <div class="page-path">Panacea Fan + Soulshade Umbrella · Lv.90 · Solo · EN Verified</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span style="font-size:0.6rem;letter-spacing:0.2em;color:rgba(200,224,208,0.3)">SNAPSHOT</span>
+      <span style="font-family:'DM Mono',monospace;font-size:0.65rem;color:#2eb464;background:rgba(46,180,100,0.08);padding:4px 10px;border:1px solid rgba(46,180,100,0.2)">v1.5 · Apr 2026</span>
+    </div>
+  </div>
+
+  <div class="stat-bar">
+    <div class="stat-pill"><div class="stat-pill-label">Phys ATK</div><div class="stat-pill-val">1236–1896</div></div>
+    <div class="stat-pill"><div class="stat-pill-label">Silkbind ATK</div><div class="stat-pill-val">352–651</div></div>
+    <div class="stat-pill"><div class="stat-pill-label">Crit Rate</div><div class="stat-pill-val">69.8%</div></div>
+    <div class="stat-pill"><div class="stat-pill-label">Crit Heal</div><div class="stat-pill-val">169%</div></div>
+    <div class="stat-pill"><div class="stat-pill-label">Resistance</div><div class="stat-pill-val">30%</div></div>
+    <div class="stat-pill"><div class="stat-pill-label">Precision</div><div class="stat-pill-val">88.5% (83.1%)</div></div>
+    <div class="stat-pill"><div class="stat-pill-label">Agility</div><div class="stat-pill-val">143</div></div>
+    <div class="stat-pill"><div class="stat-pill-label">Content</div><div class="stat-pill-val">Solo</div></div>
+  </div>
+
+  <div class="main-grid">
+    <div class="skills-panel">
+      <div class="skill-row-header">
+        <span class="col-label">Skill</span>
+        <span class="col-label">HPS Output</span>
+        <span class="col-label">Avg Heal</span>
+        <span class="col-label">Cooldown</span>
+        <span class="col-label">Type</span>
+      </div>
+
+      <div class="skill-row selected" onclick="selectSkill(this, 'a', 'fan-q')">
+        <div><div class="skill-name">Martial Art Q</div><div class="skill-weapon">Panacea Fan</div></div>
+        <div class="hps-bar-wrap"><div class="hps-track"><div class="hps-fill" style="width:100%"></div></div><div class="hps-val">31,184</div></div>
+        <div class="avg-val">124,735</div>
+        <div class="cd-val">20.0s</div>
+        <span class="type-badge heal">Heal</span>
+      </div>
+
+      <div class="skill-row" onclick="selectSkill(this, 'a', 'fan-r')">
+        <div><div class="skill-name">R (Total)</div><div class="skill-weapon">Panacea Fan</div></div>
+        <div class="hps-bar-wrap"><div class="hps-track"><div class="hps-fill" style="width:89%"></div></div><div class="hps-val">27,664</div></div>
+        <div class="avg-val">61,414</div>
+        <div class="cd-val">2.2s</div>
+        <span class="type-badge heal">Heal</span>
+      </div>
+
+      <div class="skill-row" onclick="selectSkill(this, 'a', 'fan-special')">
+        <div><div class="skill-name">Special (~)</div><div class="skill-weapon">Panacea Fan</div></div>
+        <div class="hps-bar-wrap"><div class="hps-track"><div class="hps-fill" style="width:44%"></div></div><div class="hps-val">13,672</div></div>
+        <div class="avg-val">82,031</div>
+        <div class="cd-val">6.0s</div>
+        <span class="type-badge heal">Heal</span>
+      </div>
+
+      <div class="skill-row" onclick="selectSkill(this, 'a', 'fan-perc')">
+        <div><div class="skill-name">Perception Q</div><div class="skill-weapon">Panacea Fan</div></div>
+        <div class="hps-bar-wrap"><div class="hps-track"><div class="hps-fill" style="width:13%"></div></div><div class="hps-val">4,150</div></div>
+        <div class="avg-val">82,999</div>
+        <div class="cd-val">20.0s</div>
+        <span class="type-badge heal">Heal</span>
+      </div>
+
+      <div class="skill-row" onclick="selectSkill(this, 'a', 'umb-q')">
+        <div><div class="skill-name">Martial Art Q</div><div class="skill-weapon">Soulshade Umbrella</div></div>
+        <div class="hps-bar-wrap"><div class="hps-track"><div class="hps-fill" style="width:18%"></div></div><div class="hps-val">5,643</div></div>
+        <div class="avg-val">33,856</div>
+        <div class="cd-val">30.0s</div>
+        <span class="type-badge heal">Heal</span>
+      </div>
+
+      <div class="skill-row" onclick="selectSkill(this, 'a', 'umb-special')">
+        <div><div class="skill-name">Special (~)</div><div class="skill-weapon">Soulshade Umbrella</div></div>
+        <div class="hps-bar-wrap"><div class="hps-track"><div class="hps-fill" style="width:19%"></div></div><div class="hps-val">6,062</div></div>
+        <div class="avg-val">6,062</div>
+        <div class="cd-val">1.0s</div>
+        <span class="type-badge heal">Heal</span>
+      </div>
+
+      <div class="skill-row" onclick="selectSkill(this, 'a', 'fan-lmb')">
+        <div><div class="skill-name">LMB</div><div class="skill-weapon">Panacea Fan</div></div>
+        <div class="hps-bar-wrap"><div class="hps-track"><div class="hps-fill dmg" style="width:11%;background:#e05555"></div></div><div class="hps-val" style="color:#e05555">3,519</div></div>
+        <div class="avg-val">2,463</div>
+        <div class="cd-val">0.7s</div>
+        <span class="type-badge dmg">Damage</span>
+      </div>
+    </div>
+
+    <div class="side-panel">
+      <div>
+        <div class="side-section-title">Total HPS</div>
+        <div class="total-row">
+          <span class="total-label">Solo HPS</span>
+          <span class="total-val">88,375</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-section-title">Selected: Martial Art Q</div>
+        <div class="hit-breakdown" id="hit-breakdown-a">
+          <div class="hit-row"><span class="hit-type">Normal (30.2%)</span><span class="hit-output">66,978–101,387</span></div>
+          <div class="hit-row"><span class="hit-type">Crit (69.8%)</span><span class="hit-output">113,193–171,344</span></div>
+          <div class="hit-row"><span class="hit-type">Avg Heal</span><span class="hit-output">124,735</span></div>
+          <div class="hit-row"><span class="hit-type">Heal Range</span><span class="hit-output">115,380–134,090</span></div>
+          <div class="hit-row"><span class="hit-type">HPS (Solo)</span><span class="hit-output">31,184</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-section-title">Stat Weights</div>
+        <div class="sw-row"><span class="sw-name">Critical Rate</span><div class="sw-track"><div class="sw-fill" style="width:90%"></div></div><span class="sw-tier s">S</span></div>
+        <div class="sw-row"><span class="sw-name">Crit Heal Bonus</span><div class="sw-track"><div class="sw-fill" style="width:82%"></div></div><span class="sw-tier s">S</span></div>
+        <div class="sw-row"><span class="sw-name">Agility</span><div class="sw-track"><div class="sw-fill" style="width:65%"></div></div><span class="sw-tier a">A</span></div>
+        <div class="sw-row"><span class="sw-name">Min Silkbind ATK</span><div class="sw-track"><div class="sw-fill" style="width:55%"></div></div><span class="sw-tier a">A</span></div>
+        <div class="sw-row"><span class="sw-name">Phys Penetration</span><div class="sw-track"><div class="sw-fill" style="width:40%"></div></div><span class="sw-tier b">B</span></div>
+        <div class="sw-row"><span class="sw-name">Affinity Rate</span><div class="sw-track"><div class="sw-fill" style="width:0%"></div></div><span class="sw-tier c">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ LAYOUT B — DASHBOARD ═══════ -->
+<div class="layout layout-b" id="layout-b">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Silkbind · Deluge</div>
+      <div style="margin-top:6px"><span style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;color:rgba(255,255,255,0.3)">Panacea Fan + Soulshade Umbrella · Level 90 · Solo</span></div>
+    </div>
+    <div class="page-path">EN Verified · v1.5</div>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-item"><div class="stat-item-label">Physical ATK</div><div class="stat-item-val">1236–1896</div></div>
+    <div class="stat-item"><div class="stat-item-label">Silkbind ATK</div><div class="stat-item-val">352–651</div></div>
+    <div class="stat-item"><div class="stat-item-label">Crit Rate</div><div class="stat-item-val gold">69.8%</div></div>
+    <div class="stat-item"><div class="stat-item-label">Crit Heal Bonus</div><div class="stat-item-val gold">169%</div></div>
+    <div class="stat-item"><div class="stat-item-label">Resistance</div><div class="stat-item-val">30%</div></div>
+    <div class="stat-item"><div class="stat-item-label">Precision (eff.)</div><div class="stat-item-val">83.1%</div></div>
+    <div class="stat-item"><div class="stat-item-label">Agility</div><div class="stat-item-val">143</div></div>
+  </div>
+
+  <div class="content">
+    <div>
+      <div class="section-title">Skill Output — Sorted by HPS</div>
+      <div class="skill-cards">
+
+        <div class="skill-card selected" onclick="selectSkill(this,'b','fan-q')">
+          <div class="skill-card-top">
+            <div><div class="skill-card-name">Martial Art Q</div><div class="skill-card-weapon">Panacea Fan</div></div>
+            <div class="skill-card-hps"><div class="skill-card-hps-val">31,184</div><div class="skill-card-hps-label">HPS</div></div>
+          </div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:100%"></div></div>
+          <div class="skill-card-meta">
+            <span class="skill-meta-item">Avg: <strong>124,735</strong></span>
+            <span class="skill-meta-item">CD: <strong>20.0s</strong></span>
+            <span class="skill-meta-item">Crit: <strong>69.8%</strong></span>
+            <span class="skill-meta-item">Range: <strong>115,380–134,090</strong></span>
+          </div>
+        </div>
+
+        <div class="skill-card" onclick="selectSkill(this,'b','fan-r')">
+          <div class="skill-card-top">
+            <div><div class="skill-card-name">R (Total)</div><div class="skill-card-weapon">Panacea Fan</div></div>
+            <div class="skill-card-hps"><div class="skill-card-hps-val">27,664</div><div class="skill-card-hps-label">HPS</div></div>
+          </div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:89%"></div></div>
+          <div class="skill-card-meta">
+            <span class="skill-meta-item">Avg: <strong>61,414</strong></span>
+            <span class="skill-meta-item">CD: <strong>2.2s</strong></span>
+            <span class="skill-meta-item">3-hit chain</span>
+          </div>
+        </div>
+
+        <div class="skill-card" onclick="selectSkill(this,'b','fan-special')">
+          <div class="skill-card-top">
+            <div><div class="skill-card-name">Special (~)</div><div class="skill-card-weapon">Panacea Fan</div></div>
+            <div class="skill-card-hps"><div class="skill-card-hps-val">13,672</div><div class="skill-card-hps-label">HPS</div></div>
+          </div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:44%"></div></div>
+          <div class="skill-card-meta">
+            <span class="skill-meta-item">Avg: <strong>82,031</strong></span>
+            <span class="skill-meta-item">CD: <strong>6.0s</strong></span>
+            <span class="skill-meta-item">Crit Heal: <strong>199%</strong></span>
+          </div>
+        </div>
+
+        <div class="skill-card" onclick="selectSkill(this,'b','umb-special')">
+          <div class="skill-card-top">
+            <div><div class="skill-card-name">Special (~)</div><div class="skill-card-weapon">Soulshade Umbrella</div></div>
+            <div class="skill-card-hps"><div class="skill-card-hps-val">6,062</div><div class="skill-card-hps-label">HPS</div></div>
+          </div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:19%"></div></div>
+          <div class="skill-card-meta">
+            <span class="skill-meta-item">Avg: <strong>6,062</strong></span>
+            <span class="skill-meta-item">CD: <strong>1.0s</strong></span>
+          </div>
+        </div>
+
+        <div class="skill-card" onclick="selectSkill(this,'b','umb-q')">
+          <div class="skill-card-top">
+            <div><div class="skill-card-name">Martial Art Q</div><div class="skill-card-weapon">Soulshade Umbrella</div></div>
+            <div class="skill-card-hps"><div class="skill-card-hps-val">5,643</div><div class="skill-card-hps-label">HPS</div></div>
+          </div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:18%"></div></div>
+          <div class="skill-card-meta">
+            <span class="skill-meta-item">Avg: <strong>33,856</strong></span>
+            <span class="skill-meta-item">CD: <strong>30.0s</strong></span>
+            <span class="skill-meta-item">+20% DMG buff · 12s</span>
+          </div>
+        </div>
+
+        <div class="skill-card" onclick="selectSkill(this,'b','fan-perc')">
+          <div class="skill-card-top">
+            <div><div class="skill-card-name">Perception Q</div><div class="skill-card-weapon">Panacea Fan</div></div>
+            <div class="skill-card-hps"><div class="skill-card-hps-val">4,150</div><div class="skill-card-hps-label">HPS</div></div>
+          </div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:13%"></div></div>
+          <div class="skill-card-meta">
+            <span class="skill-meta-item">Avg: <strong>82,999</strong></span>
+            <span class="skill-meta-item">CD: <strong>20.0s</strong></span>
+            <span class="skill-meta-item">Party heal</span>
+          </div>
+        </div>
+
+        <div class="skill-card dmg" onclick="selectSkill(this,'b','fan-lmb')">
+          <div class="skill-card-top">
+            <div><div class="skill-card-name">LMB</div><div class="skill-card-weapon">Panacea Fan</div></div>
+            <div class="skill-card-hps"><div class="skill-card-hps-val dmg">3,519</div><div class="skill-card-hps-label">DPS</div></div>
+          </div>
+          <div class="skill-bar-track"><div class="skill-bar-fill dmg" style="width:11%"></div></div>
+          <div class="skill-card-meta">
+            <span class="skill-meta-item">Avg: <strong>2,463</strong></span>
+            <span class="skill-meta-item">CD: <strong>0.7s</strong></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="side-cards">
+      <div class="side-card">
+        <div class="section-title">Total HPS (Solo)</div>
+        <div class="total-display">
+          <div class="total-big">88,375</div>
+          <div class="total-sub">Heals per second</div>
+        </div>
+      </div>
+
+      <div class="side-card">
+        <div class="section-title">Combat Stats</div>
+        <div class="crit-display"><span class="crit-label">Critical Rate</span><span class="crit-val">69.8%</span></div>
+        <div class="crit-display"><span class="crit-label">After Resistance</span><span class="crit-val">53.7%</span></div>
+        <div class="crit-display"><span class="crit-label">Direct Crit</span><span class="crit-val">+9.2%</span></div>
+        <div class="crit-display"><span class="crit-label">Effective Crit</span><span class="crit-val" style="color:#b8740a">69.8%</span></div>
+        <div class="crit-display"><span class="crit-label">Affinity Rate</span><span class="crit-val" style="color:rgba(26,21,16,0.3)">n/a (healing)</span></div>
+      </div>
+
+      <div class="side-card">
+        <div class="section-title">Stat Weights</div>
+        <div class="sw-list">
+          <div class="sw-item"><span class="sw-item-name">Critical Rate</span><div class="sw-item-track"><div class="sw-item-fill" style="width:90%"></div></div><span class="sw-item-tier s">S</span></div>
+          <div class="sw-item"><span class="sw-item-name">Crit Heal Bonus</span><div class="sw-item-track"><div class="sw-item-fill" style="width:82%"></div></div><span class="sw-item-tier s">S</span></div>
+          <div class="sw-item"><span class="sw-item-name">Agility</span><div class="sw-item-track"><div class="sw-item-fill" style="width:65%"></div></div><span class="sw-item-tier a">A</span></div>
+          <div class="sw-item"><span class="sw-item-name">Min Silkbind</span><div class="sw-item-track"><div class="sw-item-fill" style="width:55%"></div></div><span class="sw-item-tier a">A</span></div>
+          <div class="sw-item"><span class="sw-item-name">Phys Pen</span><div class="sw-item-track"><div class="sw-item-fill" style="width:40%"></div></div><span class="sw-item-tier b">B</span></div>
+          <div class="sw-item"><span class="sw-item-name">Affinity Rate</span><div class="sw-item-track"><div class="sw-item-fill" style="width:0%"></div></div><span class="sw-item-tier c">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ LAYOUT C — EDITORIAL ═══════ -->
+<div class="layout layout-c" id="layout-c">
+  <div class="page-header">
+    <div>
+      <div class="page-title">Silkbind · <span>Deluge</span></div>
+      <div style="margin-top:10px;font-size:1rem;color:rgba(240,237,232,0.4);font-style:italic;">Panacea Fan + Soulshade Umbrella</div>
+    </div>
+    <div class="page-meta">
+      Level 90 · Solo Content<br>
+      EN Verified · v1.5<br>
+      Apr 2026
+    </div>
+  </div>
+
+  <div class="stat-ribbon">
+    <div class="stat-ribbon-item"><span class="srb-label">Phys ATK</span><span class="srb-val">1236–1896</span></div>
+    <div class="stat-ribbon-item"><span class="srb-label">Silkbind ATK</span><span class="srb-val">352–651</span></div>
+    <div class="stat-ribbon-item"><span class="srb-label">Crit Rate</span><span class="srb-val">69.8%</span></div>
+    <div class="stat-ribbon-item"><span class="srb-label">Crit Heal</span><span class="srb-val">169%</span></div>
+    <div class="stat-ribbon-item"><span class="srb-label">Resistance</span><span class="srb-val">30%</span></div>
+    <div class="stat-ribbon-item"><span class="srb-label">Agility</span><span class="srb-val">143</span></div>
+  </div>
+
+  <div class="content">
+    <div class="skills-col">
+      <div class="skills-col-header">
+        <span class="skills-col-title">Skill Output</span>
+        <span class="total-hps-inline">Total HPS <strong>88,375</strong></span>
+      </div>
+
+      <div class="skill-entry selected" onclick="selectSkill(this,'c','fan-q')">
+        <div class="skill-entry-num">1</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-name">Martial Art Skill</div>
+          <div class="skill-entry-weapon">Panacea Fan · Q · 20s cooldown</div>
+          <div class="skill-entry-bar"><div class="skill-entry-bar-fill" style="width:100%"></div></div>
+          <div class="skill-entry-stats">
+            <span>Avg 124,735</span>
+            <span>Range 115,380–134,090</span>
+            <span>Crit 69.8%</span>
+          </div>
+        </div>
+        <div class="skill-entry-right">
+          <div class="skill-entry-hps">31,184</div>
+          <div class="skill-entry-hps-label">HPS</div>
+          <div class="skill-entry-pct">35.3%</div>
+        </div>
+      </div>
+
+      <div class="skill-entry" onclick="selectSkill(this,'c','fan-r')">
+        <div class="skill-entry-num">2</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-name">Heavy Attack Chain</div>
+          <div class="skill-entry-weapon">Panacea Fan · R (Total) · 2.2s</div>
+          <div class="skill-entry-bar"><div class="skill-entry-bar-fill" style="width:89%"></div></div>
+          <div class="skill-entry-stats">
+            <span>Avg 61,414</span>
+            <span>3-hit combo</span>
+          </div>
+        </div>
+        <div class="skill-entry-right">
+          <div class="skill-entry-hps">27,664</div>
+          <div class="skill-entry-hps-label">HPS</div>
+          <div class="skill-entry-pct">31.3%</div>
+        </div>
+      </div>
+
+      <div class="skill-entry" onclick="selectSkill(this,'c','fan-special')">
+        <div class="skill-entry-num">3</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-name">Special Skill</div>
+          <div class="skill-entry-weapon">Panacea Fan · ~ · 6s cooldown</div>
+          <div class="skill-entry-bar"><div class="skill-entry-bar-fill" style="width:44%"></div></div>
+          <div class="skill-entry-stats">
+            <span>Avg 82,031</span>
+            <span>Crit Heal 199%</span>
+          </div>
+        </div>
+        <div class="skill-entry-right">
+          <div class="skill-entry-hps">13,672</div>
+          <div class="skill-entry-hps-label">HPS</div>
+          <div class="skill-entry-pct">15.5%</div>
+        </div>
+      </div>
+
+      <div class="skill-entry" onclick="selectSkill(this,'c','umb-special')">
+        <div class="skill-entry-num">4</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-name">Special Skill</div>
+          <div class="skill-entry-weapon">Soulshade Umbrella · ~ · 1s</div>
+          <div class="skill-entry-bar"><div class="skill-entry-bar-fill" style="width:19%"></div></div>
+          <div class="skill-entry-stats">
+            <span>Avg 6,062</span>
+            <span>Range 5,607–6,516</span>
+          </div>
+        </div>
+        <div class="skill-entry-right">
+          <div class="skill-entry-hps">6,062</div>
+          <div class="skill-entry-hps-label">HPS</div>
+          <div class="skill-entry-pct">6.9%</div>
+        </div>
+      </div>
+
+      <div class="skill-entry" onclick="selectSkill(this,'c','umb-q')">
+        <div class="skill-entry-num">5</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-name">Martial Art Skill</div>
+          <div class="skill-entry-weapon">Soulshade Umbrella · Q · 30s cooldown</div>
+          <div class="skill-entry-bar"><div class="skill-entry-bar-fill" style="width:18%"></div></div>
+          <div class="skill-entry-stats">
+            <span>Avg 33,856</span>
+            <span>+20% DMG buff 12s</span>
+            <span>+5% vs exhausted</span>
+          </div>
+        </div>
+        <div class="skill-entry-right">
+          <div class="skill-entry-hps">5,643</div>
+          <div class="skill-entry-hps-label">HPS</div>
+          <div class="skill-entry-pct">6.4%</div>
+        </div>
+      </div>
+
+      <div class="skill-entry" onclick="selectSkill(this,'c','fan-perc')">
+        <div class="skill-entry-num">6</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-name">Perception Skill</div>
+          <div class="skill-entry-weapon">Panacea Fan · Q · 20s cooldown · Party</div>
+          <div class="skill-entry-bar"><div class="skill-entry-bar-fill" style="width:13%"></div></div>
+          <div class="skill-entry-stats">
+            <span>Avg 82,999</span>
+            <span>Party HPS 20,750</span>
+          </div>
+        </div>
+        <div class="skill-entry-right">
+          <div class="skill-entry-hps">4,150</div>
+          <div class="skill-entry-hps-label">HPS</div>
+          <div class="skill-entry-pct">4.7%</div>
+        </div>
+      </div>
+
+      <div class="skill-entry" onclick="selectSkill(this,'c','fan-lmb')">
+        <div class="skill-entry-num">7</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-name">Light Attack</div>
+          <div class="skill-entry-weapon">Panacea Fan · LMB · 0.7s</div>
+          <div class="skill-entry-bar"><div class="skill-entry-bar-fill dmg" style="width:11%"></div></div>
+          <div class="skill-entry-stats">
+            <span>Avg 2,463</span>
+            <span>Crit DMG 165%</span>
+          </div>
+        </div>
+        <div class="skill-entry-right">
+          <div class="skill-entry-hps dmg">3,519</div>
+          <div class="skill-entry-hps-label">DPS</div>
+          <div class="skill-entry-pct">—</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="side-col">
+      <div>
+        <div class="side-block-title">Total Output</div>
+        <div class="big-number">88,375</div>
+        <div class="big-number-label">Heals Per Second · Solo</div>
+      </div>
+
+      <div>
+        <div class="side-block-title">Selected Skill — Hit Types</div>
+        <div class="hit-grid" id="hit-grid-c">
+          <div class="hit-entry"><span class="hit-entry-type">Normal (30.2%)</span><span class="hit-entry-val">66,978–101,387</span></div>
+          <div class="hit-entry"><span class="hit-entry-type">Critical (69.8%)</span><span class="hit-entry-val">113,193–171,344</span></div>
+          <div class="hit-entry"><span class="hit-entry-type">Average Heal</span><span class="hit-entry-val">124,735</span></div>
+          <div class="hit-entry"><span class="hit-entry-type">Heal Range</span><span class="hit-entry-val">115,380–134,090</span></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="side-block-title">Stat Weights</div>
+        <div class="sw-entry"><span class="sw-entry-name">Critical Rate</span><div class="sw-entry-track"><div class="sw-entry-fill" style="width:90%"></div></div><span class="sw-entry-tier s">S</span></div>
+        <div class="sw-entry"><span class="sw-entry-name">Crit Heal Bonus</span><div class="sw-entry-track"><div class="sw-entry-fill" style="width:82%"></div></div><span class="sw-entry-tier s">S</span></div>
+        <div class="sw-entry"><span class="sw-entry-name">Agility</span><div class="sw-entry-track"><div class="sw-entry-fill" style="width:65%"></div></div><span class="sw-entry-tier a">A</span></div>
+        <div class="sw-entry"><span class="sw-entry-name">Min Silkbind ATK</span><div class="sw-entry-track"><div class="sw-entry-fill" style="width:55%"></div></div><span class="sw-entry-tier a">A</span></div>
+        <div class="sw-entry"><span class="sw-entry-name">Phys Penetration</span><div class="sw-entry-track"><div class="sw-entry-fill" style="width:40%"></div></div><span class="sw-entry-tier b">B</span></div>
+        <div class="sw-entry"><span class="sw-entry-name">Affinity Rate</span><div class="sw-entry-track"><div class="sw-entry-fill" style="width:0%"></div></div><span class="sw-entry-tier c">—</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchLayout(id) {
+  document.querySelectorAll('.layout').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.layout-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('layout-' + id).classList.add('active');
+  document.querySelectorAll('.layout-btn')[['a','b','c'].indexOf(id)].classList.add('active');
+}
+
+const skillData = {
+  'fan-q':      { name: 'Martial Art Q', normal: '66,978–101,387', crit: '113,193–171,344', avg: '124,735', range: '115,380–134,090', hps: '31,184' },
+  'fan-r':      { name: 'R Total', normal: '32,978–49,917', crit: '55,732–84,376', avg: '61,414', range: '56,807–66,020', hps: '27,664' },
+  'fan-special':{ name: 'Special (~)', normal: '38,592–58,418', crit: '76,798–116,252', avg: '82,031', range: '75,878–88,183', hps: '13,672' },
+  'fan-perc':   { name: 'Perception Q', normal: '44,567–67,463', crit: '75,318–114,013', avg: '82,999', range: '76,774–89,224', hps: '4,150' },
+  'umb-q':      { name: 'Umbrella Q', normal: '18,180–27,518', crit: '30,724–46,505', avg: '33,856', range: '31,317–36,395', hps: '5,643' },
+  'umb-special':{ name: 'Umbrella (~)', normal: '2,851–4,317', crit: '5,673–8,591', avg: '6,062', range: '5,607–6,516', hps: '6,062' },
+  'fan-lmb':    { name: 'LMB (Damage)', normal: '1,378–2,142', crit: '2,273–3,534', avg: '2,463', range: '1,378–3,534', hps: '3,519 DPS' },
+};
+
+function selectSkill(el, layout, key) {
+  const parent = document.getElementById('layout-' + layout);
+  parent.querySelectorAll('.skill-row, .skill-card, .skill-entry').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const d = skillData[key];
+  if (!d) return;
+
+  if (layout === 'a') {
+    document.getElementById('hit-breakdown-a').innerHTML = `
+      <div class="hit-row"><span class="hit-type">Normal (30.2%)</span><span class="hit-output">${d.normal}</span></div>
+      <div class="hit-row"><span class="hit-type">Crit (69.8%)</span><span class="hit-output">${d.crit}</span></div>
+      <div class="hit-row"><span class="hit-type">Avg Heal</span><span class="hit-output">${d.avg}</span></div>
+      <div class="hit-row"><span class="hit-type">Heal Range</span><span class="hit-output">${d.range}</span></div>
+      <div class="hit-row"><span class="hit-type">HPS</span><span class="hit-output">${d.hps}</span></div>
+    `;
+  }
+
+  if (layout === 'c') {
+    document.getElementById('hit-grid-c').innerHTML = `
+      <div class="hit-entry"><span class="hit-entry-type">Normal (30.2%)</span><span class="hit-entry-val">${d.normal}</span></div>
+      <div class="hit-entry"><span class="hit-entry-type">Critical (69.8%)</span><span class="hit-entry-val">${d.crit}</span></div>
+      <div class="hit-entry"><span class="hit-entry-type">Average Heal</span><span class="hit-entry-val">${d.avg}</span></div>
+      <div class="hit-entry"><span class="hit-entry-type">Heal Range</span><span class="hit-entry-val">${d.range}</span></div>
+    `;
+  }
+}
+</script>
+</body>
+</html>
