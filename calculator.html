@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fearsom's Calculator — Silkbind · Deluge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:        #080b0a;
+  --ink-mid:    #0e1410;
+  --ink-lt:     #141c17;
+  --paper:      #e8e0cc;
+  --paper-dim:  rgba(232,224,204,0.55);
+  --paper-faint:rgba(232,224,204,0.12);
+  --jade:       #4aaa78;
+  --jade-lt:    #6ecf9a;
+  --jade-dim:   #2a6b4a;
+  --jade-glow:  rgba(74,170,120,0.15);
+  --gold:       #c8a84a;
+  --gold-lt:    #e4c46e;
+  --gold-dim:   rgba(200,168,74,0.2);
+  --crimson:    #9b2a2a;
+  --mist:       rgba(232,224,204,0.35);
+  --border:     rgba(232,224,204,0.07);
+  --border-jade:rgba(74,170,120,0.2);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── INK WASH BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(74,170,120,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 80% at 0% 50%, rgba(14,20,16,0.8) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 100% at 100% 50%, rgba(200,168,74,0.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── PAPER TEXTURE ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── DECORATIVE BRUSHSTROKES ── */
+.brushstroke-left,
+.brushstroke-right {
+  position: fixed;
+  top: 0; bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.brushstroke-left {
+  left: 32px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(74,170,120,0.15) 20%,
+    rgba(74,170,120,0.08) 50%,
+    rgba(74,170,120,0.15) 80%,
+    transparent 100%
+  );
+}
+
+.brushstroke-right {
+  right: 32px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(200,168,74,0.1) 30%,
+    rgba(200,168,74,0.05) 60%,
+    transparent 100%
+  );
+}
+
+/* ── FLOATING PARTICLES ── */
+.particles {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: var(--jade);
+  opacity: 0;
+  animation: float-up linear infinite;
+}
+
+@keyframes float-up {
+  0%   { opacity: 0; transform: translateY(0) translateX(0); }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translateY(-100px) translateX(20px); }
+}
+
+/* ── LAYOUT ── */
+.app {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  padding: 28px 48px 24px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 32px;
+  background: rgba(8,11,10,0.7);
+  backdrop-filter: blur(8px);
+  position: sticky; top: 0; z-index: 50;
+}
+
+.header-seal {
+  width: 48px; height: 48px;
+  border: 1px solid rgba(200,168,74,0.4);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(200,168,74,0.1) 0%, transparent 70%);
+  box-shadow: 0 0 20px rgba(200,168,74,0.1), inset 0 0 10px rgba(200,168,74,0.05);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.header-seal::before {
+  content: '';
+  position: absolute; inset: 3px;
+  border: 1px solid rgba(200,168,74,0.15);
+  border-radius: 50%;
+}
+
+.header-seal span {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.header-center {}
+
+.header-path {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--jade);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.header-path::before {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--jade-dim);
+}
+
+.header-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--paper);
+  line-height: 1;
+}
+
+.header-title span { color: var(--jade); }
+
+.header-weapons {
+  font-size: 0.88rem;
+  color: var(--mist);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.version-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  padding: 3px 10px;
+  border: 1px solid var(--gold-dim);
+  background: rgba(200,168,74,0.05);
+}
+
+.verified-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: var(--jade);
+  display: flex; align-items: center; gap: 6px;
+}
+
+.verified-tag::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--jade);
+  box-shadow: 0 0 6px var(--jade);
+}
+
+/* ── STAT SCROLL ── */
+.stat-scroll {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: rgba(14,20,16,0.6);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.stat-scroll::-webkit-scrollbar { display: none; }
+
+.stat-node {
+  padding: 12px 24px;
+  border-right: 1px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.stat-node::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 24px; right: 24px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--jade-dim), transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.stat-node:hover::after { transform: scaleX(1); }
+
+.stat-node-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.22em;
+  color: rgba(232,224,204,0.3);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.stat-node-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.92rem;
+  color: var(--paper-dim);
+}
+
+.stat-node-val.jade { color: var(--jade); }
+.stat-node-val.gold { color: var(--gold); }
+
+/* ── MAIN CONTENT ── */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  position: relative;
+}
+
+/* ── SKILLS COLUMN ── */
+.skills-col {
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+
+.skills-header {
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(8,11,10,0.4);
+}
+
+.skills-header-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  color: rgba(232,224,204,0.25);
+  text-transform: uppercase;
+}
+
+.total-hps-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.total-hps-num {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  color: var(--jade);
+  letter-spacing: 0.06em;
+}
+
+.total-hps-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: rgba(232,224,204,0.25);
+  text-transform: uppercase;
+}
+
+/* ── SKILL ENTRIES ── */
+.skill-entry {
+  display: grid;
+  grid-template-columns: 48px 1fr 160px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-entry::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--jade);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 0.25s;
+}
+
+.skill-entry.selected::before { transform: scaleY(1); }
+
+.skill-entry:hover { background: rgba(74,170,120,0.04); }
+.skill-entry.selected { background: rgba(74,170,120,0.06); }
+.skill-entry.dmg::before { background: var(--crimson); }
+.skill-entry.dmg.selected { background: rgba(155,42,42,0.05); }
+
+.skill-entry-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1rem;
+  color: rgba(232,224,204,0.12);
+  border-right: 1px solid var(--border);
+  transition: color 0.2s;
+}
+
+.skill-entry.selected .skill-entry-rank { color: var(--jade); }
+
+.skill-entry-body {
+  padding: 18px 24px;
+}
+
+.skill-entry-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.skill-entry-name {
+  font-family: 'Cinzel', serif;
+  font-size: 0.88rem;
+  color: var(--paper);
+  letter-spacing: 0.06em;
+}
+
+.skill-weapon-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  padding: 2px 7px;
+  border: 1px solid var(--border-jade);
+  color: var(--jade);
+  text-transform: uppercase;
+}
+
+.skill-weapon-tag.umb {
+  border-color: rgba(200,168,74,0.2);
+  color: rgba(200,168,74,0.7);
+}
+
+.skill-note {
+  font-size: 0.8rem;
+  color: var(--mist);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+/* ── BRUSHSTROKE BAR ── */
+.brush-bar {
+  position: relative;
+  height: 3px;
+  margin-bottom: 8px;
+}
+
+.brush-bar-track {
+  position: absolute;
+  inset: 0;
+  background: rgba(232,224,204,0.05);
+}
+
+.brush-bar-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  background: linear-gradient(to right,
+    var(--jade-dim),
+    var(--jade) 60%,
+    var(--jade-lt)
+  );
+  transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.brush-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: 0; top: -1px; bottom: -1px;
+  width: 4px;
+  background: var(--jade-lt);
+  box-shadow: 0 0 8px var(--jade);
+  border-radius: 2px;
+}
+
+.brush-bar-fill.dmg {
+  background: linear-gradient(to right, #5a1a1a, var(--crimson) 60%, #d45555);
+}
+
+.brush-bar-fill.dmg::after {
+  background: #d45555;
+  box-shadow: 0 0 8px var(--crimson);
+}
+
+.skill-meta-row {
+  display: flex;
+  gap: 16px;
+  font-size: 0.78rem;
+  color: rgba(232,224,204,0.35);
+}
+
+.skill-meta-row strong {
+  color: rgba(232,224,204,0.65);
+}
+
+.skill-entry-output {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  border-left: 1px solid var(--border);
+}
+
+.skill-output-val {
+  font-family: 'Cinzel', serif;
+  font-size: 1.15rem;
+  color: var(--jade);
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+
+.skill-output-val.dmg { color: #d45555; }
+
+.skill-output-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  color: rgba(232,224,204,0.2);
+  text-transform: uppercase;
+}
+
+.skill-output-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(232,224,204,0.2);
+}
+
+/* ── RIGHT PANEL ── */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  background: rgba(8,11,10,0.3);
+}
+
+/* ── PANEL BLOCK ── */
+.panel-block {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.panel-block-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(232,224,204,0.22);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-block-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--border-jade), transparent);
+}
+
+/* ── TOTAL DISPLAY ── */
+.total-display {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.total-big {
+  font-family: 'Cinzel', serif;
+  font-size: 2.6rem;
+  color: var(--jade);
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(74,170,120,0.3);
+}
+
+.total-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  color: rgba(232,224,204,0.22);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.total-composition {
+  margin-top: 16px;
+  display: flex;
+  gap: 2px;
+}
+
+.comp-bar {
+  height: 4px;
+  background: var(--jade-dim);
+  transition: flex 0.6s ease;
+}
+
+.comp-bar.jade { background: var(--jade); }
+.comp-bar.jade-lt { background: var(--jade-lt); }
+.comp-bar.jade-dim { background: var(--jade-dim); opacity: 0.6; }
+.comp-bar.gold { background: var(--gold-dim); }
+
+.comp-labels {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(232,224,204,0.25);
+  letter-spacing: 0.1em;
+}
+
+/* ── SELECTED SKILL DETAIL ── */
+.hit-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.hit-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(232,224,204,0.04);
+}
+
+.hit-entry:last-child { border-bottom: none; }
+
+.hit-type-name {
+  font-size: 0.82rem;
+  color: var(--mist);
+  font-style: italic;
+}
+
+.hit-type-chance {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(232,224,204,0.2);
+  margin-left: 6px;
+}
+
+.hit-type-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--jade);
+}
+
+.hit-type-val.paper { color: rgba(232,224,204,0.55); }
+
+/* ── STAT WEIGHT BLOCK ── */
+.sw-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sw-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(232,224,204,0.03);
+}
+
+.sw-entry:last-child { border-bottom: none; }
+
+.sw-name {
+  font-size: 0.82rem;
+  color: rgba(232,224,204,0.6);
+  min-width: 110px;
+  font-style: italic;
+}
+
+.sw-track {
+  flex: 1;
+  height: 2px;
+  background: rgba(232,224,204,0.05);
+  position: relative;
+}
+
+.sw-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--jade-dim), var(--jade));
+  transition: width 0.8s ease;
+}
+
+.sw-fill.zero { background: transparent; }
+
+.sw-tier {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  min-width: 22px;
+  text-align: right;
+  font-weight: 500;
+}
+
+.sw-tier.s { color: #d45555; }
+.sw-tier.a { color: var(--gold); }
+.sw-tier.b { color: var(--jade); }
+.sw-tier.c { color: rgba(232,224,204,0.2); }
+
+/* ── ATTUNE ADVISOR ── */
+.attune-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.attune-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(232,224,204,0.02);
+  border: 1px solid rgba(232,224,204,0.05);
+  transition: border-color 0.2s;
+}
+
+.attune-row:hover { border-color: var(--border-jade); }
+
+.attune-slot {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: rgba(232,224,204,0.3);
+  text-transform: uppercase;
+}
+
+.attune-rec {
+  font-size: 0.82rem;
+  color: rgba(232,224,204,0.7);
+  font-style: italic;
+}
+
+.attune-mark {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  padding: 2px 7px;
+}
+
+.attune-mark.keep {
+  color: var(--jade);
+  border: 1px solid var(--border-jade);
+  background: var(--jade-glow);
+}
+
+.attune-mark.swap {
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  background: rgba(200,168,74,0.05);
+}
+
+/* ── DECORATIVE BOTTOM SEAL ── */
+.footer-seal {
+  padding: 32px 48px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8,11,10,0.5);
+}
+
+.footer-seal-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.2em;
+  color: rgba(232,224,204,0.15);
+  text-transform: uppercase;
+}
+
+.footer-divider {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border), transparent);
+  margin: 0 24px;
+}
+
+/* ── CORNER DECORATIONS ── */
+.corner {
+  position: fixed;
+  width: 40px; height: 40px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.corner-tl { top: 16px; left: 16px; border-top: 1px solid rgba(200,168,74,0.2); border-left: 1px solid rgba(200,168,74,0.2); }
+.corner-tr { top: 16px; right: 16px; border-top: 1px solid rgba(200,168,74,0.2); border-right: 1px solid rgba(200,168,74,0.2); }
+.corner-bl { bottom: 16px; left: 16px; border-bottom: 1px solid rgba(200,168,74,0.2); border-left: 1px solid rgba(200,168,74,0.2); }
+.corner-br { bottom: 16px; right: 16px; border-bottom: 1px solid rgba(200,168,74,0.2); border-right: 1px solid rgba(200,168,74,0.2); }
+
+/* ── SCROLL ANIMATION ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; }
+  .right-panel { border-top: 1px solid var(--border); }
+  .header { padding: 16px 20px; grid-template-columns: auto 1fr; }
+  .header-right { display: none; }
+  .skill-entry { grid-template-columns: 36px 1fr 130px; }
+  .brushstroke-left, .brushstroke-right, .corner { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- CORNER DECORATIONS -->
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<!-- BRUSHSTROKES -->
+<div class="brushstroke-left"></div>
+<div class="brushstroke-right"></div>
+
+<!-- PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-seal"><span>風</span></div>
+    <div class="header-center">
+      <div class="header-path">Silkbind · Deluge</div>
+      <div class="header-title">Skill <span>Output</span></div>
+      <div class="header-weapons">Panacea Fan · Soulshade Umbrella · Level 90 · Solo</div>
+    </div>
+    <div class="header-right">
+      <span class="version-tag">v1.5 · Apr 2026</span>
+      <span class="verified-tag">EN Verified</span>
+    </div>
+  </header>
+
+  <!-- STAT SCROLL -->
+  <div class="stat-scroll">
+    <div class="stat-node"><div class="stat-node-label">Physical ATK</div><div class="stat-node-val">1236–1896</div></div>
+    <div class="stat-node"><div class="stat-node-label">Silkbind ATK</div><div class="stat-node-val">352–651</div></div>
+    <div class="stat-node"><div class="stat-node-label">Crit Rate</div><div class="stat-node-val jade">69.8%</div></div>
+    <div class="stat-node"><div class="stat-node-label">Crit Heal Bonus</div><div class="stat-node-val jade">169%</div></div>
+    <div class="stat-node"><div class="stat-node-label">Resistance</div><div class="stat-node-val">30.0%</div></div>
+    <div class="stat-node"><div class="stat-node-label">Precision</div><div class="stat-node-val">88.5% <span style="color:var(--mist);font-size:0.8em">(83.1%)</span></div></div>
+    <div class="stat-node"><div class="stat-node-label">Agility</div><div class="stat-node-val gold">143</div></div>
+    <div class="stat-node"><div class="stat-node-label">Phys Pen</div><div class="stat-node-val">14.1</div></div>
+    <div class="stat-node"><div class="stat-node-label">Silkbind Pen</div><div class="stat-node-val">23.5</div></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- SKILLS COLUMN -->
+    <div class="skills-col">
+      <div class="skills-header">
+        <span class="skills-header-title">Skill Output — Sorted by HPS</span>
+        <div class="total-hps-display">
+          <span class="total-hps-num">88,375</span>
+          <span class="total-hps-label">Total HPS</span>
+        </div>
+      </div>
+
+      <!-- Skill 1 -->
+      <div class="skill-entry selected reveal" onclick="selectSkill(this, 'fan-q')">
+        <div class="skill-entry-rank">一</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-top">
+            <span class="skill-entry-name">Martial Art Skill</span>
+            <span class="skill-weapon-tag">Fan</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">Q · 20s</span>
+          </div>
+          <div class="skill-note">Clone skill — ticking HPS while active. Highest sustained output.</div>
+          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:100%"></div></div>
+          <div class="skill-meta-row">
+            <span>Avg <strong>124,735</strong></span>
+            <span>Range <strong>115,380–134,090</strong></span>
+            <span>Crit <strong>69.8%</strong></span>
+          </div>
+        </div>
+        <div class="skill-entry-output">
+          <div class="skill-output-val">31,184</div>
+          <div class="skill-output-label">HPS</div>
+          <div class="skill-output-pct">35.3%</div>
+        </div>
+      </div>
+
+      <!-- Skill 2 -->
+      <div class="skill-entry reveal" onclick="selectSkill(this, 'fan-r')">
+        <div class="skill-entry-rank">二</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-top">
+            <span class="skill-entry-name">Heavy Attack Chain</span>
+            <span class="skill-weapon-tag">Fan</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">R · 2.2s</span>
+          </div>
+          <div class="skill-note">3-hit combo total. Core rotation filler.</div>
+          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:89%"></div></div>
+          <div class="skill-meta-row">
+            <span>Avg <strong>61,414</strong></span>
+            <span>3 hits</span>
+            <span>Crit <strong>69.8%</strong></span>
+          </div>
+        </div>
+        <div class="skill-entry-output">
+          <div class="skill-output-val">27,664</div>
+          <div class="skill-output-label">HPS</div>
+          <div class="skill-output-pct">31.3%</div>
+        </div>
+      </div>
+
+      <!-- Skill 3 -->
+      <div class="skill-entry reveal" onclick="selectSkill(this, 'fan-special')">
+        <div class="skill-entry-rank">三</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-top">
+            <span class="skill-entry-name">Special Skill</span>
+            <span class="skill-weapon-tag">Fan</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">~ · 6s</span>
+          </div>
+          <div class="skill-note">Enhanced Crit Heal multiplier (199%). High single-hit value.</div>
+          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:44%"></div></div>
+          <div class="skill-meta-row">
+            <span>Avg <strong>82,031</strong></span>
+            <span>Crit Heal <strong>199%</strong></span>
+          </div>
+        </div>
+        <div class="skill-entry-output">
+          <div class="skill-output-val">13,672</div>
+          <div class="skill-output-label">HPS</div>
+          <div class="skill-output-pct">15.5%</div>
+        </div>
+      </div>
+
+      <!-- Skill 4 -->
+      <div class="skill-entry reveal" onclick="selectSkill(this, 'umb-special')">
+        <div class="skill-entry-rank">四</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-top">
+            <span class="skill-entry-name">Special Skill</span>
+            <span class="skill-weapon-tag umb">Umbrella</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">~ · 1s</span>
+          </div>
+          <div class="skill-note">Quick single-target top-up. Low cooldown.</div>
+          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:19%"></div></div>
+          <div class="skill-meta-row">
+            <span>Avg <strong>6,062</strong></span>
+            <span>Range <strong>5,607–6,516</strong></span>
+          </div>
+        </div>
+        <div class="skill-entry-output">
+          <div class="skill-output-val">6,062</div>
+          <div class="skill-output-label">HPS</div>
+          <div class="skill-output-pct">6.9%</div>
+        </div>
+      </div>
+
+      <!-- Skill 5 -->
+      <div class="skill-entry reveal" onclick="selectSkill(this, 'umb-q')">
+        <div class="skill-entry-rank">五</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-top">
+            <span class="skill-entry-name">Martial Art Skill</span>
+            <span class="skill-weapon-tag umb">Umbrella</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">Q · 30s</span>
+          </div>
+          <div class="skill-note">Heal + 20% DMG buff 12s. +5% vs exhausted enemies while active.</div>
+          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:18%"></div></div>
+          <div class="skill-meta-row">
+            <span>Avg <strong>33,856</strong></span>
+            <span>DMG Buff <strong>+20%</strong></span>
+          </div>
+        </div>
+        <div class="skill-entry-output">
+          <div class="skill-output-val">5,643</div>
+          <div class="skill-output-label">HPS</div>
+          <div class="skill-output-pct">6.4%</div>
+        </div>
+      </div>
+
+      <!-- Skill 6 -->
+      <div class="skill-entry reveal" onclick="selectSkill(this, 'fan-perc')">
+        <div class="skill-entry-rank">六</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-top">
+            <span class="skill-entry-name">Perception Skill</span>
+            <span class="skill-weapon-tag">Fan</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">Q · 20s · Party</span>
+          </div>
+          <div class="skill-note">Party-wide heal. Low personal HPS but high team value.</div>
+          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:13%"></div></div>
+          <div class="skill-meta-row">
+            <span>Avg <strong>82,999</strong></span>
+            <span>Party HPS <strong>20,750</strong></span>
+          </div>
+        </div>
+        <div class="skill-entry-output">
+          <div class="skill-output-val">4,150</div>
+          <div class="skill-output-label">HPS</div>
+          <div class="skill-output-pct">4.7%</div>
+        </div>
+      </div>
+
+      <!-- Skill 7 — Damage -->
+      <div class="skill-entry dmg reveal" onclick="selectSkill(this, 'fan-lmb')">
+        <div class="skill-entry-rank" style="color:rgba(155,42,42,0.3)">七</div>
+        <div class="skill-entry-body">
+          <div class="skill-entry-top">
+            <span class="skill-entry-name">Light Attack</span>
+            <span class="skill-weapon-tag" style="border-color:rgba(155,42,42,0.3);color:rgba(212,85,85,0.7)">Fan</span>
+            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">LMB · 0.7s</span>
+          </div>
+          <div class="skill-note">Damage only — no healing contribution.</div>
+          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill dmg" style="width:11%"></div></div>
+          <div class="skill-meta-row">
+            <span>Avg <strong>2,463</strong></span>
+            <span>Crit DMG <strong>165%</strong></span>
+          </div>
+        </div>
+        <div class="skill-entry-output">
+          <div class="skill-output-val dmg">3,519</div>
+          <div class="skill-output-label">DPS</div>
+          <div class="skill-output-pct">—</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <!-- Total -->
+      <div class="panel-block reveal">
+        <div class="panel-block-title">Total Output</div>
+        <div class="total-display">
+          <div class="total-big">88,375</div>
+          <div class="total-sub">Heals Per Second · Solo</div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="total-composition" id="comp-bar">
+            <div class="comp-bar jade" style="flex:31184"></div>
+            <div class="comp-bar jade-lt" style="flex:27664"></div>
+            <div class="comp-bar jade-dim" style="flex:13672"></div>
+            <div class="comp-bar" style="flex:6062;background:rgba(74,170,120,0.25)"></div>
+            <div class="comp-bar" style="flex:5643;background:rgba(74,170,120,0.15)"></div>
+            <div class="comp-bar" style="flex:4150;background:rgba(74,170,120,0.08)"></div>
+          </div>
+          <div class="comp-labels">
+            <span>Art Q</span>
+            <span>R Chain</span>
+            <span>Special</span>
+            <span>Other</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Skill Detail -->
+      <div class="panel-block reveal" id="skill-detail-panel">
+        <div class="panel-block-title">Martial Art Skill</div>
+        <div class="hit-entries" id="hit-entries">
+          <div class="hit-entry">
+            <span class="hit-type-name">Normal<span class="hit-type-chance"> 30.2%</span></span>
+            <span class="hit-type-val paper">66,978–101,387</span>
+          </div>
+          <div class="hit-entry">
+            <span class="hit-type-name">Critical<span class="hit-type-chance"> 69.8%</span></span>
+            <span class="hit-type-val">113,193–171,344</span>
+          </div>
+          <div class="hit-entry">
+            <span class="hit-type-name">Avg Heal</span>
+            <span class="hit-type-val">124,735</span>
+          </div>
+          <div class="hit-entry">
+            <span class="hit-type-name">Heal Range</span>
+            <span class="hit-type-val paper">115,380–134,090</span>
+          </div>
+          <div class="hit-entry">
+            <span class="hit-type-name">HPS</span>
+            <span class="hit-type-val">31,184</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stat Weights -->
+      <div class="panel-block reveal">
+        <div class="panel-block-title">Stat Weights</div>
+        <div class="sw-entries">
+          <div class="sw-entry">
+            <span class="sw-name">Critical Rate</span>
+            <div class="sw-track"><div class="sw-fill" style="width:90%"></div></div>
+            <span class="sw-tier s">S</span>
+          </div>
+          <div class="sw-entry">
+            <span class="sw-name">Crit Heal Bonus</span>
+            <div class="sw-track"><div class="sw-fill" style="width:82%"></div></div>
+            <span class="sw-tier s">S</span>
+          </div>
+          <div class="sw-entry">
+            <span class="sw-name">Agility</span>
+            <div class="sw-track"><div class="sw-fill" style="width:65%"></div></div>
+            <span class="sw-tier a">A</span>
+          </div>
+          <div class="sw-entry">
+            <span class="sw-name">Min Silkbind ATK</span>
+            <div class="sw-track"><div class="sw-fill" style="width:55%"></div></div>
+            <span class="sw-tier a">A</span>
+          </div>
+          <div class="sw-entry">
+            <span class="sw-name">Phys Penetration</span>
+            <div class="sw-track"><div class="sw-fill" style="width:40%"></div></div>
+            <span class="sw-tier b">B</span>
+          </div>
+          <div class="sw-entry">
+            <span class="sw-name">Max Physical ATK</span>
+            <div class="sw-track"><div class="sw-fill" style="width:22%"></div></div>
+            <span class="sw-tier c">C</span>
+          </div>
+          <div class="sw-entry">
+            <span class="sw-name">Affinity Rate</span>
+            <div class="sw-track"><div class="sw-fill zero" style="width:0%"></div></div>
+            <span class="sw-tier c">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attune Advisor -->
+      <div class="panel-block reveal">
+        <div class="panel-block-title">Attune Advisor</div>
+        <div class="attune-rows">
+          <div class="attune-row">
+            <span class="attune-slot">Weapons</span>
+            <span class="attune-rec">Crit Rate</span>
+            <span class="attune-mark keep">Keep</span>
+          </div>
+          <div class="attune-row">
+            <span class="attune-slot">Accessories</span>
+            <span class="attune-rec">Min Silkbind</span>
+            <span class="attune-mark keep">Keep</span>
+          </div>
+          <div class="attune-row">
+            <span class="attune-slot">Armor</span>
+            <span class="attune-rec">Crit Rate × 2</span>
+            <span class="attune-mark keep">Keep</span>
+          </div>
+          <div class="attune-row">
+            <span class="attune-slot">Max Physical</span>
+            <span class="attune-rec">→ Min Physical</span>
+            <span class="attune-mark swap">Consider</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-seal">
+    <span class="footer-seal-text">Fearsom's Calculator</span>
+    <div class="footer-divider"></div>
+    <span class="footer-seal-text">Where Winds Meet · EN Theorycrafting · Not affiliated with NetEase</span>
+  </div>
+
+</div>
+
+<script>
+// Particles
+const container = document.getElementById('particles');
+for (let i = 0; i < 12; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.cssText = `
+    left: ${Math.random() * 100}%;
+    bottom: ${Math.random() * 30}%;
+    animation-duration: ${6 + Math.random() * 8}s;
+    animation-delay: ${Math.random() * 6}s;
+    width: ${1 + Math.random() * 2}px;
+    height: ${1 + Math.random() * 2}px;
+    opacity: 0;
+  `;
+  container.appendChild(p);
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.05 });
+document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
+
+// Skill data
+const skills = {
+  'fan-q':       { name: 'Martial Art Skill', normal: '66,978–101,387', crit: '113,193–171,344', avg: '124,735', range: '115,380–134,090', hps: '31,184', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
+  'fan-r':       { name: 'Heavy Attack Chain', normal: '32,978–49,917', crit: '55,732–84,376', avg: '61,414', range: '56,807–66,020', hps: '27,664', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
+  'fan-special': { name: 'Special Skill', normal: '38,592–58,418', crit: '76,798–116,252', avg: '82,031', range: '75,878–88,183', hps: '13,672', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
+  'umb-special': { name: 'Umbrella Special', normal: '2,851–4,317', crit: '5,673–8,591', avg: '6,062', range: '5,607–6,516', hps: '6,062', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
+  'umb-q':       { name: 'Martial Art Skill', normal: '18,180–27,518', crit: '30,724–46,505', avg: '33,856', range: '31,317–36,395', hps: '5,643', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
+  'fan-perc':    { name: 'Perception Skill', normal: '44,567–67,463', crit: '75,318–114,013', avg: '82,999', range: '76,774–89,224', hps: '4,150', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
+  'fan-lmb':     { name: 'Light Attack', normal: '1,378–2,142', crit: '2,273–3,534', avg: '2,463', range: '1,378–3,534', hps: '3,519 DPS', normalChance: '16.9%', critChance: '83.1%', isDmg: true },
+};
+
+function selectSkill(el, key) {
+  document.querySelectorAll('.skill-entry').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const d = skills[key];
+  if (!d) return;
+
+  const panel = document.getElementById('skill-detail-panel');
+  const nameEl = panel.querySelector('.panel-block-title');
+  nameEl.textContent = d.name;
+
+  const hpsLabel = d.isDmg ? 'DPS' : 'HPS';
+  const valClass = d.isDmg ? 'hit-type-val dmg' : 'hit-type-val';
+
+  document.getElementById('hit-entries').innerHTML = `
+    <div class="hit-entry">
+      <span class="hit-type-name">Normal<span class="hit-type-chance"> ${d.normalChance}</span></span>
+      <span class="hit-type-val paper">${d.normal}</span>
+    </div>
+    <div class="hit-entry">
+      <span class="hit-type-name">Critical<span class="hit-type-chance"> ${d.critChance}</span></span>
+      <span class="${valClass}">${d.crit}</span>
+    </div>
+    <div class="hit-entry">
+      <span class="hit-type-name">Avg ${d.isDmg ? 'Damage' : 'Heal'}</span>
+      <span class="${valClass}">${d.avg}</span>
+    </div>
+    <div class="hit-entry">
+      <span class="hit-type-name">${d.isDmg ? 'Damage' : 'Heal'} Range</span>
+      <span class="hit-type-val paper">${d.range}</span>
+    </div>
+    <div class="hit-entry">
+      <span class="hit-type-name">${hpsLabel}</span>
+      <span class="${valClass}">${d.hps}</span>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
