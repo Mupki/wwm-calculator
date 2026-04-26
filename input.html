@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fearsom's Calculator — Build Input</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:         #080b0a;
+  --ink-mid:     #0e1410;
+  --ink-lt:      #141c17;
+  --paper:       #e8e0cc;
+  --paper-dim:   rgba(232,224,204,0.55);
+  --paper-faint: rgba(232,224,204,0.08);
+  --jade:        #4aaa78;
+  --jade-lt:     #6ecf9a;
+  --jade-dim:    #2a6b4a;
+  --jade-glow:   rgba(74,170,120,0.12);
+  --gold:        #c8a84a;
+  --gold-lt:     #e4c46e;
+  --gold-dim:    rgba(200,168,74,0.18);
+  --crimson:     #9b2a2a;
+  --mist:        rgba(232,224,204,0.35);
+  --border:      rgba(232,224,204,0.07);
+  --border-jade: rgba(74,170,120,0.18);
+  --input-bg:    rgba(232,224,204,0.04);
+  --input-focus: rgba(74,170,120,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: 'Crimson Pro', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 100% 50% at 50% 0%, rgba(74,170,120,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 100% 100%, rgba(200,168,74,0.03) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.corner { position: fixed; width: 36px; height: 36px; pointer-events: none; z-index: 3; }
+.corner-tl { top: 14px; left: 14px; border-top: 1px solid rgba(200,168,74,0.18); border-left: 1px solid rgba(200,168,74,0.18); }
+.corner-tr { top: 14px; right: 14px; border-top: 1px solid rgba(200,168,74,0.18); border-right: 1px solid rgba(200,168,74,0.18); }
+.corner-bl { bottom: 14px; left: 14px; border-bottom: 1px solid rgba(200,168,74,0.18); border-left: 1px solid rgba(200,168,74,0.18); }
+.corner-br { bottom: 14px; right: 14px; border-bottom: 1px solid rgba(200,168,74,0.18); border-right: 1px solid rgba(200,168,74,0.18); }
+
+/* ── HEADER ── */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(8,11,10,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px;
+}
+
+.header-left { display: flex; align-items: center; gap: 16px; }
+
+.header-seal {
+  width: 40px; height: 40px;
+  border: 1px solid rgba(200,168,74,0.35);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, rgba(200,168,74,0.08) 0%, transparent 70%);
+  flex-shrink: 0;
+}
+
+.header-seal span { font-family: 'Noto Serif SC', serif; font-size: 1rem; color: var(--gold); }
+
+.header-title { font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.12em; color: var(--paper); }
+.header-sub { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; color: var(--mist); text-transform: uppercase; margin-top: 2px; }
+
+.header-nav { display: flex; gap: 4px; }
+
+.nav-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--mist);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.nav-pill:hover { color: var(--paper); border-color: rgba(232,224,204,0.15); }
+.nav-pill.active { color: var(--jade); border-color: var(--border-jade); background: var(--jade-glow); }
+
+.calc-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  background: var(--jade-dim);
+  color: var(--jade-lt);
+  border: 1px solid var(--border-jade);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.calc-btn:hover { background: rgba(74,170,120,0.2); }
+.calc-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+/* ── LAYOUT ── */
+.app {
+  position: relative; z-index: 2;
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  min-height: calc(100vh - 61px);
+}
+
+/* ── LEFT NAV ── */
+.section-nav {
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  position: sticky;
+  top: 61px;
+  height: calc(100vh - 61px);
+  overflow-y: auto;
+  background: rgba(8,11,10,0.4);
+  scrollbar-width: thin;
+  scrollbar-color: var(--jade-dim) transparent;
+}
+
+.section-nav-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  color: rgba(232,224,204,0.2);
+  text-transform: uppercase;
+  padding: 0 24px;
+  margin-bottom: 12px;
+}
+
+.nav-section {
+  padding: 8px 24px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-section:hover { background: var(--paper-faint); }
+.nav-section.active { border-left-color: var(--jade); background: var(--jade-glow); }
+
+.nav-section-icon {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 0.85rem;
+  color: var(--jade-dim);
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.nav-section:hover .nav-section-icon,
+.nav-section.active .nav-section-icon { color: var(--jade); }
+
+.nav-section-label {
+  font-size: 0.85rem;
+  color: var(--mist);
+  transition: color 0.15s;
+}
+
+.nav-section:hover .nav-section-label,
+.nav-section.active .nav-section-label { color: var(--paper); }
+
+.nav-section-count {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(232,224,204,0.2);
+  background: var(--paper-faint);
+  padding: 1px 6px;
+}
+
+.nav-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 24px;
+}
+
+/* ── MAIN FORM ── */
+.form-main {
+  padding: 32px 40px;
+  overflow-y: auto;
+  height: calc(100vh - 61px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--jade-dim) transparent;
+}
+
+/* ── SECTION ── */
+.form-section {
+  margin-bottom: 48px;
+  scroll-margin-top: 24px;
+}
+
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+
+.section-header-icon {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 1.1rem;
+  color: var(--jade);
+  width: 28px; text-align: center;
+}
+
+.section-header-text {}
+
+.section-header-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  color: var(--paper);
+}
+
+.section-header-desc {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  color: rgba(232,224,204,0.25);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.section-toggle {
+  margin-left: auto;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--mist);
+  transition: transform 0.25s;
+  font-size: 0.7rem;
+}
+
+.section-toggle.collapsed { transform: rotate(-90deg); }
+
+.section-body {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.section-body.collapsed { display: none; }
+
+/* ── FIELD GROUPS ── */
+.field-group {
+  margin-bottom: 24px;
+}
+
+.field-group-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  color: rgba(232,224,204,0.3);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+
+.field-group-label::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, var(--border), transparent);
+}
+
+.field-grid {
+  display: grid;
+  gap: 2px;
+}
+
+.field-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.field-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.field-grid.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.field-grid.cols-1 { grid-template-columns: 1fr; }
+
+/* ── FIELD ── */
+.field {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.field:hover { border-color: rgba(232,224,204,0.12); }
+.field:focus-within { border-color: var(--border-jade); background: var(--input-focus); }
+
+.field-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: rgba(232,224,204,0.35);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.field-label .tip {
+  cursor: help;
+  color: rgba(232,224,204,0.2);
+  font-size: 0.65rem;
+  transition: color 0.15s;
+}
+
+.field-label .tip:hover { color: var(--jade); }
+
+.field-input-wrap {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.field input[type="number"],
+.field input[type="text"] {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--paper);
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  width: 100%;
+  -moz-appearance: textfield;
+}
+
+.field input[type="number"]::-webkit-outer-spin-button,
+.field input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.field input::placeholder { color: rgba(232,224,204,0.15); font-size: 0.9rem; }
+
+.field-unit {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  color: rgba(232,224,204,0.25);
+  flex-shrink: 0;
+  letter-spacing: 0.1em;
+}
+
+.field-suffix {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(232,224,204,0.2);
+  flex-shrink: 0;
+}
+
+/* Min-Max pair field */
+.field-minmax {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  transition: all 0.2s;
+}
+
+.field-minmax:hover { border-color: rgba(232,224,204,0.12); }
+.field-minmax:focus-within { border-color: var(--border-jade); background: var(--input-focus); }
+
+.field-minmax-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  color: rgba(232,224,204,0.35);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.field-minmax-inputs {
+  display: flex; align-items: center; gap: 8px;
+}
+
+.field-minmax-inputs input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--paper);
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  width: 100%;
+  -moz-appearance: textfield;
+}
+
+.field-minmax-inputs input::-webkit-outer-spin-button,
+.field-minmax-inputs input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.field-minmax-inputs input::placeholder { color: rgba(232,224,204,0.15); font-size: 0.9rem; }
+
+.minmax-sep {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(232,224,204,0.2);
+  flex-shrink: 0;
+}
+
+/* Select */
+.field select {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--paper);
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  width: 100%;
+  cursor: pointer;
+  appearance: none;
+}
+
+.field select option { background: #141c17; color: var(--paper); }
+
+/* Toggle field */
+.field-toggle {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.field-toggle:hover { border-color: rgba(232,224,204,0.12); }
+.field-toggle.on { border-color: var(--border-jade); background: var(--jade-glow); }
+
+.field-toggle-label {
+  font-size: 0.85rem;
+  color: var(--mist);
+  transition: color 0.15s;
+}
+
+.field-toggle.on .field-toggle-label { color: var(--paper); }
+
+.field-toggle-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(232,224,204,0.2);
+  margin-top: 2px;
+}
+
+.toggle-switch {
+  width: 32px; height: 18px;
+  background: rgba(232,224,204,0.1);
+  border-radius: 9px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(232,224,204,0.35);
+  top: 3px; left: 3px;
+  transition: all 0.2s;
+}
+
+.field-toggle.on .toggle-switch { background: var(--jade-dim); }
+.field-toggle.on .toggle-switch::after { left: 17px; background: var(--jade); }
+
+/* Passive display */
+.passive-display {
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.passive-display-label {
+  font-size: 0.82rem;
+  color: var(--mist);
+  font-style: italic;
+}
+
+.passive-display-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--jade);
+}
+
+.passive-display-val.inactive { color: rgba(232,224,204,0.2); }
+
+/* Hint text */
+.field-hint {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: rgba(232,224,204,0.2);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* Unconfirmed badge */
+.badge-unconfirmed {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  padding: 1px 5px;
+  border: 1px solid rgba(200,168,74,0.25);
+  color: rgba(200,168,74,0.5);
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: 4px;
+}
+
+/* ── RIGHT PANEL — LIVE PREVIEW ── */
+.preview-panel {
+  border-left: 1px solid var(--border);
+  padding: 24px;
+  position: sticky;
+  top: 61px;
+  height: calc(100vh - 61px);
+  overflow-y: auto;
+  background: rgba(8,11,10,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--jade-dim) transparent;
+}
+
+.preview-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(232,224,204,0.2);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.preview-title::after {
+  content: '';
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, var(--border-jade), transparent);
+}
+
+/* Stat summary */
+.stat-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+}
+
+.stat-summary-label {
+  font-size: 0.82rem;
+  color: var(--mist);
+  font-style: italic;
+}
+
+.stat-summary-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.88rem;
+  color: var(--paper-dim);
+}
+
+.stat-summary-val.jade { color: var(--jade); }
+.stat-summary-val.gold { color: var(--gold); }
+.stat-summary-val.empty { color: rgba(232,224,204,0.15); }
+
+/* Passive cascade */
+.passive-cascade {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cascade-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 10px;
+  background: var(--input-bg);
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.cascade-row.active { border-color: var(--border-jade); }
+
+.cascade-source {
+  font-size: 0.78rem;
+  color: rgba(232,224,204,0.4);
+  font-style: italic;
+}
+
+.cascade-stat {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(232,224,204,0.3);
+  letter-spacing: 0.1em;
+}
+
+.cascade-val {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  color: var(--jade);
+  min-width: 40px;
+  text-align: right;
+}
+
+.cascade-val.inactive { color: rgba(232,224,204,0.15); }
+
+/* Calculate button */
+.calculate-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--jade-dim), rgba(74,170,120,0.25));
+  color: var(--jade-lt);
+  border: 1px solid var(--border-jade);
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-top: auto;
+}
+
+.calculate-btn:hover { background: linear-gradient(135deg, rgba(74,170,120,0.3), rgba(74,170,120,0.35)); }
+.calculate-btn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(8px); transition: opacity 0.4s, transform 0.4s; }
+.reveal.visible { opacity: 1; transform: none; }
+
+@media (max-width: 1100px) {
+  .app { grid-template-columns: 220px 1fr; }
+  .preview-panel { display: none; }
+}
+
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; }
+  .section-nav { display: none; }
+  .header { padding: 14px 20px; }
+  .form-main { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-seal"><span>風</span></div>
+    <div>
+      <div class="header-title">Build Input</div>
+      <div class="header-sub">Enter your character stats</div>
+    </div>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html" class="nav-pill">Overview</a>
+    <a href="calculator.html" class="nav-pill">Output</a>
+    <a href="#" class="nav-pill active">Build Input</a>
+  </nav>
+  <button class="calc-btn" onclick="calculateOutput()">
+    <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+    Calculate
+  </button>
+</header>
+
+<div class="app">
+
+  <!-- LEFT NAV -->
+  <nav class="section-nav">
+    <div class="section-nav-title">Sections</div>
+    <a href="#section-setup" class="nav-section active" onclick="setActive(this)">
+      <span class="nav-section-icon">設</span>
+      <span class="nav-section-label">Build Setup</span>
+      <span class="nav-section-count">4</span>
+    </a>
+    <a href="#section-attributes" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">力</span>
+      <span class="nav-section-label">Five Attributes</span>
+      <span class="nav-section-count">5</span>
+    </a>
+    <a href="#section-combat" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">戰</span>
+      <span class="nav-section-label">Combat Stats</span>
+      <span class="nav-section-count">8</span>
+    </a>
+    <a href="#section-attack" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">攻</span>
+      <span class="nav-section-label">Attack Values</span>
+      <span class="nav-section-count">10</span>
+    </a>
+    <a href="#section-dmgboost" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">增</span>
+      <span class="nav-section-label">Damage Boosts</span>
+      <span class="nav-section-count">12</span>
+    </a>
+    <a href="#section-healing" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">癒</span>
+      <span class="nav-section-label">Healing Boosts</span>
+      <span class="nav-section-count">4</span>
+    </a>
+    <div class="nav-divider"></div>
+    <a href="#section-passives" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">技</span>
+      <span class="nav-section-label">Weapon Passives</span>
+      <span class="nav-section-count">8</span>
+    </a>
+    <a href="#section-innerway" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">道</span>
+      <span class="nav-section-label">Inner Ways</span>
+      <span class="nav-section-count">6</span>
+    </a>
+    <a href="#section-buffs" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">氣</span>
+      <span class="nav-section-label">Active Buffs</span>
+      <span class="nav-section-count">4</span>
+    </a>
+    <a href="#section-systems" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">械</span>
+      <span class="nav-section-label">Systems</span>
+      <span class="nav-section-count">3</span>
+    </a>
+    <a href="#section-content" class="nav-section" onclick="setActive(this)">
+      <span class="nav-section-icon">境</span>
+      <span class="nav-section-label">Content Settings</span>
+      <span class="nav-section-count">3</span>
+    </a>
+  </nav>
+
+  <!-- MAIN FORM -->
+  <main class="form-main" id="formMain">
+
+    <!-- ── BUILD SETUP ── -->
+    <div class="form-section reveal" id="section-setup">
+      <div class="section-header" onclick="toggleSection('setup')">
+        <span class="section-header-icon">設</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Build Setup</div>
+          <div class="section-header-desc">Path, weapons, level</div>
+        </div>
+        <span class="section-toggle" id="toggle-setup">▾</span>
+      </div>
+      <div class="section-body" id="body-setup">
+        <div class="field-group">
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">Level</div>
+              <div class="field-input-wrap">
+                <input type="number" id="level" value="90" min="1" max="90" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Martial Arts Path</div>
+              <div class="field-input-wrap">
+                <select id="path" onchange="updatePreview()">
+                  <option value="silkbind-deluge">Silkbind · Deluge</option>
+                  <option value="bellstrike-umbra">Bellstrike · Umbra</option>
+                  <option value="bellstrike-splendor">Bellstrike · Splendor</option>
+                  <option value="silkbind-jade">Silkbind · Jade</option>
+                  <option value="bamboocut-wind">Bamboocut · Wind</option>
+                  <option value="bamboocut-dust">Bamboocut · Dust</option>
+                  <option value="stonesplit-might">Stonesplit · Might</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Primary Weapon</div>
+              <div class="field-input-wrap">
+                <select id="weapon1" onchange="updatePreview()">
+                  <option value="panacea-fan">Panacea Fan</option>
+                  <option value="inkwell-fan">Inkwell Fan</option>
+                  <option value="strategic-sword">Strategic Sword</option>
+                  <option value="nameless-sword">Nameless Sword</option>
+                  <option value="infernal-twinblades">Infernal Twinblades</option>
+                  <option value="thundercry-blade">Thundercry Blade</option>
+                  <option value="everspring-umbrella">Everspring Umbrella</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Secondary Weapon</div>
+              <div class="field-input-wrap">
+                <select id="weapon2" onchange="updatePreview()">
+                  <option value="soulshade-umbrella">Soulshade Umbrella</option>
+                  <option value="vernal-umbrella">Vernal Umbrella</option>
+                  <option value="heavenquaker-spear">Heavenquaker Spear</option>
+                  <option value="nameless-spear">Nameless Spear</option>
+                  <option value="mortal-rope-dart">Mortal Rope Dart</option>
+                  <option value="stormbreaker-spear">Stormbreaker Spear</option>
+                  <option value="unfettered-rope-dart">Unfettered Rope Dart</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FIVE ATTRIBUTES ── -->
+    <div class="form-section reveal" id="section-attributes">
+      <div class="section-header" onclick="toggleSection('attributes')">
+        <span class="section-header-icon">力</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Five Attributes</div>
+          <div class="section-header-desc">Body, Power, Defense, Agility, Momentum</div>
+        </div>
+        <span class="section-toggle" id="toggle-attributes">▾</span>
+      </div>
+      <div class="section-body" id="body-attributes">
+        <div class="field-group">
+          <div class="field-grid cols-3">
+            <div class="field">
+              <div class="field-label">Body <span class="tip" title="Increases Max HP and Physical Defense">?</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="body" placeholder="145" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Power <span class="tip" title="Increases Min and Max Physical Attack">?</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="power" placeholder="174" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Defense <span class="tip" title="Increases Max HP and Physical Defense">?</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="defense" placeholder="110" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Agility <span class="tip" title="Increases Min Physical Attack and Critical Rate. Double-value for Silkbind-Deluge via weapon passives up to 200.">?</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="agility" placeholder="176" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Momentum <span class="tip" title="Increases Max Physical Attack and Affinity Rate">?</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="momentum" placeholder="174" oninput="updatePreview()">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COMBAT STATS ── -->
+    <div class="form-section reveal" id="section-combat">
+      <div class="section-header" onclick="toggleSection('combat')">
+        <span class="section-header-icon">戰</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Combat Stats</div>
+          <div class="section-header-desc">Rates, resistances, penetration — enter values from your in-game stat screen</div>
+        </div>
+        <span class="section-toggle" id="toggle-combat">▾</span>
+      </div>
+      <div class="section-body" id="body-combat">
+        <div class="field-group">
+          <div class="field-group-label">Hit Rates — Enter base values (before resistance)</div>
+          <div class="field-grid cols-3">
+            <div class="field">
+              <div class="field-label">Precision Rate</div>
+              <div class="field-input-wrap">
+                <input type="number" id="precision" placeholder="88.5" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Critical Rate</div>
+              <div class="field-input-wrap">
+                <input type="number" id="critRate" placeholder="83.6" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Affinity Rate</div>
+              <div class="field-input-wrap">
+                <input type="number" id="affinityRate" placeholder="14.6" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Direct Crit Rate <span class="tip" title="Bypasses resistance calculation — added directly to effective crit">?</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="directCrit" placeholder="9.2" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Direct Affinity Rate</div>
+              <div class="field-input-wrap">
+                <input type="number" id="directAffinity" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Abrasion Conversion</div>
+              <div class="field-input-wrap">
+                <input type="number" id="abrasion" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-label">Resistance &amp; Penetration</div>
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">Enemy Resistance <span class="tip" title="30% for solo bosses, varies by content. Affects effective crit, precision, and affinity rates.">?</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="resistance" placeholder="30.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Physical Penetration</div>
+              <div class="field-input-wrap">
+                <input type="number" id="physPen" placeholder="14.1" step="0.1" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Attribute Penetration</div>
+              <div class="field-input-wrap">
+                <input type="number" id="attrPen" placeholder="31.4" step="0.1" oninput="updatePreview()">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ATTACK VALUES ── -->
+    <div class="form-section reveal" id="section-attack">
+      <div class="section-header" onclick="toggleSection('attack')">
+        <span class="section-header-icon">攻</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Attack Values</div>
+          <div class="section-header-desc">Physical and attribute attack ranges</div>
+        </div>
+        <span class="section-toggle" id="toggle-attack">▾</span>
+      </div>
+      <div class="section-body" id="body-attack">
+        <div class="field-group">
+          <div class="field-group-label">Physical Attack</div>
+          <div class="field-grid cols-2">
+            <div class="field-minmax">
+              <div class="field-minmax-label">Physical Attack (Min – Max)</div>
+              <div class="field-minmax-inputs">
+                <input type="number" id="physMin" placeholder="1160" oninput="updatePreview()">
+                <span class="minmax-sep">—</span>
+                <input type="number" id="physMax" placeholder="1999" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Max HP</div>
+              <div class="field-input-wrap">
+                <input type="number" id="maxHp" placeholder="135951" oninput="updatePreview()">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-label">Attribute Attack — Main Path</div>
+          <div class="field-grid cols-2">
+            <div class="field-minmax">
+              <div class="field-minmax-label">Silkbind Attack (Min – Max)</div>
+              <div class="field-minmax-inputs">
+                <input type="number" id="silkMin" placeholder="352" oninput="updatePreview()">
+                <span class="minmax-sep">—</span>
+                <input type="number" id="silkMax" placeholder="620" oninput="updatePreview()">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-label">Attribute Attack — Off-Path <span class="badge-unconfirmed">Any min &gt; 0 = past breakpoint</span></div>
+          <div class="field-grid cols-2">
+            <div class="field-minmax">
+              <div class="field-minmax-label">Bellstrike Attack (Min – Max)</div>
+              <div class="field-minmax-inputs">
+                <input type="number" id="bellMin" placeholder="29" oninput="updatePreview()">
+                <span class="minmax-sep">—</span>
+                <input type="number" id="bellMax" placeholder="29" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field-minmax">
+              <div class="field-minmax-label">Stonesplit Attack (Min – Max)</div>
+              <div class="field-minmax-inputs">
+                <input type="number" id="stoneMin" placeholder="30" oninput="updatePreview()">
+                <span class="minmax-sep">—</span>
+                <input type="number" id="stoneMax" placeholder="30" oninput="updatePreview()">
+              </div>
+            </div>
+            <div class="field-minmax">
+              <div class="field-minmax-label">Bamboocut Attack (Min – Max)</div>
+              <div class="field-minmax-inputs">
+                <input type="number" id="bambooMin" placeholder="31" oninput="updatePreview()">
+                <span class="minmax-sep">—</span>
+                <input type="number" id="bambooMax" placeholder="31" oninput="updatePreview()">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DAMAGE BOOSTS ── -->
+    <div class="form-section reveal" id="section-dmgboost">
+      <div class="section-header" onclick="toggleSection('dmgboost')">
+        <span class="section-header-icon">增</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Damage Boosts</div>
+          <div class="section-header-desc">Multipliers and bonuses</div>
+        </div>
+        <span class="section-toggle" id="toggle-dmgboost">▾</span>
+      </div>
+      <div class="section-body" id="body-dmgboost">
+        <div class="field-group">
+          <div class="field-group-label">Critical &amp; Affinity</div>
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">Critical DMG Bonus</div>
+              <div class="field-input-wrap">
+                <input type="number" id="critDmg" placeholder="150.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Affinity DMG Bonus</div>
+              <div class="field-input-wrap">
+                <input type="number" id="affinityDmg" placeholder="135.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-label">Physical &amp; Attribute</div>
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">Physical DMG Bonus</div>
+              <div class="field-input-wrap">
+                <input type="number" id="physDmgBonus" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Attribute DMG Bonus</div>
+              <div class="field-input-wrap">
+                <input type="number" id="attrDmgBonus" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-label">Weapon-Specific Boosts</div>
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">All Martial Art Skill DMG</div>
+              <div class="field-input-wrap">
+                <input type="number" id="allArtDmg" placeholder="3.2" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Art of Fan DMG</div>
+              <div class="field-input-wrap">
+                <input type="number" id="fanDmg" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Art of Fan (Healing)</div>
+              <div class="field-input-wrap">
+                <input type="number" id="fanHealDmg" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Art of Umbrella DMG</div>
+              <div class="field-input-wrap">
+                <input type="number" id="umbDmg" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Art of Umbrella (Healing)</div>
+              <div class="field-input-wrap">
+                <input type="number" id="umbHealDmg" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Damage Boost vs. Boss</div>
+              <div class="field-input-wrap">
+                <input type="number" id="bossDmg" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-group-label">Mystic Skill Boosts</div>
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">Single-Target Mystic DMG</div>
+              <div class="field-input-wrap">
+                <input type="number" id="mysticSingle" placeholder="0.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Area Mystic DMG</div>
+              <div class="field-input-wrap">
+                <input type="number" id="mysticArea" placeholder="5.5" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── HEALING BOOSTS ── -->
+    <div class="form-section reveal" id="section-healing">
+      <div class="section-header" onclick="toggleSection('healing')">
+        <span class="section-header-icon">癒</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Healing Boosts</div>
+          <div class="section-header-desc">Critical healing, physical healing, attribute healing</div>
+        </div>
+        <span class="section-toggle" id="toggle-healing">▾</span>
+      </div>
+      <div class="section-body" id="body-healing">
+        <div class="field-group">
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">Critical Healing Bonus</div>
+              <div class="field-input-wrap">
+                <input type="number" id="critHealBonus" placeholder="54.0" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Physical Healing Bonus</div>
+              <div class="field-input-wrap">
+                <input type="number" id="physHealBonus" placeholder="2.5" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Attribute Heal Bonus</div>
+              <div class="field-input-wrap">
+                <input type="number" id="attrHealBonus" placeholder="7.6" step="0.1" oninput="updatePreview()">
+                <span class="field-unit">%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── WEAPON PASSIVES ── -->
+    <div class="form-section reveal" id="section-passives">
+      <div class="section-header" onclick="toggleSection('passives')">
+        <span class="section-header-icon">技</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Weapon Passives</div>
+          <div class="section-header-desc">Toggle which passives apply — values calculated from your attributes</div>
+        </div>
+        <span class="section-toggle" id="toggle-passives">▾</span>
+      </div>
+      <div class="section-body" id="body-passives">
+        <div class="field-group">
+          <div class="field-group-label">Active Passives</div>
+          <div class="field-grid cols-1">
+            <div class="field-toggle on" id="toggle-umbrellaPhysUp" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Soulshade Umbrella — Physical Attack UP</div>
+                <div class="field-toggle-note">+Min Physical based on Agility (capped at 200) · Current: <span id="umbrellaPhysVal">46.4</span></div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-fanCritUp" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Panacea Fan — Critical Rate UP</div>
+                <div class="field-toggle-note">+Crit Rate based on Agility (capped at 200) · Current: <span id="fanCritVal">5.28%</span></div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-umbrellaAttrUp" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Soulshade Umbrella — Silkbind Attribute UP</div>
+                <div class="field-toggle-note">+Silkbind ATK and Silkbind Penetration based on Min Silkbind · Current: <span id="umbrellaAttrVal">15.2 pen</span></div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-fanHeavyHeal" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Panacea Fan — Heavy Attack Healing Boost</div>
+                <div class="field-toggle-note">+30% to heavy attack healing · Applied to R chain skills</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-umbrellaSpecialCrit" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Soulshade Umbrella — Critical Heal Enhancement</div>
+                <div class="field-toggle-note">+30% Special Skill crit healing · Applied to ~ skill block</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-umbrellaBuff" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Soulshade Umbrella — Buff Enhancement</div>
+                <div class="field-toggle-note">+5% dmg vs exhausted targets (5s) · +20% Mystic Skill DMG when both weapons equipped</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-fanClone" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Panacea Fan — Water Clone Enhancement</div>
+                <div class="field-toggle-note">+2 clones · +50% clone healing bonus</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── INNER WAYS ── -->
+    <div class="form-section reveal" id="section-innerway">
+      <div class="section-header" onclick="toggleSection('innerway')">
+        <span class="section-header-icon">道</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Inner Ways</div>
+          <div class="section-header-desc">Active inner way bonuses</div>
+        </div>
+        <span class="section-toggle" id="toggle-innerway">▾</span>
+      </div>
+      <div class="section-body" id="body-innerway">
+        <div class="field-group">
+          <div class="field-grid cols-1">
+            <div class="field-toggle on" id="toggle-moraleChant" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Morale Chant (Yi River)</div>
+                <div class="field-toggle-note">+5% Physical Healing Bonus</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-restoringBlossom1" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Restoring Blossom (Nurturing)</div>
+                <div class="field-toggle-note">+12% Critical Healing Bonus</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-restoringBlossom2" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Restoring Blossom (Concentration)</div>
+                <div class="field-toggle-note">+12% Critical Healing Bonus</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle" id="toggle-blossomBarrage" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Blossom Barrage (T1)</div>
+                <div class="field-toggle-note">+10% healing — off by default</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-ivorybloom4pc1" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">4PC Ivorybloom — +5% Crit at Max HP</div>
+                <div class="field-toggle-note">Requires being at maximum HP to activate</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle on" id="toggle-ivorybloom4pc2" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">4PC Ivorybloom — +15% Crit DMG at Max HP</div>
+                <div class="field-toggle-note">Requires being at maximum HP to activate</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ACTIVE BUFFS ── -->
+    <div class="form-section reveal" id="section-buffs">
+      <div class="section-header" onclick="toggleSection('buffs')">
+        <span class="section-header-icon">氣</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Active Buffs</div>
+          <div class="section-header-desc">Situational and rotational buffs</div>
+        </div>
+        <span class="section-toggle" id="toggle-buffs">▾</span>
+      </div>
+      <div class="section-body" id="body-buffs">
+        <div class="field-group">
+          <div class="field-grid cols-1">
+            <div class="field-toggle on" id="toggle-echoes" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Echoes of a Thousand Plants (Umbrella ~)</div>
+                <div class="field-toggle-note">+15% to healing — from Umbrella special skill</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle" id="toggle-chill" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Chill Beneath the Cloak (Tab to Umbrella)</div>
+                <div class="field-toggle-note">+5% situational — off by default</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle" id="toggle-jadebreak" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Emerald Barrier — Jadebreak (Inkwell Fan Q)</div>
+                <div class="field-toggle-note">+30% — Silkbind-Jade path only</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <div class="field-toggle" id="toggle-jadebreakBoss" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Jadebreak Boss Bonus</div>
+                <div class="field-toggle-note">+10% vs boss — requires Jadebreak active</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SYSTEMS ── -->
+    <div class="form-section reveal" id="section-systems">
+      <div class="section-header" onclick="toggleSection('systems')">
+        <span class="section-header-icon">械</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Systems</div>
+          <div class="section-header-desc">Arsenal, Slot Enhancement contributions</div>
+        </div>
+        <span class="section-toggle" id="toggle-systems">▾</span>
+      </div>
+      <div class="section-body" id="body-systems">
+        <div class="field-group">
+          <div class="field-group-label">Arsenal — Path Bonus</div>
+          <div class="field-grid cols-2">
+            <div class="field-minmax">
+              <div class="field-minmax-label">Silkbind Arsenal (Min – Max)</div>
+              <div class="field-minmax-inputs">
+                <input type="number" id="arsenalMin" placeholder="97" oninput="updatePreview()">
+                <span class="minmax-sep">—</span>
+                <input type="number" id="arsenalMax" placeholder="195" oninput="updatePreview()">
+              </div>
+            </div>
+          </div>
+          <div class="field-hint">Arsenal scales with banked gear. HP scaling only after tier cap.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONTENT SETTINGS ── -->
+    <div class="form-section reveal" id="section-content">
+      <div class="section-header" onclick="toggleSection('content')">
+        <span class="section-header-icon">境</span>
+        <div class="section-header-text">
+          <div class="section-header-title">Content Settings</div>
+          <div class="section-header-desc">Affects resistance, exhaustion windows, and party bonuses</div>
+        </div>
+        <span class="section-toggle" id="toggle-content">▾</span>
+      </div>
+      <div class="section-body" id="body-content">
+        <div class="field-group">
+          <div class="field-grid cols-2">
+            <div class="field">
+              <div class="field-label">Content Type</div>
+              <div class="field-input-wrap">
+                <select id="contentType" onchange="updatePreview()">
+                  <option value="solo">Solo Boss</option>
+                  <option value="dungeon5">5-Man Dungeon</option>
+                  <option value="dungeon10">10-Man Raid</option>
+                  <option value="pvp">PvP</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Exhaustion Window <span class="badge-unconfirmed">Context</span></div>
+              <div class="field-input-wrap">
+                <input type="number" id="exhaustionWindow" value="7" step="0.5" oninput="updatePreview()">
+                <span class="field-unit">sec</span>
+              </div>
+            </div>
+            <div class="field-toggle" id="toggle-exhaustionBonus" onclick="toggleField(this)">
+              <div>
+                <div class="field-toggle-label">Include Exhaustion Bonus in DPS</div>
+                <div class="field-toggle-note">+10% global during exhaustion window</div>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT PREVIEW PANEL -->
+  <aside class="preview-panel">
+
+    <div class="preview-title">Stat Summary</div>
+    <div class="stat-summary">
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Physical ATK</span>
+        <span class="stat-summary-val" id="prev-physAtk">—</span>
+      </div>
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Silkbind ATK</span>
+        <span class="stat-summary-val jade" id="prev-silkAtk">—</span>
+      </div>
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Effective Crit Rate</span>
+        <span class="stat-summary-val jade" id="prev-effCrit">—</span>
+      </div>
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Crit Heal Multiplier</span>
+        <span class="stat-summary-val" id="prev-critHealMult">—</span>
+      </div>
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Effective Precision</span>
+        <span class="stat-summary-val" id="prev-effPrec">—</span>
+      </div>
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Phys Pen Multiplier</span>
+        <span class="stat-summary-val" id="prev-physPenMult">—</span>
+      </div>
+    </div>
+
+    <div class="preview-title">Passive Cascade</div>
+    <div class="passive-cascade">
+      <div class="cascade-row active">
+        <span class="cascade-source">Umbrella Passive</span>
+        <span class="cascade-stat">Min Phys</span>
+        <span class="cascade-val" id="casc-umbrellaPhys">+46.4</span>
+      </div>
+      <div class="cascade-row active">
+        <span class="cascade-source">Fan Passive</span>
+        <span class="cascade-stat">Crit Rate</span>
+        <span class="cascade-val" id="casc-fanCrit">+5.28%</span>
+      </div>
+      <div class="cascade-row active">
+        <span class="cascade-source">Umbrella Passive</span>
+        <span class="cascade-stat">Silk Pen</span>
+        <span class="cascade-val" id="casc-umbrellaAttr">+15.2</span>
+      </div>
+      <div class="cascade-row active">
+        <span class="cascade-source">Buff Enhancement</span>
+        <span class="cascade-stat">Mystic DMG</span>
+        <span class="cascade-val">+20%</span>
+      </div>
+      <div class="cascade-row active">
+        <span class="cascade-source">4PC Ivorybloom</span>
+        <span class="cascade-stat">Crit Rate</span>
+        <span class="cascade-val">+5%</span>
+      </div>
+      <div class="cascade-row active">
+        <span class="cascade-source">4PC Ivorybloom</span>
+        <span class="cascade-stat">Crit DMG</span>
+        <span class="cascade-val">+15%</span>
+      </div>
+    </div>
+
+    <div class="preview-title">Breakpoint Status</div>
+    <div class="stat-summary">
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Phys Min vs Max</span>
+        <span class="stat-summary-val" id="bp-physMinMax" style="color:rgba(192,57,43,0.8)">Far (−660)</span>
+      </div>
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Silk Min vs Max</span>
+        <span class="stat-summary-val" id="bp-silkMinMax" style="color:rgba(192,57,43,0.8)">Far (−268)</span>
+      </div>
+      <div class="stat-summary-row">
+        <span class="stat-summary-label">Agility Passive Cap</span>
+        <span class="stat-summary-val gold" id="bp-agiCap">88% (176/200)</span>
+      </div>
+    </div>
+
+    <button class="calculate-btn" onclick="calculateOutput()">
+      <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+      Calculate Output
+    </button>
+
+  </aside>
+
+</div>
+
+<script>
+function toggleSection(id) {
+  const body = document.getElementById('body-' + id);
+  const toggle = document.getElementById('toggle-' + id);
+  const isCollapsed = body.classList.contains('collapsed');
+  body.classList.toggle('collapsed');
+  toggle.classList.toggle('collapsed', !isCollapsed);
+}
+
+function toggleField(el) {
+  el.classList.toggle('on');
+  updatePreview();
+}
+
+function setActive(el) {
+  document.querySelectorAll('.nav-section').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function val(id, fallback = 0) {
+  const el = document.getElementById(id);
+  if (!el) return fallback;
+  const v = parseFloat(el.value);
+  return isNaN(v) ? fallback : v;
+}
+
+function isOn(id) {
+  const el = document.getElementById(id);
+  return el ? el.classList.contains('on') : false;
+}
+
+function updatePreview() {
+  const agility = val('agility', 176);
+  const physMin = val('physMin', 1160);
+  const physMax = val('physMax', 1999);
+  const silkMin = val('silkMin', 352);
+  const silkMax = val('silkMax', 620);
+  const resistance = val('resistance', 30) / 100;
+  const critRate = val('critRate', 83.6) / 100;
+  const directCrit = val('directCrit', 9.2) / 100;
+  const precision = val('precision', 88.5) / 100;
+  const critHealBonus = val('critHealBonus', 54.0);
+  const physPen = val('physPen', 14.1);
+
+  // Passive calculations
+  const maxUmbrellaBonus = 52.7;
+  const maxFanCritBonus = 0.0601;
+  const umbrellaPhysPassive = isOn('toggle-umbrellaPhysUp')
+    ? Math.min(maxUmbrellaBonus, agility / 200 * maxUmbrellaBonus)
+    : 0;
+  const fanCritPassive = isOn('toggle-fanCritUp')
+    ? Math.min(maxFanCritBonus, agility / 200 * maxFanCritBonus)
+    : 0;
+
+  // Effective crit = (base crit / (1 + resistance)) + direct crit
+  const effCrit = Math.min(1, critRate / (1 + resistance) + directCrit);
+  const effPrec = precision / (1 + resistance);
+
+  // Crit heal multiplier = 100% + 50% base + bonus%
+  const critHealMult = 1 + 0.5 + (critHealBonus / 100);
+
+  // Pen multiplier
+  const enemyRes = 20; // assume standard
+  const penDiff = physPen - enemyRes;
+  const penMult = penDiff >= 0 ? 1 + penDiff / 100 : 1 + penDiff / 200;
+
+  // Update display
+  const set = (id, val, cls) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val;
+    if (cls) el.className = 'stat-summary-val ' + cls;
+  };
+
+  const pm = physMin > 0 ? physMin : 1160;
+  const px = physMax > 0 ? physMax : 1999;
+  set('prev-physAtk', `${pm.toLocaleString()}–${px.toLocaleString()}`);
+  set('prev-silkAtk', `${silkMin > 0 ? silkMin : 352}–${silkMax > 0 ? silkMax : 620}`, 'jade');
+  set('prev-effCrit', (effCrit * 100).toFixed(1) + '%', effCrit > 0.6 ? 'jade' : 'gold');
+  set('prev-critHealMult', (critHealMult * 100).toFixed(0) + '%');
+  set('prev-effPrec', (effPrec * 100).toFixed(1) + '%');
+  set('prev-physPenMult', (penMult * 100).toFixed(1) + '%');
+
+  // Passive cascade
+  const cascUmb = document.getElementById('casc-umbrellaPhys');
+  if (cascUmb) {
+    cascUmb.textContent = isOn('toggle-umbrellaPhysUp') ? '+' + umbrellaPhysPassive.toFixed(1) : '—';
+    cascUmb.className = 'cascade-val' + (isOn('toggle-umbrellaPhysUp') ? '' : ' inactive');
+    cascUmb.parentElement.classList.toggle('active', isOn('toggle-umbrellaPhysUp'));
+  }
+
+  const cascFan = document.getElementById('casc-fanCrit');
+  if (cascFan) {
+    cascFan.textContent = isOn('toggle-fanCritUp') ? '+' + (fanCritPassive * 100).toFixed(2) + '%' : '—';
+    cascFan.className = 'cascade-val' + (isOn('toggle-fanCritUp') ? '' : ' inactive');
+    cascFan.parentElement.classList.toggle('active', isOn('toggle-fanCritUp'));
+  }
+
+  // Breakpoints
+  const physGap = physMax - physMin - umbrellaPhysPassive;
+  const silkGap = silkMax - silkMin;
+  const bpPhys = document.getElementById('bp-physMinMax');
+  if (bpPhys) {
+    if (physGap <= 0) {
+      bpPhys.textContent = '✓ Breakpoint reached!';
+      bpPhys.style.color = 'var(--jade)';
+    } else {
+      bpPhys.textContent = `Far (−${physGap.toFixed(0)})`;
+      bpPhys.style.color = 'rgba(200,168,74,0.7)';
+    }
+  }
+
+  const bpSilk = document.getElementById('bp-silkMinMax');
+  if (bpSilk) {
+    if (silkGap <= 0) {
+      bpSilk.textContent = '✓ Breakpoint reached!';
+      bpSilk.style.color = 'var(--jade)';
+    } else {
+      bpSilk.textContent = `Far (−${silkGap.toFixed(0)})`;
+      bpSilk.style.color = 'rgba(200,168,74,0.7)';
+    }
+  }
+
+  const bpAgi = document.getElementById('bp-agiCap');
+  if (bpAgi) {
+    const pct = Math.min(100, (agility / 200 * 100)).toFixed(0);
+    bpAgi.textContent = `${pct}% (${agility}/200)`;
+    bpAgi.className = 'stat-summary-val ' + (agility >= 200 ? 'jade' : 'gold');
+  }
+}
+
+function calculateOutput() {
+  window.location.href = 'calculator.html';
+}
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.05 });
+document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
+
+// Active section tracking on scroll
+const formMain = document.getElementById('formMain');
+const sections = document.querySelectorAll('.form-section');
+formMain.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    const top = s.offsetTop - 80;
+    if (formMain.scrollTop >= top) current = s.id;
+  });
+  document.querySelectorAll('.nav-section').forEach(n => {
+    n.classList.toggle('active', n.getAttribute('href') === '#' + current);
+  });
+});
+
+// Initial preview
+updatePreview();
+</script>
+</body>
+</html>
