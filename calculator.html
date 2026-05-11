@@ -3,1225 +3,1279 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fearsom's Calculator — Silkbind · Deluge</title>
+<title>Fearsom's Calculator — Where Winds Meet</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════ PATH TOKENS ══════════════════ */
 :root {
-  --ink:        #080b0a;
-  --ink-mid:    #0e1410;
-  --ink-lt:     #141c17;
-  --paper:      #e8e0cc;
-  --paper-dim:  rgba(232,224,204,0.55);
-  --paper-faint:rgba(232,224,204,0.12);
-  --jade:       #4aaa78;
-  --jade-lt:    #6ecf9a;
-  --jade-dim:   #2a6b4a;
-  --jade-glow:  rgba(74,170,120,0.15);
-  --gold:       #c8a84a;
-  --gold-lt:    #e4c46e;
-  --gold-dim:   rgba(200,168,74,0.2);
-  --crimson:    #9b2a2a;
-  --mist:       rgba(232,224,204,0.35);
-  --border:     rgba(232,224,204,0.07);
-  --border-jade:rgba(74,170,120,0.2);
+  --p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#2a6b4a;
+  --p-glow:rgba(74,170,120,0.14);--p-border:rgba(74,170,120,0.24);
+  --p-bg1:#060f0c;--p-bg2:#0b1a13;--p-tint:rgba(74,170,120,0.06);--p-tint2:rgba(74,170,120,0.10);
+  --ink:#050d09;--paper:#dce8dc;--paper-dim:rgba(220,232,220,0.55);
+  --mist:rgba(220,232,220,0.38);--border:rgba(220,232,220,0.08);
+  --gold:#c8a84a;--gold-dim:rgba(200,168,74,0.18);
+  --crimson:#c0392b;--phys:#9baaa0;
 }
+body.path-bellstrike{--p:#7a9db0;--p-lt:#a8c8d8;--p-dim:#3a6070;--p-glow:rgba(122,157,176,0.13);--p-border:rgba(122,157,176,0.24);--p-bg1:#070c10;--p-bg2:#0c1620;--p-tint:rgba(97,125,141,0.06);--p-tint2:rgba(97,125,141,0.11);--ink:#050a0e;--paper:#dce4e8;}
+body.path-stonesplit{--p:#c2826e;--p-lt:#e0a890;--p-dim:#7a3a2a;--p-glow:rgba(194,130,110,0.13);--p-border:rgba(194,130,110,0.24);--p-bg1:#100806;--p-bg2:#1c0e08;--p-tint:rgba(161,105,92,0.06);--p-tint2:rgba(161,105,92,0.11);--ink:#0e0705;--paper:#ede0dc;}
+body.path-silkbind{--p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#2a6b4a;--p-glow:rgba(74,170,120,0.14);--p-border:rgba(74,170,120,0.24);--p-bg1:#060f0c;--p-bg2:#0b1a13;--p-tint:rgba(74,170,120,0.06);--p-tint2:rgba(74,170,120,0.10);--ink:#050d09;--paper:#dce8dc;}
+body.path-bamboocut{--p:#b89cc0;--p-lt:#d4bce0;--p-dim:#6a4878;--p-glow:rgba(184,156,192,0.13);--p-border:rgba(184,156,192,0.24);--p-bg1:#0c090f;--p-bg2:#150e1c;--p-tint:rgba(159,138,166,0.06);--p-tint2:rgba(159,138,166,0.11);--ink:#0a0810;--paper:#e4dce8;}
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgia,serif;font-size:16px;line-height:1.6;overflow-x:hidden;min-height:100vh;transition:background .5s,color .3s;}
 
-body {
-  background: var(--ink);
-  color: var(--paper);
-  font-family: 'Crimson Pro', Georgia, serif;
-  font-size: 16px;
-  line-height: 1.6;
-  overflow-x: hidden;
-  min-height: 100vh;
-}
+/* ── SUBTLE BACKGROUND ── */
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.bg-grad{position:absolute;inset:-20%;
+  background:radial-gradient(ellipse 60% 50% at 20% 10%,var(--p-tint2) 0%,transparent 55%),
+             radial-gradient(ellipse 40% 60% at 80% 90%,var(--p-tint) 0%,transparent 50%),
+             radial-gradient(ellipse 30% 30% at 75% 5%,var(--gold-dim) 0%,transparent 40%);
+  animation:bgd 22s ease-in-out infinite alternate;transition:background .5s;}
+@keyframes bgd{0%{transform:translate(0,0);}50%{transform:translate(1%,-0.8%);}100%{transform:translate(-0.8%,1%);}}
+.bg-noise{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");}
 
-/* ── INK WASH BACKGROUND ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse 120% 60% at 50% 0%, rgba(74,170,120,0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 80% 80% at 0% 50%, rgba(14,20,16,0.8) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 100% at 100% 50%, rgba(200,168,74,0.03) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
-}
+/* Shafts — very subtle */
+.shafts{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.shaft{position:absolute;top:-5%;width:1px;height:120%;
+  background:linear-gradient(to bottom,transparent,var(--p-border) 45%,var(--p-tint) 55%,transparent);
+  opacity:0.25;animation:sw linear infinite;}
+.shaft:nth-child(1){left:9%;animation-duration:18s;}
+.shaft:nth-child(2){left:28%;animation-duration:24s;animation-delay:-5s;width:1px;opacity:.15;}
+.shaft:nth-child(3){left:55%;animation-duration:20s;animation-delay:-10s;opacity:.2;}
+.shaft:nth-child(4){left:78%;animation-duration:16s;animation-delay:-7s;opacity:.15;}
+@keyframes sw{0%{transform:rotate(-1.5deg);}50%{transform:rotate(1deg);}100%{transform:rotate(-1.5deg);}}
 
-/* ── PAPER TEXTURE ── */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-}
+.bubbles{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bubble{position:absolute;border-radius:50%;border:1px solid var(--p-border);opacity:0;animation:br linear infinite;}
+@keyframes br{0%{opacity:0;transform:translateY(0);}10%{opacity:.5;}85%{opacity:.2;}100%{opacity:0;transform:translateY(-100px) translateX(var(--dx));}}
 
-/* ── DECORATIVE BRUSHSTROKES ── */
-.brushstroke-left,
-.brushstroke-right {
-  position: fixed;
-  top: 0; bottom: 0;
-  width: 1px;
-  pointer-events: none;
-  z-index: 1;
-}
+.corner{position:fixed;width:24px;height:24px;z-index:3;pointer-events:none;}
+.ctl{top:10px;left:10px;border-top:1px solid var(--gold-dim);border-left:1px solid var(--gold-dim);}
+.ctr{top:10px;right:10px;border-top:1px solid var(--gold-dim);border-right:1px solid var(--gold-dim);}
+.cbl{bottom:10px;left:10px;border-bottom:1px solid var(--gold-dim);border-left:1px solid var(--gold-dim);}
+.cbr{bottom:10px;right:10px;border-bottom:1px solid var(--gold-dim);border-right:1px solid var(--gold-dim);}
 
-.brushstroke-left {
-  left: 32px;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(74,170,120,0.15) 20%,
-    rgba(74,170,120,0.08) 50%,
-    rgba(74,170,120,0.15) 80%,
-    transparent 100%
-  );
-}
-
-.brushstroke-right {
-  right: 32px;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(200,168,74,0.1) 30%,
-    rgba(200,168,74,0.05) 60%,
-    transparent 100%
-  );
-}
-
-/* ── FLOATING PARTICLES ── */
-.particles {
-  position: fixed; inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  width: 2px; height: 2px;
-  border-radius: 50%;
-  background: var(--jade);
-  opacity: 0;
-  animation: float-up linear infinite;
-}
-
-@keyframes float-up {
-  0%   { opacity: 0; transform: translateY(0) translateX(0); }
-  10%  { opacity: 0.6; }
-  90%  { opacity: 0.3; }
-  100% { opacity: 0; transform: translateY(-100px) translateX(20px); }
-}
-
-/* ── LAYOUT ── */
-.app {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-rows: auto auto 1fr;
-  min-height: 100vh;
-}
+/* ══════════════ APP ══════════════ */
+.app{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;}
 
 /* ── HEADER ── */
-.header {
-  padding: 28px 48px 24px;
-  border-bottom: 1px solid var(--border);
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 32px;
-  background: rgba(8,11,10,0.7);
-  backdrop-filter: blur(8px);
-  position: sticky; top: 0; z-index: 50;
-}
-
-.header-seal {
-  width: 48px; height: 48px;
-  border: 1px solid rgba(200,168,74,0.4);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle, rgba(200,168,74,0.1) 0%, transparent 70%);
-  box-shadow: 0 0 20px rgba(200,168,74,0.1), inset 0 0 10px rgba(200,168,74,0.05);
-  position: relative;
-  flex-shrink: 0;
-}
-
-.header-seal::before {
-  content: '';
-  position: absolute; inset: 3px;
-  border: 1px solid rgba(200,168,74,0.15);
-  border-radius: 50%;
-}
-
-.header-seal span {
-  font-family: 'Noto Serif SC', serif;
-  font-size: 1.1rem;
-  color: var(--gold);
-  line-height: 1;
-}
-
-.header-center {}
-
-.header-path {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
-  color: var(--jade);
-  text-transform: uppercase;
-  margin-bottom: 4px;
-  display: flex; align-items: center; gap: 10px;
-}
-
-.header-path::before {
-  content: '';
-  width: 24px; height: 1px;
-  background: var(--jade-dim);
-}
-
-.header-title {
-  font-family: 'Cinzel', serif;
-  font-size: clamp(1.2rem, 3vw, 1.8rem);
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  color: var(--paper);
-  line-height: 1;
-}
-
-.header-title span { color: var(--jade); }
-
-.header-weapons {
-  font-size: 0.88rem;
-  color: var(--mist);
-  font-style: italic;
-  margin-top: 4px;
-}
-
-.header-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
-}
-
-.version-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.2em;
-  color: var(--gold);
-  padding: 3px 10px;
-  border: 1px solid var(--gold-dim);
-  background: rgba(200,168,74,0.05);
-}
-
-.verified-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  color: var(--jade);
-  display: flex; align-items: center; gap: 6px;
-}
-
-.verified-tag::before {
-  content: '';
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--jade);
-  box-shadow: 0 0 6px var(--jade);
-}
-
-/* ── STAT SCROLL ── */
-.stat-scroll {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  background: rgba(14,20,16,0.6);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.stat-scroll::-webkit-scrollbar { display: none; }
-
-.stat-node {
-  padding: 12px 24px;
-  border-right: 1px solid var(--border);
-  flex-shrink: 0;
-  position: relative;
-}
-
-.stat-node::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 24px; right: 24px;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--jade-dim), transparent);
-  transform: scaleX(0);
-  transition: transform 0.3s;
-}
-
-.stat-node:hover::after { transform: scaleX(1); }
-
-.stat-node-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.22em;
-  color: rgba(232,224,204,0.3);
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-.stat-node-val {
-  font-family: 'Cinzel', serif;
-  font-size: 0.92rem;
-  color: var(--paper-dim);
-}
-
-.stat-node-val.jade { color: var(--jade); }
-.stat-node-val.gold { color: var(--gold); }
-
-/* ── MAIN CONTENT ── */
-.main {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  position: relative;
-}
-
-/* ── SKILLS COLUMN ── */
-.skills-col {
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-}
-
-.skills-header {
-  padding: 20px 32px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(8,11,10,0.4);
-}
-
-.skills-header-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.28em;
-  color: rgba(232,224,204,0.25);
-  text-transform: uppercase;
-}
-
-.total-hps-display {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.total-hps-num {
-  font-family: 'Cinzel', serif;
-  font-size: 1.3rem;
-  color: var(--jade);
-  letter-spacing: 0.06em;
-}
-
-.total-hps-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.15em;
-  color: rgba(232,224,204,0.25);
-  text-transform: uppercase;
-}
-
-/* ── SKILL ENTRIES ── */
-.skill-entry {
-  display: grid;
-  grid-template-columns: 48px 1fr 160px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-
-.skill-entry::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 2px;
-  background: var(--jade);
-  transform: scaleY(0);
-  transform-origin: center;
-  transition: transform 0.25s;
-}
-
-.skill-entry.selected::before { transform: scaleY(1); }
-
-.skill-entry:hover { background: rgba(74,170,120,0.04); }
-.skill-entry.selected { background: rgba(74,170,120,0.06); }
-.skill-entry.dmg::before { background: var(--crimson); }
-.skill-entry.dmg.selected { background: rgba(155,42,42,0.05); }
-
-.skill-entry-rank {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Noto Serif SC', serif;
-  font-size: 1rem;
-  color: rgba(232,224,204,0.12);
-  border-right: 1px solid var(--border);
-  transition: color 0.2s;
-}
-
-.skill-entry.selected .skill-entry-rank { color: var(--jade); }
-
-.skill-entry-body {
-  padding: 18px 24px;
-}
-
-.skill-entry-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-
-.skill-entry-name {
-  font-family: 'Cinzel', serif;
-  font-size: 0.88rem;
-  color: var(--paper);
-  letter-spacing: 0.06em;
-}
-
-.skill-weapon-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.12em;
-  padding: 2px 7px;
-  border: 1px solid var(--border-jade);
-  color: var(--jade);
-  text-transform: uppercase;
-}
-
-.skill-weapon-tag.umb {
-  border-color: rgba(200,168,74,0.2);
-  color: rgba(200,168,74,0.7);
-}
-
-.skill-note {
-  font-size: 0.8rem;
-  color: var(--mist);
-  font-style: italic;
-  margin-bottom: 10px;
-}
-
-/* ── BRUSHSTROKE BAR ── */
-.brush-bar {
-  position: relative;
-  height: 3px;
-  margin-bottom: 8px;
-}
-
-.brush-bar-track {
-  position: absolute;
-  inset: 0;
-  background: rgba(232,224,204,0.05);
-}
-
-.brush-bar-fill {
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  background: linear-gradient(to right,
-    var(--jade-dim),
-    var(--jade) 60%,
-    var(--jade-lt)
-  );
-  transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.brush-bar-fill::after {
-  content: '';
-  position: absolute;
-  right: 0; top: -1px; bottom: -1px;
-  width: 4px;
-  background: var(--jade-lt);
-  box-shadow: 0 0 8px var(--jade);
-  border-radius: 2px;
-}
-
-.brush-bar-fill.dmg {
-  background: linear-gradient(to right, #5a1a1a, var(--crimson) 60%, #d45555);
-}
-
-.brush-bar-fill.dmg::after {
-  background: #d45555;
-  box-shadow: 0 0 8px var(--crimson);
-}
-
-.skill-meta-row {
-  display: flex;
-  gap: 16px;
-  font-size: 0.78rem;
-  color: rgba(232,224,204,0.35);
-}
-
-.skill-meta-row strong {
-  color: rgba(232,224,204,0.65);
-}
-
-.skill-entry-output {
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 3px;
-  border-left: 1px solid var(--border);
-}
-
-.skill-output-val {
-  font-family: 'Cinzel', serif;
-  font-size: 1.15rem;
-  color: var(--jade);
-  letter-spacing: 0.04em;
-  transition: color 0.2s;
-}
-
-.skill-output-val.dmg { color: #d45555; }
-
-.skill-output-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.55rem;
-  letter-spacing: 0.18em;
-  color: rgba(232,224,204,0.2);
-  text-transform: uppercase;
-}
-
-.skill-output-pct {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.62rem;
-  color: rgba(232,224,204,0.2);
-}
-
-/* ── RIGHT PANEL ── */
-.right-panel {
-  display: flex;
-  flex-direction: column;
-  background: rgba(8,11,10,0.3);
-}
-
-/* ── PANEL BLOCK ── */
-.panel-block {
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-}
-
-.panel-block-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: rgba(232,224,204,0.22);
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.panel-block-title::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, var(--border-jade), transparent);
-}
-
-/* ── TOTAL DISPLAY ── */
-.total-display {
-  text-align: center;
-  padding: 8px 0 4px;
-}
-
-.total-big {
-  font-family: 'Cinzel', serif;
-  font-size: 2.6rem;
-  color: var(--jade);
-  letter-spacing: 0.04em;
-  line-height: 1;
-  text-shadow: 0 0 40px rgba(74,170,120,0.3);
-}
-
-.total-sub {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.22em;
-  color: rgba(232,224,204,0.22);
-  text-transform: uppercase;
-  margin-top: 6px;
-}
-
-.total-composition {
-  margin-top: 16px;
-  display: flex;
-  gap: 2px;
-}
-
-.comp-bar {
-  height: 4px;
-  background: var(--jade-dim);
-  transition: flex 0.6s ease;
-}
-
-.comp-bar.jade { background: var(--jade); }
-.comp-bar.jade-lt { background: var(--jade-lt); }
-.comp-bar.jade-dim { background: var(--jade-dim); opacity: 0.6; }
-.comp-bar.gold { background: var(--gold-dim); }
-
-.comp-labels {
-  margin-top: 8px;
-  display: flex;
-  justify-content: space-between;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.55rem;
-  color: rgba(232,224,204,0.25);
-  letter-spacing: 0.1em;
-}
-
-/* ── SELECTED SKILL DETAIL ── */
-.hit-entries {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.hit-entry {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(232,224,204,0.04);
-}
-
-.hit-entry:last-child { border-bottom: none; }
-
-.hit-type-name {
-  font-size: 0.82rem;
-  color: var(--mist);
-  font-style: italic;
-}
-
-.hit-type-chance {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  color: rgba(232,224,204,0.2);
-  margin-left: 6px;
-}
-
-.hit-type-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.72rem;
-  color: var(--jade);
-}
-
-.hit-type-val.paper { color: rgba(232,224,204,0.55); }
-
-/* ── STAT WEIGHT BLOCK ── */
-.sw-entries {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.sw-entry {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 0;
-  border-bottom: 1px solid rgba(232,224,204,0.03);
-}
-
-.sw-entry:last-child { border-bottom: none; }
-
-.sw-name {
-  font-size: 0.82rem;
-  color: rgba(232,224,204,0.6);
-  min-width: 110px;
-  font-style: italic;
-}
-
-.sw-track {
-  flex: 1;
-  height: 2px;
-  background: rgba(232,224,204,0.05);
-  position: relative;
-}
-
-.sw-fill {
-  height: 100%;
-  background: linear-gradient(to right, var(--jade-dim), var(--jade));
-  transition: width 0.8s ease;
-}
-
-.sw-fill.zero { background: transparent; }
-
-.sw-tier {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  min-width: 22px;
-  text-align: right;
-  font-weight: 500;
-}
-
-.sw-tier.s { color: #d45555; }
-.sw-tier.a { color: var(--gold); }
-.sw-tier.b { color: var(--jade); }
-.sw-tier.c { color: rgba(232,224,204,0.2); }
-
-/* ── ATTUNE ADVISOR ── */
-.attune-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.attune-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: rgba(232,224,204,0.02);
-  border: 1px solid rgba(232,224,204,0.05);
-  transition: border-color 0.2s;
-}
-
-.attune-row:hover { border-color: var(--border-jade); }
-
-.attune-slot {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  color: rgba(232,224,204,0.3);
-  text-transform: uppercase;
-}
-
-.attune-rec {
-  font-size: 0.82rem;
-  color: rgba(232,224,204,0.7);
-  font-style: italic;
-}
-
-.attune-mark {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  padding: 2px 7px;
-}
-
-.attune-mark.keep {
-  color: var(--jade);
-  border: 1px solid var(--border-jade);
-  background: var(--jade-glow);
-}
-
-.attune-mark.swap {
-  color: var(--gold);
-  border: 1px solid var(--gold-dim);
-  background: rgba(200,168,74,0.05);
-}
-
-/* ── DECORATIVE BOTTOM SEAL ── */
-.footer-seal {
-  padding: 32px 48px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(8,11,10,0.5);
-}
-
-.footer-seal-text {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  color: rgba(232,224,204,0.15);
-  text-transform: uppercase;
-}
-
-.footer-divider {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--border), transparent);
-  margin: 0 24px;
-}
-
-/* ── CORNER DECORATIONS ── */
-.corner {
-  position: fixed;
-  width: 40px; height: 40px;
-  pointer-events: none;
-  z-index: 3;
-}
-
-.corner-tl { top: 16px; left: 16px; border-top: 1px solid rgba(200,168,74,0.2); border-left: 1px solid rgba(200,168,74,0.2); }
-.corner-tr { top: 16px; right: 16px; border-top: 1px solid rgba(200,168,74,0.2); border-right: 1px solid rgba(200,168,74,0.2); }
-.corner-bl { bottom: 16px; left: 16px; border-bottom: 1px solid rgba(200,168,74,0.2); border-left: 1px solid rgba(200,168,74,0.2); }
-.corner-br { bottom: 16px; right: 16px; border-bottom: 1px solid rgba(200,168,74,0.2); border-right: 1px solid rgba(200,168,74,0.2); }
-
-/* ── SCROLL ANIMATION ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.5s, transform 0.5s;
-}
-
-.reveal.visible { opacity: 1; transform: none; }
-
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .main { grid-template-columns: 1fr; }
-  .right-panel { border-top: 1px solid var(--border); }
-  .header { padding: 16px 20px; grid-template-columns: auto 1fr; }
-  .header-right { display: none; }
-  .skill-entry { grid-template-columns: 36px 1fr 130px; }
-  .brushstroke-left, .brushstroke-right, .corner { display: none; }
-}
+.hdr{position:sticky;top:0;z-index:50;background:rgba(5,13,9,0.92);backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--p-border);padding:0 24px;height:54px;
+  display:flex;align-items:center;gap:14px;box-shadow:0 2px 20px rgba(0,0,0,0.5);transition:border-color .4s;}
+.hdr-seal{width:36px;height:36px;flex-shrink:0;border-radius:50%;border:1px solid var(--gold-dim);
+  display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(200,168,74,0.1) 0%,transparent 70%);}
+.hdr-seal span{font-family:'Noto Serif SC',serif;font-size:.9rem;color:var(--gold);}
+.hdr-mid{flex:1;min-width:0;}
+.hdr-tag{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.26em;color:var(--p);text-transform:uppercase;margin-bottom:1px;transition:color .4s;}
+.hdr-title{font-family:'Cinzel',serif;font-size:.95rem;letter-spacing:.1em;color:var(--paper);line-height:1;}
+.hdr-title .ac{color:var(--p);transition:color .4s;}
+.hdr-r{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.hdr-pill{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;padding:3px 7px;border:1px solid var(--gold-dim);color:var(--gold);background:rgba(200,168,74,.05);}
+.hdr-btn{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;background:transparent;border:1px solid var(--p-border);color:rgba(220,232,220,.4);
+  cursor:pointer;transition:all .2s;text-decoration:none;display:flex;align-items:center;gap:5px;}
+.hdr-btn:hover{border-color:var(--p);color:var(--p);}
+.path-wrap{display:flex;align-items:center;gap:7px;}
+.path-lbl{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;color:var(--mist);text-transform:uppercase;}
+.path-sel{background:var(--p-bg2);border:1px solid var(--p-border);color:var(--p);
+  font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.1em;
+  padding:4px 9px;cursor:pointer;outline:none;appearance:none;transition:all .3s;}
+.path-sel option{background:#0b1510;color:#dce8dc;}
+
+/* ══════════════ PAGE NAV WIDGET ══════════════ */
+.page-nav{
+  position:fixed;left:10px;top:50%;transform:translateY(-50%);
+  z-index:40;display:flex;flex-direction:column;gap:6px;
+}
+.pn-btn{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(220,232,220,0.04);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+  font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(220,232,220,.3);
+  title:'';position:relative;
+}
+.pn-btn:hover{background:var(--p-glow);border-color:var(--p-border);color:var(--p);}
+.pn-btn.active{background:var(--p-glow);border-color:var(--p);color:var(--p);}
+.pn-dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
+.pn-tooltip{
+  position:absolute;left:36px;top:50%;transform:translateY(-50%);
+  background:rgba(5,13,9,.95);border:1px solid var(--p-border);
+  font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.12em;
+  color:var(--p);padding:4px 8px;white-space:nowrap;
+  pointer-events:none;opacity:0;transition:opacity .15s;text-transform:uppercase;
+}
+.pn-btn:hover .pn-tooltip{opacity:1;}
+
+/* ══════════════ STAT PANEL ══════════════ */
+.stat-panel{background:var(--p-bg2);border-bottom:1px solid var(--p-border);padding:12px 20px 10px;transition:background .4s,border-color .4s;}
+.sph{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.sph-title{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.26em;color:rgba(220,232,220,.2);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.sph-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--p-border),transparent);}
+.sph-acts{display:flex;gap:5px;}
+.spa-btn{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:3px 9px;background:transparent;border:1px solid var(--p-border);color:var(--p);cursor:pointer;transition:all .2s;}
+.spa-btn:hover{background:var(--p-glow);}
+
+/* Stat section dividers */
+.stat-section{margin-bottom:10px;}
+.stat-sec-title{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(220,232,220,.18);padding:4px 0 5px;border-bottom:1px solid var(--border);margin-bottom:5px;
+  display:flex;align-items:center;gap:8px;}
+.stat-sec-title .sec-icon{color:var(--p);font-size:.55rem;}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:3px;}
+.sf{background:rgba(220,232,220,.035);border:1px solid var(--border);padding:5px 9px;transition:border-color .15s,background .15s;}
+.sf:hover{border-color:var(--p-border);}
+.sf:focus-within{border-color:var(--p);background:var(--p-glow);}
+.sf-lbl{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.16em;color:rgba(220,232,220,.28);text-transform:uppercase;margin-bottom:2px;display:flex;align-items:center;gap:3px;}
+.sf-lbl .tip{font-size:.58rem;color:rgba(220,232,220,.14);cursor:help;transition:color .15s;}
+.sf-lbl .tip:hover{color:var(--p);}
+.sf-row{display:flex;align-items:center;gap:4px;}
+.sf input[type=number]{background:transparent;border:none;outline:none;color:var(--p);
+  font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.03em;width:100%;-moz-appearance:textfield;transition:color .3s;}
+.sf input[type=number]::-webkit-outer-spin-button,.sf input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
+.sf input::placeholder{color:rgba(220,232,220,.15);font-size:.78rem;}
+.sf-unit{font-family:'DM Mono',monospace;font-size:.52rem;color:rgba(220,232,220,.22);flex-shrink:0;}
+.sf-passive{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;
+  color:var(--p);background:var(--p-glow);border:1px solid var(--p-border);
+  padding:1px 5px;margin-top:2px;display:inline-block;transition:color .3s;}
+.sf-derived{font-family:'DM Mono',monospace;font-size:.46rem;color:rgba(220,232,220,.22);margin-top:1px;}
+
+/* ══════════════ MAIN ══════════════ */
+.main{flex:1;display:grid;grid-template-columns:1fr 296px;}
+
+/* ── SKILL COL ── */
+.skill-col{border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.sc-hdr{padding:10px 22px;border-bottom:1px solid var(--border);background:rgba(5,13,9,.6);
+  backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:54px;z-index:10;}
+.sc-title{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.22em;color:rgba(220,232,220,.18);text-transform:uppercase;}
+.sc-total{display:flex;align-items:baseline;gap:5px;}
+.sc-total-n{font-family:'Cinzel',serif;font-size:1.3rem;color:var(--p);letter-spacing:.04em;text-shadow:0 0 20px var(--p-glow);transition:all .4s;}
+.sc-total-l{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;color:rgba(220,232,220,.18);text-transform:uppercase;}
+
+/* content type */
+.content-bar{padding:7px 22px;border-bottom:1px solid var(--border);background:rgba(5,13,9,.3);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ct-lbl{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.18em;color:rgba(220,232,220,.25);text-transform:uppercase;}
+.ct-btns{display:flex;gap:3px;}
+.ct-btn{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 10px;background:transparent;border:1px solid var(--border);color:rgba(220,232,220,.35);
+  cursor:pointer;transition:all .2s;}
+.ct-btn:hover{border-color:var(--p-border);color:var(--p);}
+.ct-btn.active{background:var(--p-glow);border-color:var(--p);color:var(--p-lt);}
+.ct-hps-note{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.1em;color:rgba(220,232,220,.2);font-style:italic;}
+
+/* skill entry */
+.se{border-bottom:1px solid var(--border);cursor:pointer;position:relative;overflow:hidden;transition:background .15s;}
+.se::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--p);transform:scaleY(0);transform-origin:center;transition:transform .2s;}
+.se.sel::before{transform:scaleY(1);}
+.se.tdmg::before{background:var(--crimson);}
+.se:hover{background:var(--p-tint);}
+.se.sel{background:var(--p-glow);}
+.se.tdmg.sel{background:rgba(192,57,43,.05);}
+.se::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,var(--p-tint) 50%,transparent 60%);transform:translateX(-100%);transition:transform .5s;pointer-events:none;}
+.se:hover::after{transform:translateX(100%);}
+
+.se-main{display:grid;grid-template-columns:40px 1fr 140px;}
+.se-rank{display:flex;align-items:center;justify-content:center;font-family:'Noto Serif SC',serif;font-size:.9rem;color:rgba(220,232,220,.1);border-right:1px solid var(--border);transition:color .15s;}
+.se.sel .se-rank{color:var(--p);}
+.se-body{padding:11px 17px;}
+.se-head{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap;}
+.se-name{font-family:'Cinzel',serif;font-size:.8rem;color:var(--paper);letter-spacing:.06em;}
+.se-tag{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.1em;padding:2px 5px;border:1px solid var(--p-border);color:var(--p);text-transform:uppercase;transition:all .3s;}
+.se-tag.umb{border-color:var(--gold-dim);color:var(--gold);}
+.se-tag.dmgt{border-color:rgba(192,57,43,.3);color:rgba(212,85,85,.7);}
+.se-tag.party{border-color:rgba(200,168,74,.25);color:rgba(200,168,74,.7);}
+.se-cd{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.1em;color:rgba(220,232,220,.18);}
+.se-note{font-size:.74rem;color:var(--mist);font-style:italic;margin-bottom:6px;line-height:1.4;}
+
+.wbar{position:relative;height:2px;margin-bottom:5px;overflow:hidden;}
+.wbar-bg{position:absolute;inset:0;background:rgba(220,232,220,.05);}
+.wbar-fill{position:absolute;top:0;left:0;bottom:0;background:linear-gradient(to right,var(--p-dim),var(--p) 65%,var(--p-lt));transition:width 1s cubic-bezier(.22,1,.36,1);}
+.wbar-fill::after{content:'';position:absolute;right:0;top:-1px;bottom:-1px;width:4px;background:var(--p-lt);box-shadow:0 0 7px var(--p),0 0 14px var(--p-glow);border-radius:2px;}
+.wbar-fill.dmg{background:linear-gradient(to right,#5a1212,var(--crimson) 65%,#e05555);}
+.wbar-fill.dmg::after{background:#e05555;box-shadow:0 0 7px var(--crimson);}
+
+.se-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:.7rem;color:rgba(220,232,220,.26);}
+.se-meta strong{color:rgba(220,232,220,.6);}
+
+.se-out{padding:11px 13px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;border-left:1px solid var(--border);}
+.se-out-val{font-family:'Cinzel',serif;font-size:1rem;color:var(--p);letter-spacing:.04em;transition:color .3s;}
+.se-out-val.dmg{color:#e05555;}
+.se-out-lbl{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.15em;color:rgba(220,232,220,.16);text-transform:uppercase;}
+.se-out-pct{font-family:'DM Mono',monospace;font-size:.52rem;color:rgba(220,232,220,.16);}
+.se-out-eff{font-family:'DM Mono',monospace;font-size:.46rem;color:var(--gold);margin-top:1px;}
+
+/* expandable detail — click anywhere on skill */
+.se-detail{display:none;border-top:1px solid var(--border);background:rgba(220,232,220,.015);padding:10px 16px 12px 57px;}
+.se-detail.open{display:block;}
+
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:8px;}
+.dc{background:var(--p-bg1);padding:6px 10px;}
+.dc-l{font-family:'DM Mono',monospace;font-size:.47rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(220,232,220,.2);margin-bottom:2px;}
+.dc-v{font-family:'Cinzel',serif;font-size:.78rem;color:var(--p);}
+.dc-v.n{color:rgba(220,232,220,.48);}
+.dc-v.g{color:var(--gold);}
+.dc-v.r{color:#e05555;}
+.dc-v.sm{font-size:.65rem;font-family:'DM Mono',monospace;}
+
+.ht{width:100%;}
+.ht-hd{display:grid;grid-template-columns:110px 70px 1fr 72px;padding:3px 7px;font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.14em;color:rgba(220,232,220,.18);text-transform:uppercase;border-bottom:1px solid var(--border);}
+.ht-row{display:grid;grid-template-columns:110px 70px 1fr 72px;padding:4px 7px;border-bottom:1px solid rgba(220,232,220,.03);font-size:.75rem;}
+.ht-row:last-child{border-bottom:none;}
+.ht-type{color:var(--mist);font-style:italic;}
+.ht-ch{font-family:'DM Mono',monospace;font-size:.62rem;color:rgba(220,232,220,.32);}
+.ht-rng{font-family:'DM Mono',monospace;font-size:.62rem;color:rgba(220,232,220,.45);}
+.ht-con{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--p);text-align:right;}
+
+/* ══════════════ RIGHT PANEL ══════════════ */
+.rpanel{display:flex;flex-direction:column;background:rgba(5,13,9,.25);overflow-y:auto;
+  position:sticky;top:54px;height:calc(100vh - 54px);scrollbar-width:thin;scrollbar-color:var(--p-dim) transparent;}
+.pb{padding:16px 16px;border-bottom:1px solid var(--border);}
+.pb-t{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.26em;text-transform:uppercase;
+  color:rgba(220,232,220,.16);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.pb-t::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--p-border),transparent);}
+
+/* total */
+.tot-big{text-align:center;padding:2px 0 5px;}
+.tot-num{font-family:'Cinzel',serif;font-size:2.4rem;color:var(--p);letter-spacing:.04em;line-height:1;text-shadow:0 0 36px var(--p-glow);transition:all .4s;}
+.tot-sub{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.2em;color:rgba(220,232,220,.16);text-transform:uppercase;margin-top:4px;}
+.tot-eff{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.12em;color:var(--gold);margin-top:3px;}
+
+.cbar-wrap{margin-top:10px;}
+.cbar{display:flex;height:4px;gap:1px;border-radius:2px;overflow:hidden;}
+.cbar-seg{height:100%;transition:flex .7s ease;border-radius:1px;}
+.cbar-lbls{display:flex;justify-content:space-between;margin-top:4px;font-family:'DM Mono',monospace;font-size:.46rem;color:rgba(220,232,220,.18);}
+
+/* target */
+.tgt-rows{display:flex;flex-direction:column;gap:3px;}
+.tgt-row{display:flex;align-items:center;justify-content:space-between;padding:5px 9px;background:rgba(220,232,220,.03);border:1px solid var(--border);transition:border-color .15s;}
+.tgt-row:hover{border-color:var(--p-border);}
+.tgt-lbl{font-size:.76rem;color:var(--mist);font-style:italic;}
+.tgt-inp{background:transparent;border:none;border-bottom:1px solid var(--p-border);color:var(--p);
+  font-family:'Cinzel',serif;font-size:.82rem;width:52px;text-align:right;outline:none;padding:0 2px;
+  transition:border-color .2s;-moz-appearance:textfield;}
+.tgt-inp::-webkit-outer-spin-button,.tgt-inp::-webkit-inner-spin-button{-webkit-appearance:none;}
+.tgt-inp:focus{border-color:var(--p);}
+.tgt-unit{font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(220,232,220,.22);margin-left:3px;}
+
+.der-blk{margin-top:5px;padding:7px 9px;background:var(--p-tint);border:1px solid var(--p-border);}
+.der-row{display:flex;justify-content:space-between;padding:2px 0;font-size:.74rem;}
+.der-l{color:var(--mist);font-style:italic;}
+.der-v{font-family:'DM Mono',monospace;font-size:.66rem;color:var(--p);}
+
+/* buffs panel */
+.buff-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.buff-toggle{display:flex;align-items:center;gap:6px;padding:5px 8px;background:rgba(220,232,220,.03);
+  border:1px solid var(--border);cursor:pointer;transition:all .2s;user-select:none;}
+.buff-toggle:hover{border-color:var(--p-border);}
+.buff-toggle.on{border-color:var(--p-border);background:var(--p-glow);}
+.buff-toggle-sw{width:26px;height:14px;border-radius:7px;background:rgba(220,232,220,.1);border:1px solid var(--border);position:relative;flex-shrink:0;transition:all .2s;}
+.buff-toggle-sw::after{content:'';position:absolute;width:9px;height:9px;border-radius:50%;background:rgba(220,232,220,.3);top:2px;left:2px;transition:all .2s;}
+.buff-toggle.on .buff-toggle-sw{background:var(--p-dim);border-color:var(--p-border);}
+.buff-toggle.on .buff-toggle-sw::after{left:13px;background:var(--p);}
+.buff-lbl{font-size:.7rem;color:var(--mist);font-style:italic;line-height:1.3;}
+.buff-val{font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(220,232,220,.2);}
+
+.debuff-rows{display:flex;flex-direction:column;gap:3px;margin-top:8px;}
+.debuff-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;
+  padding:5px 9px;background:rgba(220,232,220,.03);border:1px solid var(--border);}
+.debuff-lbl{font-size:.74rem;color:var(--mist);font-style:italic;}
+.debuff-inp{background:transparent;border:none;border-bottom:1px solid var(--p-border);
+  color:var(--p);font-family:'Cinzel',serif;font-size:.78rem;width:44px;text-align:right;
+  outline:none;-moz-appearance:textfield;}
+.debuff-inp::-webkit-outer-spin-button,.debuff-inp::-webkit-inner-spin-button{-webkit-appearance:none;}
+
+/* stat weights */
+.sw-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.sw-filter{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.1em;color:var(--mist);cursor:pointer;user-select:none;}
+.sw-filter input[type=checkbox]{display:none;}
+.sw-chk{width:14px;height:14px;border:1px solid var(--p-border);background:transparent;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.sw-filter.checked .sw-chk{background:var(--p-dim);border-color:var(--p);}
+.sw-filter.checked .sw-chk::after{content:'✓';font-size:.55rem;color:var(--p-lt);}
+
+.sw-row{display:flex;align-items:flex-start;gap:6px;padding:4px 0;border-bottom:1px solid rgba(220,232,220,.03);}
+.sw-row:last-child{border-bottom:none;}
+.sw-row.non-trait .sw-name{color:rgba(220,232,220,.3);}
+.sw-row.non-trait .sw-tier{opacity:.5;}
+.sw-name{font-size:.76rem;color:rgba(220,232,220,.52);font-style:italic;min-width:100px;padding-top:1px;}
+.sw-bars{flex:1;display:flex;flex-direction:column;gap:2px;}
+.sw-bar-row{display:flex;align-items:center;gap:3px;}
+.sw-bar-lbl{font-family:'DM Mono',monospace;font-size:.44rem;color:rgba(220,232,220,.18);min-width:18px;}
+.sw-track{flex:1;height:2px;background:rgba(220,232,220,.05);}
+.sw-fill{height:100%;background:linear-gradient(to right,var(--p-dim),var(--p));transition:width .8s ease;}
+.sw-fill.f1{opacity:.7;}.sw-fill.f2{opacity:.4;}
+.sw-gain{font-family:'DM Mono',monospace;font-size:.46rem;color:rgba(220,232,220,.28);min-width:52px;text-align:right;}
+.sw-tier{font-family:'DM Mono',monospace;font-size:.58rem;min-width:14px;text-align:right;font-weight:500;}
+.sw-tier.S{color:#e05555;}.sw-tier.A{color:var(--gold);}.sw-tier.B{color:var(--p);}.sw-tier.C{color:rgba(220,232,220,.2);}
+.sw-nt-badge{font-family:'DM Mono',monospace;font-size:.42rem;letter-spacing:.08em;padding:1px 4px;
+  border:1px solid rgba(220,232,220,.12);color:rgba(220,232,220,.2);text-transform:uppercase;margin-left:3px;vertical-align:middle;}
+
+/* breakpoints */
+.bp-rows{display:flex;flex-direction:column;gap:3px;}
+.bp-row{display:flex;justify-content:space-between;align-items:center;padding:5px 9px;background:rgba(220,232,220,.03);border:1px solid var(--border);}
+.bp-l{font-size:.76rem;color:var(--mist);font-style:italic;}
+.bp-v{font-family:'DM Mono',monospace;font-size:.6rem;}
+.bp-v.ok{color:var(--p);}.bp-v.warn{color:var(--gold);}.bp-v.far{color:rgba(220,232,220,.22);}
+
+/* action */
+.act-row{display:flex;gap:4px;flex-wrap:wrap;}
+.act-btn{flex:1;min-width:55px;font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:7px 8px;background:transparent;border:1px solid var(--p-border);color:var(--p);cursor:pointer;transition:all .2s;text-align:center;}
+.act-btn:hover{background:var(--p-glow);}
+
+.src-note{padding:10px 16px;font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;color:rgba(220,232,220,.12);line-height:1.9;border-top:1px solid var(--border);text-transform:uppercase;}
+
+/* footer */
+.ftr{padding:18px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:rgba(5,13,9,.5);position:relative;z-index:2;}
+.ftr-txt{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.16em;color:rgba(220,232,220,.1);text-transform:uppercase;}
+.ftr-div{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--p-border),transparent);margin:0 14px;}
+
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--p-tint2);border:1px solid var(--p-border);color:var(--p-lt);font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;padding:8px 16px;opacity:0;transition:all .3s;pointer-events:none;z-index:200;text-transform:uppercase;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:900px){.main{grid-template-columns:1fr;}.rpanel{position:static;height:auto;}.hdr{padding:0 12px;}.page-nav{display:none;}.shafts{display:none;}.corner{display:none;}}
+@media(max-width:580px){.stat-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));}.se-main{grid-template-columns:32px 1fr 118px;}}
+
+.rev{opacity:0;transform:translateY(7px);transition:opacity .4s,transform .4s;}
+.rev.vis{opacity:1;transform:none;}
 </style>
 </head>
-<body>
+<body class="path-silkbind">
+<div class="corner ctl"></div><div class="corner ctr"></div>
+<div class="corner cbl"></div><div class="corner cbr"></div>
+<div class="bg-layer"><div class="bg-grad"></div><div class="bg-noise"></div></div>
+<div class="shafts"><div class="shaft"></div><div class="shaft"></div><div class="shaft"></div><div class="shaft"></div></div>
+<div class="bubbles" id="bubbles"></div>
 
-<!-- CORNER DECORATIONS -->
-<div class="corner corner-tl"></div>
-<div class="corner corner-tr"></div>
-<div class="corner corner-bl"></div>
-<div class="corner corner-br"></div>
-
-<!-- BRUSHSTROKES -->
-<div class="brushstroke-left"></div>
-<div class="brushstroke-right"></div>
-
-<!-- PARTICLES -->
-<div class="particles" id="particles"></div>
+<!-- PAGE NAV WIDGET -->
+<div class="page-nav" id="pageNav"></div>
 
 <div class="app">
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-seal"><span>風</span></div>
-    <div class="header-center">
-      <div class="header-path">Silkbind · Deluge</div>
-      <div class="header-title">Skill <span>Output</span></div>
-      <div class="header-weapons">Panacea Fan · Soulshade Umbrella · Level 90 · Solo</div>
-    </div>
-    <div class="header-right">
-      <span class="version-tag">v1.5 · Apr 2026</span>
-      <span class="verified-tag">EN Verified</span>
-      <a href="index.html" style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:rgba(232,224,204,0.25);text-decoration:none;text-transform:uppercase;margin-top:4px;transition:color 0.2s;" onmouseover="this.style.color='rgba(232,224,204,0.6)'" onmouseout="this.style.color='rgba(232,224,204,0.25)'">← Overview</a>
-    </div>
-  </header>
-
-  <!-- STAT SCROLL -->
-  <div class="stat-scroll">
-    <div class="stat-node"><div class="stat-node-label">Physical ATK</div><div class="stat-node-val">1236–1896</div></div>
-    <div class="stat-node"><div class="stat-node-label">Silkbind ATK</div><div class="stat-node-val">352–651</div></div>
-    <div class="stat-node"><div class="stat-node-label">Crit Rate</div><div class="stat-node-val jade">69.8%</div></div>
-    <div class="stat-node"><div class="stat-node-label">Crit Heal Bonus</div><div class="stat-node-val jade">169%</div></div>
-    <div class="stat-node"><div class="stat-node-label">Resistance</div><div class="stat-node-val">30.0%</div></div>
-    <div class="stat-node"><div class="stat-node-label">Precision</div><div class="stat-node-val">88.5% <span style="color:var(--mist);font-size:0.8em">(83.1%)</span></div></div>
-    <div class="stat-node"><div class="stat-node-label">Agility</div><div class="stat-node-val gold">143</div></div>
-    <div class="stat-node"><div class="stat-node-label">Phys Pen</div><div class="stat-node-val">14.1</div></div>
-    <div class="stat-node"><div class="stat-node-label">Silkbind Pen</div><div class="stat-node-val">23.5</div></div>
+<header class="hdr">
+  <div class="hdr-seal"><span>風</span></div>
+  <div class="hdr-mid">
+    <div class="hdr-tag" id="hdrTag">Silkbind · Deluge</div>
+    <div class="hdr-title">Skill <span class="ac" id="hdrAc">Output</span></div>
   </div>
+  <div class="path-wrap">
+    <span class="path-lbl">Path</span>
+    <select class="path-sel" id="pathSel" onchange="switchPath(this.value)">
+      <option value="silkbind-deluge" selected>Silkbind · Deluge</option>
+      <option value="silkbind-jade">Silkbind · Jade</option>
+      <option value="bellstrike-umbra">Bellstrike · Umbra</option>
+      <option value="bellstrike-splendor">Bellstrike · Splendor</option>
+      <option value="bamboocut-wind">Bamboocut · Wind</option>
+      <option value="bamboocut-dust">Bamboocut · Dust</option>
+      <option value="stonesplit-might">Stonesplit · Might</option>
+      <option value="stonesplit-strength">Stonesplit · Strength</option>
+    </select>
+  </div>
+  <div class="hdr-r">
+    <span class="hdr-pill">v1.5</span>
+    <a href="input.html" class="hdr-btn">← Input</a>
+    <a href="index.html" class="hdr-btn">Overview</a>
+  </div>
+</header>
 
-  <!-- MAIN -->
-  <div class="main">
-
-    <!-- SKILLS COLUMN -->
-    <div class="skills-col">
-      <div class="skills-header">
-        <span class="skills-header-title">Skill Output — Sorted by HPS</span>
-        <div class="total-hps-display">
-          <span class="total-hps-num">88,375</span>
-          <span class="total-hps-label">Total HPS</span>
-        </div>
-      </div>
-
-      <!-- Skill 1 -->
-      <div class="skill-entry selected reveal" onclick="selectSkill(this, 'fan-q')">
-        <div class="skill-entry-rank">一</div>
-        <div class="skill-entry-body">
-          <div class="skill-entry-top">
-            <span class="skill-entry-name">Martial Art Skill</span>
-            <span class="skill-weapon-tag">Fan</span>
-            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">Q · 20s</span>
-          </div>
-          <div class="skill-note">Clone skill — ticking HPS while active. Highest sustained output.</div>
-          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:100%"></div></div>
-          <div class="skill-meta-row">
-            <span>Avg <strong>124,735</strong></span>
-            <span>Range <strong>115,380–134,090</strong></span>
-            <span>Crit <strong>69.8%</strong></span>
-          </div>
-        </div>
-        <div class="skill-entry-output">
-          <div class="skill-output-val">31,184</div>
-          <div class="skill-output-label">HPS</div>
-          <div class="skill-output-pct">35.3%</div>
-        </div>
-      </div>
-
-      <!-- Skill 2 -->
-      <div class="skill-entry reveal" onclick="selectSkill(this, 'fan-r')">
-        <div class="skill-entry-rank">二</div>
-        <div class="skill-entry-body">
-          <div class="skill-entry-top">
-            <span class="skill-entry-name">Heavy Attack Chain</span>
-            <span class="skill-weapon-tag">Fan</span>
-            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">R · 2.2s</span>
-          </div>
-          <div class="skill-note">3-hit combo total. Core rotation filler.</div>
-          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:89%"></div></div>
-          <div class="skill-meta-row">
-            <span>Avg <strong>61,414</strong></span>
-            <span>3 hits</span>
-            <span>Crit <strong>69.8%</strong></span>
-          </div>
-        </div>
-        <div class="skill-entry-output">
-          <div class="skill-output-val">27,664</div>
-          <div class="skill-output-label">HPS</div>
-          <div class="skill-output-pct">31.3%</div>
-        </div>
-      </div>
-
-      <!-- Skill 3 -->
-      <div class="skill-entry reveal" onclick="selectSkill(this, 'fan-special')">
-        <div class="skill-entry-rank">三</div>
-        <div class="skill-entry-body">
-          <div class="skill-entry-top">
-            <span class="skill-entry-name">Special Skill</span>
-            <span class="skill-weapon-tag">Fan</span>
-            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">~ · 6s</span>
-          </div>
-          <div class="skill-note">Enhanced Crit Heal multiplier (199%). High single-hit value.</div>
-          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:44%"></div></div>
-          <div class="skill-meta-row">
-            <span>Avg <strong>82,031</strong></span>
-            <span>Crit Heal <strong>199%</strong></span>
-          </div>
-        </div>
-        <div class="skill-entry-output">
-          <div class="skill-output-val">13,672</div>
-          <div class="skill-output-label">HPS</div>
-          <div class="skill-output-pct">15.5%</div>
-        </div>
-      </div>
-
-      <!-- Skill 4 -->
-      <div class="skill-entry reveal" onclick="selectSkill(this, 'umb-special')">
-        <div class="skill-entry-rank">四</div>
-        <div class="skill-entry-body">
-          <div class="skill-entry-top">
-            <span class="skill-entry-name">Special Skill</span>
-            <span class="skill-weapon-tag umb">Umbrella</span>
-            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">~ · 1s</span>
-          </div>
-          <div class="skill-note">Quick single-target top-up. Low cooldown.</div>
-          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:19%"></div></div>
-          <div class="skill-meta-row">
-            <span>Avg <strong>6,062</strong></span>
-            <span>Range <strong>5,607–6,516</strong></span>
-          </div>
-        </div>
-        <div class="skill-entry-output">
-          <div class="skill-output-val">6,062</div>
-          <div class="skill-output-label">HPS</div>
-          <div class="skill-output-pct">6.9%</div>
-        </div>
-      </div>
-
-      <!-- Skill 5 -->
-      <div class="skill-entry reveal" onclick="selectSkill(this, 'umb-q')">
-        <div class="skill-entry-rank">五</div>
-        <div class="skill-entry-body">
-          <div class="skill-entry-top">
-            <span class="skill-entry-name">Martial Art Skill</span>
-            <span class="skill-weapon-tag umb">Umbrella</span>
-            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">Q · 30s</span>
-          </div>
-          <div class="skill-note">Heal + 20% DMG buff 12s. +5% vs exhausted enemies while active.</div>
-          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:18%"></div></div>
-          <div class="skill-meta-row">
-            <span>Avg <strong>33,856</strong></span>
-            <span>DMG Buff <strong>+20%</strong></span>
-          </div>
-        </div>
-        <div class="skill-entry-output">
-          <div class="skill-output-val">5,643</div>
-          <div class="skill-output-label">HPS</div>
-          <div class="skill-output-pct">6.4%</div>
-        </div>
-      </div>
-
-      <!-- Skill 6 -->
-      <div class="skill-entry reveal" onclick="selectSkill(this, 'fan-perc')">
-        <div class="skill-entry-rank">六</div>
-        <div class="skill-entry-body">
-          <div class="skill-entry-top">
-            <span class="skill-entry-name">Perception Skill</span>
-            <span class="skill-weapon-tag">Fan</span>
-            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">Q · 20s · Party</span>
-          </div>
-          <div class="skill-note">Party-wide heal. Low personal HPS but high team value.</div>
-          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill" style="width:13%"></div></div>
-          <div class="skill-meta-row">
-            <span>Avg <strong>82,999</strong></span>
-            <span>Party HPS <strong>20,750</strong></span>
-          </div>
-        </div>
-        <div class="skill-entry-output">
-          <div class="skill-output-val">4,150</div>
-          <div class="skill-output-label">HPS</div>
-          <div class="skill-output-pct">4.7%</div>
-        </div>
-      </div>
-
-      <!-- Skill 7 — Damage -->
-      <div class="skill-entry dmg reveal" onclick="selectSkill(this, 'fan-lmb')">
-        <div class="skill-entry-rank" style="color:rgba(155,42,42,0.3)">七</div>
-        <div class="skill-entry-body">
-          <div class="skill-entry-top">
-            <span class="skill-entry-name">Light Attack</span>
-            <span class="skill-weapon-tag" style="border-color:rgba(155,42,42,0.3);color:rgba(212,85,85,0.7)">Fan</span>
-            <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:rgba(232,224,204,0.25);letter-spacing:0.1em">LMB · 0.7s</span>
-          </div>
-          <div class="skill-note">Damage only — no healing contribution.</div>
-          <div class="brush-bar"><div class="brush-bar-track"></div><div class="brush-bar-fill dmg" style="width:11%"></div></div>
-          <div class="skill-meta-row">
-            <span>Avg <strong>2,463</strong></span>
-            <span>Crit DMG <strong>165%</strong></span>
-          </div>
-        </div>
-        <div class="skill-entry-output">
-          <div class="skill-output-val dmg">3,519</div>
-          <div class="skill-output-label">DPS</div>
-          <div class="skill-output-pct">—</div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-
-      <!-- Total -->
-      <div class="panel-block reveal">
-        <div class="panel-block-title">Total Output</div>
-        <div class="total-display">
-          <div class="total-big">88,375</div>
-          <div class="total-sub">Heals Per Second · Solo</div>
-        </div>
-        <div style="margin-top:16px;">
-          <div class="total-composition" id="comp-bar">
-            <div class="comp-bar jade" style="flex:31184"></div>
-            <div class="comp-bar jade-lt" style="flex:27664"></div>
-            <div class="comp-bar jade-dim" style="flex:13672"></div>
-            <div class="comp-bar" style="flex:6062;background:rgba(74,170,120,0.25)"></div>
-            <div class="comp-bar" style="flex:5643;background:rgba(74,170,120,0.15)"></div>
-            <div class="comp-bar" style="flex:4150;background:rgba(74,170,120,0.08)"></div>
-          </div>
-          <div class="comp-labels">
-            <span>Art Q</span>
-            <span>R Chain</span>
-            <span>Special</span>
-            <span>Other</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Selected Skill Detail -->
-      <div class="panel-block reveal" id="skill-detail-panel">
-        <div class="panel-block-title">Martial Art Skill</div>
-        <div class="hit-entries" id="hit-entries">
-          <div class="hit-entry">
-            <span class="hit-type-name">Normal<span class="hit-type-chance"> 30.2%</span></span>
-            <span class="hit-type-val paper">66,978–101,387</span>
-          </div>
-          <div class="hit-entry">
-            <span class="hit-type-name">Critical<span class="hit-type-chance"> 69.8%</span></span>
-            <span class="hit-type-val">113,193–171,344</span>
-          </div>
-          <div class="hit-entry">
-            <span class="hit-type-name">Avg Heal</span>
-            <span class="hit-type-val">124,735</span>
-          </div>
-          <div class="hit-entry">
-            <span class="hit-type-name">Heal Range</span>
-            <span class="hit-type-val paper">115,380–134,090</span>
-          </div>
-          <div class="hit-entry">
-            <span class="hit-type-name">HPS</span>
-            <span class="hit-type-val">31,184</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Stat Weights -->
-      <div class="panel-block reveal">
-        <div class="panel-block-title">Stat Weights</div>
-        <div class="sw-entries">
-          <div class="sw-entry">
-            <span class="sw-name">Critical Rate</span>
-            <div class="sw-track"><div class="sw-fill" style="width:90%"></div></div>
-            <span class="sw-tier s">S</span>
-          </div>
-          <div class="sw-entry">
-            <span class="sw-name">Crit Heal Bonus</span>
-            <div class="sw-track"><div class="sw-fill" style="width:82%"></div></div>
-            <span class="sw-tier s">S</span>
-          </div>
-          <div class="sw-entry">
-            <span class="sw-name">Agility</span>
-            <div class="sw-track"><div class="sw-fill" style="width:65%"></div></div>
-            <span class="sw-tier a">A</span>
-          </div>
-          <div class="sw-entry">
-            <span class="sw-name">Min Silkbind ATK</span>
-            <div class="sw-track"><div class="sw-fill" style="width:55%"></div></div>
-            <span class="sw-tier a">A</span>
-          </div>
-          <div class="sw-entry">
-            <span class="sw-name">Phys Penetration</span>
-            <div class="sw-track"><div class="sw-fill" style="width:40%"></div></div>
-            <span class="sw-tier b">B</span>
-          </div>
-          <div class="sw-entry">
-            <span class="sw-name">Max Physical ATK</span>
-            <div class="sw-track"><div class="sw-fill" style="width:22%"></div></div>
-            <span class="sw-tier c">C</span>
-          </div>
-          <div class="sw-entry">
-            <span class="sw-name">Affinity Rate</span>
-            <div class="sw-track"><div class="sw-fill zero" style="width:0%"></div></div>
-            <span class="sw-tier c">—</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Attune Advisor -->
-      <div class="panel-block reveal">
-        <div class="panel-block-title">Attune Advisor</div>
-        <div class="attune-rows">
-          <div class="attune-row">
-            <span class="attune-slot">Weapons</span>
-            <span class="attune-rec">Crit Rate</span>
-            <span class="attune-mark keep">Keep</span>
-          </div>
-          <div class="attune-row">
-            <span class="attune-slot">Accessories</span>
-            <span class="attune-rec">Min Silkbind</span>
-            <span class="attune-mark keep">Keep</span>
-          </div>
-          <div class="attune-row">
-            <span class="attune-slot">Armor</span>
-            <span class="attune-rec">Crit Rate × 2</span>
-            <span class="attune-mark keep">Keep</span>
-          </div>
-          <div class="attune-row">
-            <span class="attune-slot">Max Physical</span>
-            <span class="attune-rec">→ Min Physical</span>
-            <span class="attune-mark swap">Consider</span>
-          </div>
-        </div>
-      </div>
-
+<!-- STAT PANEL -->
+<div class="stat-panel" id="statPanelWrap">
+  <div class="sph">
+    <span class="sph-title">Character Stats</span>
+    <div class="sph-acts">
+      <button class="spa-btn" onclick="saveBuild()">Save</button>
+      <button class="spa-btn" onclick="loadBuild()">Load</button>
+      <button class="spa-btn" onclick="copyURL()">Share</button>
     </div>
   </div>
-
-  <!-- FOOTER -->
-  <div class="footer-seal">
-    <span class="footer-seal-text">Fearsom's Calculator</span>
-    <div class="footer-divider"></div>
-    <span class="footer-seal-text">Where Winds Meet · EN Theorycrafting · Not affiliated with NetEase</span>
-  </div>
-
+  <div id="statSections"></div>
 </div>
 
+<div class="main">
+  <div class="skill-col" id="skillColAnchor">
+    <div class="sc-hdr">
+      <span class="sc-title" id="scTitle">Skill Output</span>
+      <div class="sc-total"><span class="sc-total-n" id="totalHps">—</span><span class="sc-total-l" id="totalLbl">Total HPS</span></div>
+    </div>
+    <div class="content-bar">
+      <span class="ct-lbl">Content</span>
+      <div class="ct-btns">
+        <button class="ct-btn active" data-ct="solo" onclick="setContent(this,'solo')">Solo</button>
+        <button class="ct-btn" data-ct="5man" onclick="setContent(this,'5man')">Sword Trial (5-Man)</button>
+        <button class="ct-btn" data-ct="10man" onclick="setContent(this,'10man')">Hero's Realm (10-Man)</button>
+      </div>
+      <span class="ct-hps-note" id="ctNote">Party heals count once</span>
+    </div>
+    <div id="skillList"></div>
+  </div>
+
+  <div class="rpanel" id="rpanel">
+
+    <div class="pb rev" id="sec-total" data-nav="Total">
+      <div class="pb-t">Total Output</div>
+      <div class="tot-big">
+        <div class="tot-num" id="panelTotal">—</div>
+        <div class="tot-sub" id="panelTotalSub">Heals Per Second · Solo</div>
+        <div class="tot-eff" id="panelTotalEff"></div>
+      </div>
+      <div class="cbar-wrap"><div class="cbar" id="compBar"></div>
+        <div class="cbar-lbls"><span>Art Q</span><span>R Chain</span><span>Special</span><span>Other</span></div>
+      </div>
+    </div>
+
+    <div class="pb rev" id="sec-target" data-nav="Target">
+      <div class="pb-t">Target Settings</div>
+      <div class="tgt-rows">
+        <div class="tgt-row"><span class="tgt-lbl">Player Level</span>
+          <div><input class="tgt-inp" type="number" id="t_plvl" value="95" min="1" max="100" oninput="recalc()"></div></div>
+        <div class="tgt-row"><span class="tgt-lbl">Target Level</span>
+          <div><input class="tgt-inp" type="number" id="t_tlvl" value="96" min="1" max="100" oninput="recalc()"></div></div>
+        <div class="tgt-row"><span class="tgt-lbl">Base Defense</span>
+          <div><input class="tgt-inp" id="t_def" type="number" value="405" min="0" oninput="recalc()"></div></div>
+      </div>
+      <div class="der-blk" id="derivedBlk"></div>
+    </div>
+
+    <div class="pb rev" id="sec-buffs" data-nav="Buffs">
+      <div class="pb-t">External Buffs</div>
+      <div class="buff-grid" id="buffGrid"></div>
+      <div class="debuff-rows" id="debuffRows"></div>
+    </div>
+
+    <div class="pb rev" id="sec-sw" data-nav="Stat Weights">
+      <div class="pb-t">Stat Weights · Live</div>
+      <div class="sw-hdr">
+        <label class="sw-filter checked" id="swFilter" onclick="toggleSwFilter()">
+          <div class="sw-chk"></div>
+          Traits only
+        </label>
+      </div>
+      <div id="swRows"></div>
+    </div>
+
+    <div class="pb rev" id="sec-bp" data-nav="Breakpoints">
+      <div class="pb-t">Breakpoints</div>
+      <div class="bp-rows" id="bpRows"></div>
+    </div>
+
+    <div class="pb rev" id="sec-build" data-nav="Build">
+      <div class="pb-t">Build</div>
+      <div class="act-row">
+        <button class="act-btn" onclick="saveBuild()">Save</button>
+        <button class="act-btn" onclick="loadBuild()">Load</button>
+        <button class="act-btn" onclick="copyURL()">Copy URL</button>
+      </div>
+    </div>
+
+    <div class="src-note" id="srcNote">
+      K_soak=390 (Silkbind-Deluge, empirical ⚠️) · Coefficients: EN-tested Lv.90<br>
+      Heal variance ±7.5% ✅ · Agility cap 225 (Lv.95 weapons) ✅ · Pen formula: WindsFromCN ✅
+    </div>
+
+  </div>
+</div>
+
+<div class="ftr">
+  <span class="ftr-txt">Fearsom's Calculator</span>
+  <div class="ftr-div"></div>
+  <span class="ftr-txt">Where Winds Meet · EN Theorycrafting · Not affiliated with NetEase</span>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
 <script>
-// Particles
-const container = document.getElementById('particles');
-for (let i = 0; i < 12; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  p.style.cssText = `
-    left: ${Math.random() * 100}%;
-    bottom: ${Math.random() * 30}%;
-    animation-duration: ${6 + Math.random() * 8}s;
-    animation-delay: ${Math.random() * 6}s;
-    width: ${1 + Math.random() * 2}px;
-    height: ${1 + Math.random() * 2}px;
-    opacity: 0;
-  `;
-  container.appendChild(p);
-}
+'use strict';
 
-// Scroll reveal
-const observer = new IntersectionObserver(entries => {
-  entries.forEach((e, i) => {
-    if (e.isIntersecting) {
-      setTimeout(() => e.target.classList.add('visible'), i * 60);
-      observer.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.05 });
-document.querySelectorAll('.reveal').forEach(r => observer.observe(r));
+/* ═══════════════════════════════════════════
+   CONSTANTS
+   ═══════════════════════════════════════════ */
+const K_DEF=1000, HEAL_VAR=0.075, AGI_CAP=225;
+const AGI_PHYS_MAX=52.7, AGI_CRIT_MAX=0.0601;
+const ABRASION_MULT=0.775;
 
-// Skill data
-const skills = {
-  'fan-q':       { name: 'Martial Art Skill', normal: '66,978–101,387', crit: '113,193–171,344', avg: '124,735', range: '115,380–134,090', hps: '31,184', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
-  'fan-r':       { name: 'Heavy Attack Chain', normal: '32,978–49,917', crit: '55,732–84,376', avg: '61,414', range: '56,807–66,020', hps: '27,664', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
-  'fan-special': { name: 'Special Skill', normal: '38,592–58,418', crit: '76,798–116,252', avg: '82,031', range: '75,878–88,183', hps: '13,672', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
-  'umb-special': { name: 'Umbrella Special', normal: '2,851–4,317', crit: '5,673–8,591', avg: '6,062', range: '5,607–6,516', hps: '6,062', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
-  'umb-q':       { name: 'Martial Art Skill', normal: '18,180–27,518', crit: '30,724–46,505', avg: '33,856', range: '31,317–36,395', hps: '5,643', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
-  'fan-perc':    { name: 'Perception Skill', normal: '44,567–67,463', crit: '75,318–114,013', avg: '82,999', range: '76,774–89,224', hps: '4,150', normalChance: '30.2%', critChance: '69.8%', isDmg: false },
-  'fan-lmb':     { name: 'Light Attack', normal: '1,378–2,142', crit: '2,273–3,534', avg: '2,463', range: '1,378–3,534', hps: '3,519 DPS', normalChance: '16.9%', critChance: '83.1%', isDmg: true },
+/* Primary attribute conversions — from screenshot ✅
+   NA naming: Body=Constitution, Power=Strength(劲), Momentum=Power(势) */
+const ATTR_CONV = {
+  body:       { hp:60 },
+  defense:    { hp:17, def:0.5 },
+  agility:    { minAtk:0.9, critRate:0.00076 },   // 0.076% per point
+  momentum:   { maxAtk:0.9, affinity:0.00038 },   // 0.038% per point
+  power:      { minAtk:0.225, maxAtk:1.36 },
 };
 
-function selectSkill(el, key) {
-  document.querySelectorAll('.skill-entry').forEach(e => e.classList.remove('selected'));
-  el.classList.add('selected');
+/* Content type — party heal multipliers */
+const CONTENT = {
+  solo:  { partyMult:1,  label:'Solo',                 note:'Party heals count once' },
+  '5man':{ partyMult:5,  label:'Sword Trial (5-Man)',  note:'Party heals × 5 targets' },
+  '10man':{ partyMult:10,label:"Hero's Realm (10-Man)",note:'Party heals × 10 targets' },
+};
+let currentContent = 'solo';
 
-  const d = skills[key];
-  if (!d) return;
+/* ═══════════════════════════════════════════
+   STAT FIELD DEFINITIONS
+   ═══════════════════════════════════════════ */
+/* isTrait: true = available on gear traits, false = set/inner way only */
 
-  const panel = document.getElementById('skill-detail-panel');
-  const nameEl = panel.querySelector('.panel-block-title');
-  nameEl.textContent = d.name;
+const FIVE_ATTRS = [
+  {id:'body',     lbl:'Body',     def:145, tip:'1=60 HP',        sec:'five'},
+  {id:'defense',  lbl:'Defense',  def:110, tip:'1=17 HP + 0.5 DEF', sec:'five'},
+  {id:'agility',  lbl:'Agility',  def:207, tip:'1=0.9 Min ATK + 0.076% Crit · Double-value passive <225', sec:'five', showPassive:true},
+  {id:'momentum', lbl:'Momentum', def:174, tip:'1=0.9 Max ATK + 0.038% Affinity', sec:'five'},
+  {id:'power',    lbl:'Power',    def:174, tip:'1=0.225 Min ATK + 1.36 Max ATK', sec:'five'},
+];
 
-  const hpsLabel = d.isDmg ? 'DPS' : 'HPS';
-  const valClass = d.isDmg ? 'hit-type-val dmg' : 'hit-type-val';
+const SILKBIND_STATS = [
+  // Basic attack
+  {id:'physMin', lbl:'Min Phys ATK',def:1279,sec:'attack',isTrait:true},
+  {id:'physMax', lbl:'Max Phys ATK',def:2189,sec:'attack',isTrait:true},
+  {id:'silkMin', lbl:'Min Silk ATK',def:409, sec:'attack',isTrait:true},
+  {id:'silkMax', lbl:'Max Silk ATK',def:653, sec:'attack',isTrait:true},
+  // Rates
+  {id:'critRate',lbl:'Crit Rate',   def:122.2,unit:'%',step:.1,sec:'rates',isTrait:true},
+  {id:'dirCrit', lbl:'Direct Crit', def:9.2,  unit:'%',step:.1,sec:'rates',isTrait:false,tip:'Set bonus / inner way'},
+  {id:'critHeal',lbl:'Crit Heal Bon',def:54.0,unit:'%',step:.1,sec:'rates',isTrait:false,tip:'Set bonus / inner way'},
+  {id:'precision',lbl:'Precision',  def:92.0, unit:'%',step:.1,sec:'rates',isTrait:true},
+  {id:'affinity',lbl:'Affinity Rate',def:14.6,unit:'%',step:.1,sec:'rates',isTrait:true},
+  {id:'dirAff',  lbl:'Direct Aff',  def:0.0,  unit:'%',step:.1,sec:'rates',isTrait:false},
+  {id:'resistance',lbl:'Enemy Resist',def:45.0,unit:'%',step:.1,sec:'rates',tip:'30% solo lv86-90, 45% lv91-95'},
+  // Penetration
+  {id:'physPen', lbl:'Phys Pen',    def:14.9, step:.1,  sec:'pen',isTrait:true},
+  {id:'silkPen', lbl:'Silk Pen',    def:38.5, step:.1,  sec:'pen',isTrait:true},
+  // Healing bonuses
+  {id:'physHeal',lbl:'Phys Heal Bon',def:2.5, unit:'%',step:.1,sec:'heal',isTrait:false,tip:'Inner way'},
+  {id:'silkHeal',lbl:'Silk Heal Bon',def:9.0, unit:'%',step:.1,sec:'heal',isTrait:false,tip:'Inner way'},
+  // Damage boosts
+  {id:'artFanBoost',lbl:'Art of Fan Boost',def:0,unit:'%',step:.1,sec:'boost',isTrait:true,tip:'Capped at 1 trait'},
+  {id:'artUmbBoost',lbl:'Art of Umb Boost',def:0,unit:'%',step:.1,sec:'boost',isTrait:true,tip:'Capped at 1 trait'},
+  {id:'allArtBoost',lbl:'All Art Skill Boost',def:0,unit:'%',step:.1,sec:'boost',isTrait:true},
+  {id:'bossDmg',    lbl:'DMG vs Boss',     def:0,unit:'%',step:.1,sec:'boost',isTrait:true},
+];
 
-  document.getElementById('hit-entries').innerHTML = `
-    <div class="hit-entry">
-      <span class="hit-type-name">Normal<span class="hit-type-chance"> ${d.normalChance}</span></span>
-      <span class="hit-type-val paper">${d.normal}</span>
+const BELLSTRIKE_STATS = [
+  ...SILKBIND_STATS.filter(s=>!['silkMin','silkMax','silkPen','silkHeal','artFanBoost','artUmbBoost'].includes(s.id)),
+  {id:'bellMin',lbl:'Min Bell ATK',def:0,sec:'attack',isTrait:true},
+  {id:'bellMax',lbl:'Max Bell ATK',def:0,sec:'attack',isTrait:true},
+  {id:'bellPen',lbl:'Bell Pen',    def:0,step:.1,sec:'pen',isTrait:true},
+  {id:'bellHeal',lbl:'Bell Heal Bon',def:0,unit:'%',step:.1,sec:'heal',isTrait:false},
+];
+const STONESPLIT_STATS = [
+  ...SILKBIND_STATS.filter(s=>!['silkMin','silkMax','silkPen','silkHeal','artFanBoost','artUmbBoost'].includes(s.id)),
+  {id:'stoneMin',lbl:'Min Stone ATK',def:0,sec:'attack',isTrait:true},
+  {id:'stoneMax',lbl:'Max Stone ATK',def:0,sec:'attack',isTrait:true},
+  {id:'stonePen',lbl:'Stone Pen',    def:0,step:.1,sec:'pen',isTrait:true},
+];
+const BAMBOOCUT_STATS = [
+  ...SILKBIND_STATS.filter(s=>!['silkMin','silkMax','silkPen','silkHeal','artFanBoost','artUmbBoost'].includes(s.id)),
+  {id:'bambooMin',lbl:'Min Bamboo ATK',def:0,sec:'attack',isTrait:true},
+  {id:'bambooMax',lbl:'Max Bamboo ATK',def:0,sec:'attack',isTrait:true},
+  {id:'bambooPen',lbl:'Bamboo Pen',    def:0,step:.1,sec:'pen',isTrait:true},
+  {id:'bambooDmg',lbl:'Bamboo DMG Bon',def:0,unit:'%',step:.1,sec:'boost',isTrait:false,tip:'Only Bamboocut attribute portion'},
+];
+
+/* Section labels */
+const SEC_LABELS = {
+  five:'Five Attributes',attack:'Attack Values',rates:'Combat Rates',
+  pen:'Penetration',heal:'Healing Bonuses',boost:'Damage Boosts',
+};
+
+/* ═══════════════════════════════════════════
+   SKILL DATABASE
+   ═══════════════════════════════════════════ */
+/* Heavy attack chain: cd = 0.68 * 3 = 2.04s ✅ */
+const SD_SKILLS=[
+  {id:'fan-q',   name:'Martial Art Skill',  weapon:'Fan',     wtype:'path',slot:'Q',    cd:20.0,  type:'heal',isParty:false,
+   cp:15.1934,ca:15.1934,fp:351.2,fa:196.5, passiveMult:1.30,
+   note:'Clone skill — sustained ticking HPS. Core output.',rank:'一'},
+  {id:'fan-r',   name:'Heavy Attack Chain', weapon:'Fan',     wtype:'path',slot:'R×3',  cd:2.04,  type:'heal',isParty:false,
+   cp:6.7025, ca:6.7025, fp:155.0,fa:86.7,  passiveMult:1.30,
+   note:'3-hit chain (0.68s×3). Core rotation filler.',rank:'二'},
+  {id:'fan-spec',name:'Special Skill',      weapon:'Fan',     wtype:'path',slot:'~',    cd:6.0,   type:'heal',isParty:false,
+   cp:10.1977,ca:10.1977,fp:235.9,fa:131.8, critHealOverride:1.99,
+   note:'Enhanced Crit Heal 199%. High single-hit value.',rank:'三'},
+  {id:'umb-spec',name:'Special Skill',      weapon:'Umbrella',wtype:'umb', slot:'~',    cd:1.0,   type:'heal',isParty:false,
+   cp:0.7721, ca:0.7721, fp:17.8, fa:10.0,
+   note:'Quick top-up. Low cooldown.',rank:'四'},
+  {id:'umb-q',   name:'Martial Art Skill',  weapon:'Umbrella',wtype:'umb', slot:'Q',    cd:30.0,  type:'heal',isParty:false,
+   cp:4.9192, ca:4.9192, fp:113.9,fa:63.7,
+   note:'Heal + 20% DMG buff 12s. +5% vs exhausted.',rank:'五'},
+  {id:'fan-perc',name:'Perception Skill',   weapon:'Fan',     wtype:'path',slot:'Q·Pty',cd:20.0,  type:'heal',isParty:true,
+   cp:11.7766,ca:11.7766,fp:272.1,fa:152.2,
+   note:'Party-wide heal. Scales with content type.',rank:'六'},
+  {id:'fan-lmb', name:'Light Attack',       weapon:'Fan',     wtype:'path',slot:'LMB',  cd:0.70,  type:'dmg', isParty:false,
+   cp:0.4943, ca:0.4943, fp:11.4, fa:6.4,
+   note:'Damage only — precision → crit → affinity → abrasion.',rank:'七'},
+];
+
+function pendingSkills(pk){
+  const w=pk.split('-')[0];
+  return[
+    {id:`${pk}-q`,  name:'Martial Art Skill',weapon:w,wtype:'path',slot:'Q', cd:20,type:'heal',isParty:false,cp:0,ca:0,fp:0,fa:0,note:'Coefficients pending.',rank:'一',pending:true},
+    {id:`${pk}-r`,  name:'Heavy Attack',     weapon:w,wtype:'path',slot:'R', cd:2, type:'heal',isParty:false,cp:0,ca:0,fp:0,fa:0,note:'Coefficients pending.',rank:'二',pending:true},
+    {id:`${pk}-spec`,name:'Special Skill',   weapon:w,wtype:'path',slot:'~', cd:6, type:'heal',isParty:false,cp:0,ca:0,fp:0,fa:0,note:'Coefficients pending.',rank:'三',pending:true},
+  ];
+}
+
+const PATH_DB={
+  'silkbind-deluge':    {cls:'path-silkbind',  tag:'Silkbind · Deluge',    skills:SD_SKILLS,    stats:[...FIVE_ATTRS,...SILKBIND_STATS],  attrKey:'silkbind',  kSoak:390},
+  'silkbind-jade':      {cls:'path-silkbind',  tag:'Silkbind · Jade',      skills:null,          stats:[...FIVE_ATTRS,...SILKBIND_STATS],  attrKey:'silkbind',  kSoak:390},
+  'bellstrike-umbra':   {cls:'path-bellstrike',tag:'Bellstrike · Umbra',   skills:null,          stats:[...FIVE_ATTRS,...BELLSTRIKE_STATS],attrKey:'bellstrike',kSoak:300},
+  'bellstrike-splendor':{cls:'path-bellstrike',tag:'Bellstrike · Splendor',skills:null,          stats:[...FIVE_ATTRS,...BELLSTRIKE_STATS],attrKey:'bellstrike',kSoak:300},
+  'bamboocut-wind':     {cls:'path-bamboocut', tag:'Bamboocut · Wind',     skills:null,          stats:[...FIVE_ATTRS,...BAMBOOCUT_STATS], attrKey:'bamboocut', kSoak:150},
+  'bamboocut-dust':     {cls:'path-bamboocut', tag:'Bamboocut · Dust',     skills:null,          stats:[...FIVE_ATTRS,...BAMBOOCUT_STATS], attrKey:'bamboocut', kSoak:150},
+  'stonesplit-might':   {cls:'path-stonesplit',tag:'Stonesplit · Might',   skills:null,          stats:[...FIVE_ATTRS,...STONESPLIT_STATS],attrKey:'stonesplit',kSoak:200},
+  'stonesplit-strength':{cls:'path-stonesplit',tag:'Stonesplit · Strength',skills:null,          stats:[...FIVE_ATTRS,...STONESPLIT_STATS],attrKey:'stonesplit',kSoak:200},
+};
+
+/* SW increments — one full trait slot ✅ */
+const SW_INC={
+  critRate:7.4, dirCrit:2.0, critHeal:4.0,
+  agility:10, momentum:10, power:10,
+  silkMin:36.2, silkPen:10.8, physPen:9.0,
+  physMin:54.8, physMax:54.8,
+  physHeal:2.5, silkHeal:3.6,
+  affinity:3.5, artFanBoost:3.0, allArtBoost:2.0, bossDmg:2.0,
+};
+const SW_IS_TRAIT={
+  critRate:true,dirCrit:false,critHeal:false,agility:true,momentum:true,power:true,
+  silkMin:true,silkPen:true,physPen:true,physMin:true,physMax:true,
+  physHeal:false,silkHeal:false,affinity:true,artFanBoost:true,allArtBoost:true,bossDmg:true,
+};
+const SW_LABELS={
+  critRate:'Critical Rate',dirCrit:'Direct Crit',critHeal:'Crit Heal Bonus',
+  agility:'Agility',momentum:'Momentum',power:'Power',
+  silkMin:'Min Silk ATK',silkPen:'Silk Penetration',physPen:'Phys Penetration',
+  physMin:'Min Physical ATK',physMax:'Max Physical ATK',
+  physHeal:'Phys Heal Bonus',silkHeal:'Silk Heal Bonus',
+  affinity:'Affinity Rate',artFanBoost:'Art of Fan Boost',
+  allArtBoost:'All Art Boost',bossDmg:'DMG vs Boss',
+};
+
+/* Buffs */
+const BUFFS=[
+  {id:'b_echoes',    lbl:'Echoes of 1000 Plants',val:'+15% heal', mult:0.15, on:true,  type:'healMult'},
+  {id:'b_umbBuff',   lbl:'Umbrella Q Buff',       val:'+20% DMG', mult:0.20, on:true,  type:'dmgMult'},
+  {id:'b_exhausted', lbl:'Exhausted Bonus',        val:'+5% DMG',  mult:0.05, on:false, type:'dmgMult'},
+  {id:'b_chill',     lbl:'Chill Beneath Cloak',    val:'+5% heal', mult:0.05, on:false, type:'healMult'},
+];
+const DEBUFFS=[
+  {id:'d_defReduct',  lbl:'Enemy DEF Reduction',  def:0,  unit:'%', tip:'Multiplicative'},
+  {id:'d_pen',        lbl:'Extra Penetration',     def:0,  unit:'',  tip:'Added to your pen'},
+];
+
+/* ═══════════════════════════════════════════
+   STAT ACCESS
+   ═══════════════════════════════════════════ */
+let _ov={};
+function gv(id,def=0){
+  if(_ov[id]!==undefined)return _ov[id];
+  const el=document.getElementById('sf_'+id);
+  if(!el)return def;
+  const v=parseFloat(el.value);
+  return isNaN(v)?def:v;
+}
+
+function getStats(overrides={}){
+  _ov=overrides;
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const defs=PATH_DB[path]?.stats||[...FIVE_ATTRS,...SILKBIND_STATS];
+  const s={};
+  defs.forEach(d=>s[d.id]=gv(d.id,d.def));
+  FIVE_ATTRS.forEach(d=>{if(s[d.id]===undefined)s[d.id]=gv(d.id,d.def);});
+  ['physMin','physMax','silkMin','silkMax','critRate','dirCrit','critHeal','precision',
+   'affinity','dirAff','resistance','agility','momentum','power','physPen','silkPen',
+   'physHeal','silkHeal','artFanBoost','artUmbBoost','allArtBoost','bossDmg',
+   'bellMin','bellMax','bambooMin','bambooMax','stoneMin','stoneMax','bambooDmg'].forEach(k=>{
+    if(s[k]===undefined)s[k]=0;
+  });
+
+  /* Expand five attributes into derived stats ✅ */
+  s._agiMinPhys = Math.min(1,s.agility/AGI_CAP)*AGI_PHYS_MAX;
+  s._agiCrit    = Math.min(1,s.agility/AGI_CAP)*AGI_CRIT_MAX;
+  // ATTR_CONV contributions (added on top of gear stats)
+  // Agility → min ATK and crit
+  s.physMin += s.agility * ATTR_CONV.agility.minAtk;
+  s.physMax += s.momentum * ATTR_CONV.momentum.maxAtk + s.power * ATTR_CONV.power.maxAtk;
+  s.physMin += s.power * ATTR_CONV.power.minAtk;
+  s.critRate += s.agility * ATTR_CONV.agility.critRate * 100; // convert to %
+  s.affinity += s.momentum * ATTR_CONV.momentum.affinity * 100;
+
+  _ov={};
+  return s;
+}
+
+function getTarget(){
+  const d_def=parseFloat(document.getElementById('d_defReduct')?.value)||0;
+  const d_pen=parseFloat(document.getElementById('d_pen')?.value)||0;
+  return{
+    pLvl:parseFloat(document.getElementById('t_plvl')?.value)||95,
+    tLvl:parseFloat(document.getElementById('t_tlvl')?.value)||96,
+    baseDef:parseFloat(document.getElementById('t_def')?.value)||405,
+    defReduct:d_def/100, extraPen:d_pen,
+  };
+}
+
+function getBuffMults(){
+  let healM=1, dmgM=1;
+  BUFFS.forEach(b=>{
+    const el=document.getElementById(b.id);
+    if(el&&el.dataset.on==='1'){
+      if(b.type==='healMult')healM+=b.mult;
+      if(b.type==='dmgMult')dmgM+=b.mult;
+    }
+  });
+  return{healM,dmgM};
+}
+
+/* ═══════════════════════════════════════════
+   MATH ENGINE
+   ═══════════════════════════════════════════ */
+function computeDerived(s,tgt){
+  const res=s.resistance/100;
+  const lvlDiff=tgt.pLvl-tgt.tLvl;
+  const effDef=Math.max(0,(tgt.baseDef*(1-tgt.defReduct))+(lvlDiff>=0?lvlDiff*-11:Math.abs(lvlDiff)*13));
+  const mitigation=effDef/(effDef+K_DEF);
+  const dmgThru=K_DEF/(effDef+K_DEF);
+
+  const effCritBase=Math.min(0.80,(s.critRate/100)/(1+res));
+  const effCrit=effCritBase+(s.dirCrit/100);
+  const effPrec=0.65+Math.max(0,(s.precision/100)-0.65)/(1+res);
+  const effAffBase=Math.min(0.40,(s.affinity/100)/(1+res));
+  const effAff=effAffBase+(s.dirAff/100);
+
+  // Hit type probs — DAMAGE ✅
+  const pAff=effAff;
+  const pCritPrec=(1-effAff)*effPrec*effCrit;
+  const pNormPrec=(1-effAff)*effPrec*(1-effCrit);
+  const pAbrasion=(1-effAff)*(1-effPrec);
+
+  function penM(pen,eres=0){const d=(pen+tgt.extraPen)-eres;return d>=0?1+d/100:1+d/200;}
+  const mPenPhys=penM(s.physPen);
+  const mPenSilk=penM(s.silkPen||0);
+
+  const agiPhysBonus=s._agiMinPhys||0;
+  const agiCritBonus=s._agiCrit||0;
+  const physMinEff=s.physMin+agiPhysBonus;
+  const physMaxEff=Math.max(physMinEff,s.physMax);
+
+  const critHealMult=1+0.5+(s.critHeal/100);
+  const physHealMod=1+(s.physHeal/100);
+  const attrHealMod=1+((s.silkHeal||0)/100);
+
+  return{res,effDef,mitigation,dmgThru,effCrit,effPrec,effAff,
+    pAff,pCritPrec,pNormPrec,pAbrasion,mPenPhys,mPenSilk,
+    agiPhysBonus,agiCritBonus,physMinEff,physMaxEff,
+    critHealMult,physHealMod,attrHealMod};
+}
+
+function calcHeal(sk,s,d,buffs){
+  const pm=d.physMinEff, px=d.physMaxEff;
+  const prMin=pm*sk.cp+sk.fp, prMax=px*sk.cp+sk.fp;
+  const sm=s.silkMin||0, sx=s.silkMax||0;
+  const arMin=sm*sk.ca+sk.fa, arMax=sx*sk.ca+sk.fa;
+  const physM=d.physHealMod, attrM=d.attrHealMod;
+  const bMin=(prMin*physM)+(arMin*attrM);
+  const bMax=(prMax*physM)+(arMax*attrM);
+  const pass=sk.passiveMult||1;
+  const artBoost=1+(((s.allArtBoost||0)+(sk.wtype==='path'?(s.artFanBoost||0):(s.artUmbBoost||0)))/100);
+  const nMin=bMin*pass*artBoost*buffs.healM;
+  const nMax=bMax*pass*artBoost*buffs.healM;
+  const avgN=(nMin+nMax)/2;
+  const critM=sk.critHealOverride||d.critHealMult;
+  const avgC=avgN*critM;
+  const crit=d.effCrit, norm=1-crit;
+  const avgHeal=norm*avgN+crit*avgC;
+  const hps=avgHeal/sk.cd;
+  return{
+    type:'heal',avgHeal:R(avgHeal),hps:R(hps),
+    healMin:R(avgHeal*(1-HEAL_VAR)),healMax:R(avgHeal*(1+HEAL_VAR)),
+    normalMin:R(nMin),normalMax:R(nMax),
+    critMin:R(nMin*critM),critMax:R(nMax*critM),
+    critChance:crit,normalChance:norm,critMult:critM,
+    physRollMin:R(prMin),physRollMax:R(prMax),
+    attrRollMin:R(arMin),attrRollMax:R(arMax),
+    normalContrib:R(norm*avgN),critContrib:R(crit*avgC),
+  };
+}
+
+function calcDmg(sk,s,d,buffs){
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const kSoak=PATH_DB[path]?.kSoak||390;
+  const pm=d.physMinEff,px=d.physMaxEff;
+  const artBoost=1+(((s.allArtBoost||0)+(s.artFanBoost||0)+(s.bossDmg||0))/100)*buffs.dmgM;
+  const psMin=Math.max(0,pm-kSoak)*sk.cp+sk.fp;
+  const psMax=Math.max(0,px-kSoak)*sk.cp+sk.fp;
+  const physMin=psMin*d.dmgThru*d.mPenPhys*artBoost;
+  const physMax=psMax*d.dmgThru*d.mPenPhys*artBoost;
+  const sm=s.silkMin||0,sx=s.silkMax||0;
+  const attrMin=(sm*sk.ca+sk.fa)*d.mPenSilk*artBoost;
+  const attrMax=(sx*sk.ca+sk.fa)*d.mPenSilk*artBoost;
+  const bMin=physMin+attrMin,bMax=physMax+attrMax;
+  const avgBase=(bMin+bMax)/2;
+  const affBase=(Math.max(0,px-kSoak)*sk.cp+sk.fp)*d.dmgThru*d.mPenPhys+(sx*sk.ca+sk.fa)*d.mPenSilk;
+  const affHit=affBase*1.35*artBoost;
+  const abrasion=bMin*ABRASION_MULT;
+  const avgDmg=d.pAff*affHit+d.pCritPrec*avgBase*2.0+d.pNormPrec*avgBase+d.pAbrasion*abrasion;
+  const dps=avgDmg/sk.cd;
+  return{
+    type:'dmg',avgDmg:R(avgDmg),dps:R(dps),dmgMin:R(bMin),dmgMax:R(bMax),
+    physMin:R(physMin),physMax:R(physMax),attrMin:R(attrMin),attrMax:R(attrMax),
+    affHit:R(affHit),abrasionBase:R(abrasion),
+    pAff:d.pAff,pCritPrec:d.pCritPrec,pNormPrec:d.pNormPrec,pAbrasion:d.pAbrasion,
+    critChance:d.effCrit,effPrec:d.effPrec,effAff:d.effAff,kSoak,
+    affContrib:R(d.pAff*affHit),critContrib:R(d.pCritPrec*avgBase*2),
+    normContrib:R(d.pNormPrec*avgBase),abrasionContrib:R(d.pAbrasion*abrasion),
+  };
+}
+
+function R(n){return Math.round(n);}
+function fmt(n){if(!n&&n!==0)return'—';return Number(n).toLocaleString();}
+function pct(n,dec=1){return(n*100).toFixed(dec)+'%';}
+function ppct(n,dec=2){return(n>=0?'+':'')+n.toFixed(dec)+'%';}
+
+function runCalc(overrides={}){
+  const s=getStats(overrides);
+  const t=getTarget();
+  const d=computeDerived(s,t);
+  const buffs=getBuffMults();
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const skills=PATH_DB[path]?.skills||pendingSkills(path);
+  const ct=CONTENT[currentContent];
+  const results={};
+  skills.forEach(sk=>{
+    if(sk.pending){results[sk.id]=null;return;}
+    const r=sk.type==='heal'?calcHeal(sk,s,d,buffs):calcDmg(sk,s,d,buffs);
+    if(sk.isParty&&sk.type==='heal'&&r)r.hps=R(r.hps*ct.partyMult);
+    results[sk.id]=r;
+  });
+  const totalHPS=skills.filter(sk=>sk.type==='heal').reduce((sum,sk)=>sum+(results[sk.id]?.hps||0),0);
+  return{results,totalHPS,derived:d,stats:s,buffs};
+}
+
+/* ═══════════════════════════════════════════
+   STAT WEIGHTS — diminishing returns
+   threshold: only include increments where gain > 50% of first increment
+   ═══════════════════════════════════════════ */
+let swTraitsOnly=true;
+
+function computeSW(baseTotal){
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const statDefs=PATH_DB[path]?.stats||[...FIVE_ATTRS,...SILKBIND_STATS];
+  const availIds=new Set(statDefs.map(d=>d.id));
+  const weights=[];
+
+  for(const[stat,inc]of Object.entries(SW_INC)){
+    if(!inc)continue;
+    if(!availIds.has(stat)&&!FIVE_ATTRS.find(a=>a.id===stat))continue;
+    const isTrait=SW_IS_TRAIT[stat]??false;
+
+    // 3 increments
+    const gains=[];
+    for(let i=1;i<=3;i++){
+      const curVal=gv(stat,0);
+      const alt=runCalc({[stat]:curVal+inc*i});
+      gains.push(alt.totalHPS-baseTotal);
+    }
+
+    // Threshold: only average increments where gain > 50% of first gain
+    const g0=gains[0];
+    let sumW=0,sumG=0;
+    const dimW=[0.60,0.25,0.15];
+    gains.forEach((g,i)=>{
+      if(g0>0&&g/g0>=0.5){sumG+=g*dimW[i];sumW+=dimW[i];}
+      else if(i===0){sumG+=g*dimW[0];sumW+=dimW[0];} // always include first
+    });
+    const weightedGain=sumW>0?sumG/sumW*dimW[0]+sumG*(1-dimW[0]):gains[0]*dimW[0]; // normalize
+    // simpler: just use weighted sum capped by threshold
+    const finalGain=sumW>0?sumG:gains[0]*dimW[0];
+    const pctGain=baseTotal>0?finalGain/baseTotal*100:0;
+
+    weights.push({stat,gains,finalGain,pctGain,isTrait,label:SW_LABELS[stat]||stat,inc});
+  }
+  weights.sort((a,b)=>b.finalGain-a.finalGain);
+  return weights;
+}
+
+/* ═══════════════════════════════════════════
+   RENDER FUNCTIONS
+   ═══════════════════════════════════════════ */
+
+function renderStatSections(pathKey){
+  const defs=PATH_DB[pathKey]?.stats||[...FIVE_ATTRS,...SILKBIND_STATS];
+  const sections={};
+  defs.forEach(d=>{
+    if(!sections[d.sec])sections[d.sec]=[];
+    sections[d.sec].push(d);
+  });
+  const container=document.getElementById('statSections');
+  container.innerHTML=Object.entries(sections).map(([sec,fields])=>`
+    <div class="stat-section" id="statSec_${sec}">
+      <div class="stat-sec-title"><span class="sec-icon">◆</span>${SEC_LABELS[sec]||sec}</div>
+      <div class="stat-grid">
+        ${fields.map(d=>{
+          const passBadge=d.showPassive?`<div class="sf-passive" id="agiPassive">—</div>`:'';
+          const notTrait=d.isTrait===false?`<div class="sf-derived" id="nt_${d.id}">non-trait</div>`:'';
+          return`<div class="sf">
+            <div class="sf-lbl">${d.lbl}${d.tip?`<span class="tip" title="${d.tip}">?</span>`:''}${d.isTrait===false?`<span style="font-size:.44rem;color:rgba(220,232,220,.18);margin-left:2px">✦</span>`:''}</div>
+            <div class="sf-row">
+              <input type="number" id="sf_${d.id}" value="${d.def}" ${d.step?`step="${d.step}"`:''}  min="0" oninput="recalc()">
+              ${d.unit?`<span class="sf-unit">${d.unit}</span>`:''}
+            </div>
+            ${passBadge}
+          </div>`;
+        }).join('')}
+      </div>
     </div>
-    <div class="hit-entry">
-      <span class="hit-type-name">Critical<span class="hit-type-chance"> ${d.critChance}</span></span>
-      <span class="${valClass}">${d.crit}</span>
+  `).join('');
+}
+
+function renderBuffs(){
+  document.getElementById('buffGrid').innerHTML=BUFFS.map(b=>`
+    <div class="buff-toggle${b.on?' on':''}" id="${b.id}" data-on="${b.on?1:0}" onclick="toggleBuff(this)">
+      <div class="buff-toggle-sw"></div>
+      <div><div class="buff-lbl">${b.lbl}</div><div class="buff-val">${b.val}</div></div>
     </div>
-    <div class="hit-entry">
-      <span class="hit-type-name">Avg ${d.isDmg ? 'Damage' : 'Heal'}</span>
-      <span class="${valClass}">${d.avg}</span>
+  `).join('');
+  document.getElementById('debuffRows').innerHTML=DEBUFFS.map(d=>`
+    <div class="debuff-row">
+      <span class="debuff-lbl">${d.lbl}</span>
+      <div style="display:flex;align-items:center;gap:3px;">
+        <input class="debuff-inp" type="number" id="${d.id}" value="${d.def}" step="0.1" min="0" oninput="recalc()">
+        ${d.unit?`<span style="font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(220,232,220,.22)">${d.unit}</span>`:''}
+      </div>
     </div>
-    <div class="hit-entry">
-      <span class="hit-type-name">${d.isDmg ? 'Damage' : 'Heal'} Range</span>
-      <span class="hit-type-val paper">${d.range}</span>
+  `).join('');
+}
+
+function renderSkills(results,totalHPS,derived){
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const skills=PATH_DB[path]?.skills||pendingSkills(path);
+  const ct=CONTENT[currentContent];
+  const maxVal=Math.max(1,...skills.map(sk=>{
+    const r=results[sk.id];if(!r)return 0;
+    return sk.type==='heal'?r.hps:r.dps*0.3;
+  }));
+  document.getElementById('skillList').innerHTML=skills.map((sk,idx)=>{
+    const r=results[sk.id];
+    const isHeal=sk.type==='heal';
+    const val=r?(isHeal?r.hps:r.dps):0;
+    const barW=val?Math.round((val/maxVal)*100):0;
+    const isSel=sk.id===selectedId;
+    const tagCls=sk.wtype==='umb'?'se-tag umb':sk.isParty?'se-tag party':sk.type==='dmg'?'se-tag dmgt':'se-tag';
+    const metaHtml=r?(isHeal
+      ?`<span>Avg <strong>${fmt(r.avgHeal)}</strong></span>
+        <span>Crit <strong>${pct(r.critChance)}</strong></span>
+        <span>Range <strong>${fmt(r.healMin)}–${fmt(r.healMax)}</strong></span>`
+      :`<span>Avg <strong>${fmt(r.avgDmg)}</strong></span>
+        <span>Prec <strong>${pct(r.effPrec)}</strong></span>
+        <span>Crit <strong>${pct(r.critChance)}</strong></span>
+        <span>Aff <strong>${pct(r.effAff)}</strong></span>`)
+      :`<span style="color:rgba(220,232,220,.16);font-style:italic">Coefficients pending</span>`;
+    const detHtml=r?buildDetailHtml(sk,r,derived):'';
+    const effNote=sk.isParty&&ct.partyMult>1?`<div class="se-out-eff">×${ct.partyMult} party</div>`:'';
+    return`<div class="se${isSel?' sel':''}${sk.type==='dmg'?' tdmg':''}" data-id="${sk.id}">
+      <div class="se-main">
+        <div class="se-rank">${sk.rank}</div>
+        <div class="se-body">
+          <div class="se-head">
+            <span class="se-name">${sk.name}</span>
+            <span class="${tagCls}">${sk.weapon}</span>
+            <span class="se-cd">${sk.slot} · ${sk.cd}s</span>
+          </div>
+          <div class="se-note">${sk.note}</div>
+          <div class="wbar"><div class="wbar-bg"></div><div class="wbar-fill${sk.type==='dmg'?' dmg':''}" style="width:${barW}%"></div></div>
+          <div class="se-meta">${metaHtml}</div>
+        </div>
+        <div class="se-out">
+          <div class="se-out-val${sk.type==='dmg'?' dmg':''}">${r?fmt(val):'—'}</div>
+          <div class="se-out-lbl">${isHeal?'HPS':'DPS'}</div>
+          <div class="se-out-pct">${totalHPS>0&&val&&isHeal?Math.round((val/totalHPS)*100)+'%':'—'}</div>
+          ${effNote}
+        </div>
+      </div>
+      ${r?`<div class="se-detail${isSel?' open':''}" data-id="${sk.id}">${detHtml}</div>`:''}
+    </div>`;
+  }).join('');
+  // bind click
+  document.querySelectorAll('.se').forEach(el=>{
+    el.addEventListener('click',()=>selectSkill(el.dataset.id));
+  });
+}
+
+function buildDetailHtml(sk,r,d){
+  if(sk.type==='heal'){
+    return`<div class="dg">
+      <div class="dc"><div class="dc-l">Phys Roll</div><div class="dc-v n">${fmt(r.physRollMin)}–${fmt(r.physRollMax)}</div></div>
+      <div class="dc"><div class="dc-l">Attr Roll</div><div class="dc-v">${fmt(r.attrRollMin)}–${fmt(r.attrRollMax)}</div></div>
+      <div class="dc"><div class="dc-l">Crit Multiplier</div><div class="dc-v g">${(r.critMult*100).toFixed(0)}%</div></div>
+      <div class="dc"><div class="dc-l">Avg Heal</div><div class="dc-v">${fmt(r.avgHeal)}</div></div>
     </div>
-    <div class="hit-entry">
-      <span class="hit-type-name">${hpsLabel}</span>
-      <span class="${valClass}">${d.hps}</span>
+    <div class="ht">
+      <div class="ht-hd"><span>Hit Type</span><span>Chance</span><span>Range</span><span>Contrib</span></div>
+      <div class="ht-row"><span class="ht-type">Normal</span><span class="ht-ch">${pct(r.normalChance)}</span><span class="ht-rng">${fmt(r.normalMin)}–${fmt(r.normalMax)}</span><span class="ht-con">${fmt(r.normalContrib)}</span></div>
+      <div class="ht-row"><span class="ht-type">Critical</span><span class="ht-ch">${pct(r.critChance)}</span><span class="ht-rng">${fmt(r.critMin)}–${fmt(r.critMax)}</span><span class="ht-con">${fmt(r.critContrib)}</span></div>
+    </div>`;
+  }else{
+    return`<div class="dg">
+      <div class="dc"><div class="dc-l">Phys Dmg</div><div class="dc-v n">${fmt(r.physMin)}–${fmt(r.physMax)}</div></div>
+      <div class="dc"><div class="dc-l">Attr Dmg</div><div class="dc-v">${fmt(r.attrMin)}–${fmt(r.attrMax)}</div></div>
+      <div class="dc"><div class="dc-l">K_soak</div><div class="dc-v sm n">${r.kSoak} <span style="color:rgba(220,232,220,.16)">est.</span></div></div>
+      <div class="dc"><div class="dc-l">Affinity Hit</div><div class="dc-v g">${fmt(r.affHit)}</div></div>
     </div>
+    <div class="ht">
+      <div class="ht-hd"><span>Hit Type</span><span>Chance</span><span>Value</span><span>Contrib</span></div>
+      <div class="ht-row"><span class="ht-type">Affinity</span><span class="ht-ch">${pct(r.pAff)}</span><span class="ht-rng">${fmt(r.affHit)}</span><span class="ht-con">${fmt(r.affContrib)}</span></div>
+      <div class="ht-row"><span class="ht-type">Crit·Prec</span><span class="ht-ch">${pct(r.pCritPrec)}</span><span class="ht-rng">${fmt(r.dmgMin*2)}–${fmt(r.dmgMax*2)}</span><span class="ht-con">${fmt(r.critContrib)}</span></div>
+      <div class="ht-row"><span class="ht-type">Normal·Prec</span><span class="ht-ch">${pct(r.pNormPrec)}</span><span class="ht-rng">${fmt(r.dmgMin)}–${fmt(r.dmgMax)}</span><span class="ht-con">${fmt(r.normContrib)}</span></div>
+      <div class="ht-row"><span class="ht-type">Abrasion</span><span class="ht-ch">${pct(r.pAbrasion)}</span><span class="ht-rng">${fmt(r.abrasionBase)}</span><span class="ht-con">${fmt(r.abrasionContrib)}</span></div>
+    </div>`;
+  }
+}
+
+let selectedId=null;
+function selectSkill(id){
+  selectedId=id;
+  document.querySelectorAll('.se').forEach(el=>{
+    const isSel=el.dataset.id===id;
+    el.classList.toggle('sel',isSel);
+    const det=el.querySelector('.se-detail');
+    if(det)det.classList.toggle('open',isSel);
+  });
+}
+
+function renderDerived(d){
+  document.getElementById('derivedBlk').innerHTML=`
+    <div class="der-row"><span class="der-l">Effective Defense</span><span class="der-v">${fmt(R(d.effDef))}</span></div>
+    <div class="der-row"><span class="der-l">Mitigation</span><span class="der-v">${pct(d.mitigation)}</span></div>
+    <div class="der-row"><span class="der-l">Eff. Crit Rate</span><span class="der-v">${pct(d.effCrit)}</span></div>
+    <div class="der-row"><span class="der-l">Eff. Precision</span><span class="der-v">${pct(d.effPrec)}</span></div>
+    <div class="der-row"><span class="der-l">Eff. Affinity</span><span class="der-v">${pct(d.effAff)}</span></div>
+    <div class="der-row"><span class="der-l">Phys Pen Mult</span><span class="der-v">${(d.mPenPhys*100).toFixed(1)}%</span></div>
+    <div class="der-row"><span class="der-l">Silk Pen Mult</span><span class="der-v">${(d.mPenSilk*100).toFixed(1)}%</span></div>
+    <div class="der-row"><span class="der-l">Agi→Min Phys</span><span class="der-v">+${d.agiPhysBonus.toFixed(1)}</span></div>
+    <div class="der-row"><span class="der-l">Agi→Crit</span><span class="der-v">+${(d.agiCritBonus*100).toFixed(2)}%</span></div>
+  `;
+  const badge=document.getElementById('agiPassive');
+  if(badge){const s=getStats();badge.textContent=`passive → +${d.agiPhysBonus.toFixed(1)} min phys, +${(d.agiCritBonus*100).toFixed(2)}% crit`;}
+}
+
+function renderSW(baseTotal){
+  const weights=computeSW(baseTotal);
+  const visible=swTraitsOnly?weights.filter(w=>w.isTrait):weights;
+  const hidden=swTraitsOnly?weights.filter(w=>!w.isTrait):[];
+  const maxG=Math.max(1,...visible.map(w=>Math.abs(w.finalGain)));
+  const tierOf=(i,max,all)=>{
+    if(all.length===0)return'C';
+    const rank=i/all.length;
+    return rank<0.15?'S':rank<0.35?'A':rank<0.6?'B':'C';
+  };
+  const rowHtml=(w,i,arr)=>{
+    const maxIncG=Math.max(1,...w.gains.map(g=>Math.abs(g)));
+    const bars=w.gains.map((g,j)=>{
+      const bw=Math.max(0,Math.round((g/maxG)*100));
+      return`<div class="sw-bar-row">
+        <span class="sw-bar-lbl">+${j+1}t</span>
+        <div class="sw-track"><div class="sw-fill${j>0?' f'+(j):''}" style="width:${bw}%"></div></div>
+        <span class="sw-gain">${ppct(baseTotal>0?g/baseTotal*100:0)}</span>
+      </div>`;
+    }).join('');
+    const tier=tierOf(i,maxG,arr);
+    return`<div class="sw-row${w.isTrait?'':' non-trait'}">
+      <span class="sw-name">${w.label}${!w.isTrait?`<span class="sw-nt-badge">✦non-trait</span>`:''}</span>
+      <div class="sw-bars">${bars}</div>
+      <span class="sw-tier ${tier}">${tier}</span>
+    </div>`;
+  };
+  let html=visible.map((w,i)=>rowHtml(w,i,visible)).join('');
+  if(!swTraitsOnly&&hidden.length){
+    html+=`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+      <div style="font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.2em;color:rgba(220,232,220,.18);text-transform:uppercase;margin-bottom:6px;">✦ Non-Trait Bonuses</div>
+      ${hidden.map((w,i)=>rowHtml(w,i,hidden)).join('')}
+    </div>`;
+  }
+  document.getElementById('swRows').innerHTML=html;
+}
+
+function renderBP(s,d){
+  const agiPct=Math.min(100,(s.agility/AGI_CAP)*100).toFixed(0);
+  const physGap=Math.max(0,d.physMaxEff-d.physMinEff);
+  const silkGap=Math.max(0,(s.silkMax||0)-(s.silkMin||0));
+  document.getElementById('bpRows').innerHTML=`
+    <div class="bp-row"><span class="bp-l">Agility Passive Cap</span><span class="bp-v ${s.agility>=AGI_CAP?'ok':'warn'}">${agiPct}% (${s.agility}/${AGI_CAP})</span></div>
+    <div class="bp-row"><span class="bp-l">Phys Min ≥ Max</span><span class="bp-v ${physGap<=0?'ok':'far'}">${physGap<=0?'✓ Fixed':'Gap −'+fmt(R(physGap))}</span></div>
+    <div class="bp-row"><span class="bp-l">Silk Min ≥ Max</span><span class="bp-v ${silkGap<=0?'ok':'far'}">${silkGap<=0?'✓ Fixed':'Gap −'+fmt(R(silkGap))}</span></div>
+    <div class="bp-row"><span class="bp-l">Crit Cap (80%+DC)</span><span class="bp-v ${d.effCrit>=0.80?'ok':'warn'}">${pct(d.effCrit)} / 80%+DC</span></div>
   `;
 }
+
+function renderCompBar(results,skills){
+  const colors=['var(--p)','var(--p-lt)','var(--p-dim)','rgba(74,170,120,.35)','rgba(74,170,120,.2)','rgba(74,170,120,.1)'];
+  const hs=skills.filter(s=>s.type==='heal');
+  document.getElementById('compBar').innerHTML=hs.map((sk,i)=>{
+    const hps=results[sk.id]?.hps||0;
+    return`<div class="cbar-seg" style="flex:${hps};background:${colors[i]||colors[5]}"></div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════
+   MAIN RECALC
+   ═══════════════════════════════════════════ */
+function recalc(){
+  const{results,totalHPS,derived,stats}=runCalc();
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const skills=PATH_DB[path]?.skills||pendingSkills(path);
+  const ct=CONTENT[currentContent];
+
+  renderSkills(results,totalHPS,derived);
+  renderDerived(derived);
+  renderCompBar(results,skills);
+  renderSW(totalHPS);
+  renderBP(stats,derived);
+
+  const ts=fmt(R(totalHPS));
+  document.getElementById('totalHps').textContent=ts;
+  document.getElementById('panelTotal').textContent=ts;
+  document.getElementById('panelTotalSub').textContent=`Heals Per Second · ${ct.label}`;
+  document.getElementById('ctNote').textContent=ct.note;
+
+  // Effective HPS note for group
+  if(currentContent!=='solo'){
+    const soloTotal=runCalc().totalHPS; // approximate — just show current
+    document.getElementById('panelTotalEff').textContent='';
+  }
+}
+
+/* ═══════════════════════════════════════════
+   PATH SWITCH
+   ═══════════════════════════════════════════ */
+function switchPath(val){
+  const cfg=PATH_DB[val]||PATH_DB['silkbind-deluge'];
+  document.body.className=document.body.className.replace(/path-\S+/g,'').trim();
+  document.body.classList.add(cfg.cls);
+  document.getElementById('hdrTag').textContent=cfg.tag;
+  document.getElementById('hdrAc').textContent='Output';
+  renderStatSections(val);
+  selectedId=null;
+  document.getElementById('srcNote').innerHTML=cfg.skills
+    ?`K_soak=${cfg.kSoak} (${cfg.tag}, empirical ⚠️) · Coefficients: EN-tested Lv.90<br>Heal variance ±7.5% ✅ · Agility cap 225 ✅ · Pen formula: WindsFromCN ✅`
+    :`⚠ Coefficients for ${cfg.tag} not yet verified.<br>K_soak estimate = ${cfg.kSoak} (unconfirmed). Output will show zeroes.`;
+  recalc();
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT TYPE
+   ═══════════════════════════════════════════ */
+function setContent(btn,ct){
+  document.querySelectorAll('.ct-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentContent=ct;
+  recalc();
+}
+
+/* ═══════════════════════════════════════════
+   BUFFS
+   ═══════════════════════════════════════════ */
+function toggleBuff(el){
+  const on=el.dataset.on==='1';
+  el.dataset.on=on?'0':'1';
+  el.classList.toggle('on',!on);
+  recalc();
+}
+function toggleSwFilter(){
+  swTraitsOnly=!swTraitsOnly;
+  document.getElementById('swFilter').classList.toggle('checked',swTraitsOnly);
+  recalc();
+}
+
+/* ═══════════════════════════════════════════
+   PAGE NAV WIDGET
+   ═══════════════════════════════════════════ */
+function buildPageNav(){
+  const sections=document.querySelectorAll('[data-nav]');
+  const nav=document.getElementById('pageNav');
+  nav.innerHTML='';
+  sections.forEach((sec,i)=>{
+    const btn=document.createElement('div');
+    btn.className='pn-btn';
+    btn.innerHTML=`<div class="pn-dot"></div><div class="pn-tooltip">${sec.dataset.nav}</div>`;
+    btn.addEventListener('click',()=>{
+      sec.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    nav.appendChild(btn);
+  });
+  // Scroll spy
+  const rp=document.getElementById('rpanel');
+  if(rp){
+    rp.addEventListener('scroll',()=>{
+      let active=0;
+      sections.forEach((sec,i)=>{
+        if(sec.offsetTop-rp.scrollTop<=50)active=i;
+      });
+      nav.querySelectorAll('.pn-btn').forEach((b,i)=>b.classList.toggle('active',i===active));
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════
+   SAVE / LOAD / URL
+   ═══════════════════════════════════════════ */
+function getBuildObj(){
+  const path=document.getElementById('pathSel').value;
+  const obj={path,ct:currentContent,
+    t_plvl:document.getElementById('t_plvl')?.value,
+    t_tlvl:document.getElementById('t_tlvl')?.value,
+    t_def:document.getElementById('t_def')?.value};
+  const defs=PATH_DB[path]?.stats||[...FIVE_ATTRS,...SILKBIND_STATS];
+  defs.forEach(d=>{const el=document.getElementById('sf_'+d.id);if(el)obj['sf_'+d.id]=el.value;});
+  return obj;
+}
+function applyBuildObj(obj){
+  if(obj.path){document.getElementById('pathSel').value=obj.path;switchPath(obj.path);}
+  if(obj.ct)setContent(document.querySelector(`[data-ct="${obj.ct}"]`),obj.ct);
+  Object.entries(obj).forEach(([k,v])=>{if(k==='path'||k==='ct')return;const el=document.getElementById(k);if(el)el.value=v;});
+  recalc();
+}
+function saveBuild(){try{localStorage.setItem('fearsom_v1',JSON.stringify(getBuildObj()));showToast('Build saved');}catch(e){showToast('Save failed');}}
+function loadBuild(){try{const d=localStorage.getItem('fearsom_v1');if(!d){showToast('No saved build');return;}applyBuildObj(JSON.parse(d));showToast('Build loaded');}catch(e){showToast('Load failed');}}
+function copyURL(){const enc=btoa(JSON.stringify(getBuildObj()));const url=location.href.split('?')[0]+'?build='+enc;navigator.clipboard.writeText(url).then(()=>showToast('URL copied!')).catch(()=>prompt('Copy:',url));}
+function loadFromURL(){const b=new URLSearchParams(location.search).get('build');if(b)try{applyBuildObj(JSON.parse(atob(b)));}catch(e){}}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+
+/* ═══════════════════════════════════════════
+   BUBBLES
+   ═══════════════════════════════════════════ */
+function initBubbles(){
+  const c=document.getElementById('bubbles');
+  for(let i=0;i<12;i++){
+    const b=document.createElement('div');b.className='bubble';
+    const sz=2+Math.random()*4;
+    b.style.cssText=`left:${Math.random()*100}%;bottom:${Math.random()*15}%;width:${sz}px;height:${sz}px;--dx:${(Math.random()-.5)*24}px;animation-duration:${9+Math.random()*10}s;animation-delay:${Math.random()*9}s;`;
+    c.appendChild(b);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  initBubbles();
+  renderStatSections('silkbind-deluge');
+  renderBuffs();
+  loadFromURL();
+  recalc();
+  selectedId=SD_SKILLS[0].id;
+  buildPageNav();
+  setTimeout(()=>{
+    const obs=new IntersectionObserver(es=>{es.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('vis'),i*60);obs.unobserve(e.target);}});},{threshold:.05});
+    document.querySelectorAll('.rev').forEach(el=>obs.observe(el));
+  },120);
+});
 </script>
 </body>
 </html>
