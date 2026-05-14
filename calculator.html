@@ -9,18 +9,18 @@
 <style>
 /* ══════════════════ PATH TOKENS ══════════════════ */
 :root {
-  --p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#2a6b4a;
-  --p-glow:rgba(74,170,120,0.14);--p-border:rgba(74,170,120,0.24);
-  --p-bg1:#060f0c;--p-bg2:#0b1a13;--p-tint:rgba(74,170,120,0.06);--p-tint2:rgba(74,170,120,0.10);
-  --ink:#050d09;--paper:#dce8dc;--paper-dim:rgba(220,232,220,0.55);
-  --mist:rgba(220,232,220,0.38);--border:rgba(220,232,220,0.08);
-  --gold:#c8a84a;--gold-dim:rgba(200,168,74,0.18);
-  --crimson:#c0392b;--phys:#9baaa0;
+  --p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#357a57;
+  --p-glow:rgba(74,170,120,0.18);--p-border:rgba(74,170,120,0.32);
+  --p-bg1:#0e1f19;--p-bg2:#152a20;--p-tint:rgba(74,170,120,0.09);--p-tint2:rgba(74,170,120,0.14);
+  --ink:#0a1812;--paper:#e2eedf;--paper-dim:rgba(226,238,223,0.62);
+  --mist:rgba(226,238,223,0.50);--border:rgba(226,238,223,0.12);
+  --gold:#d4b44e;--gold-dim:rgba(212,180,78,0.24);
+  --crimson:#d04040;--phys:#aabcb0;
 }
-body.path-bellstrike{--p:#7a9db0;--p-lt:#a8c8d8;--p-dim:#3a6070;--p-glow:rgba(122,157,176,0.13);--p-border:rgba(122,157,176,0.24);--p-bg1:#070c10;--p-bg2:#0c1620;--p-tint:rgba(97,125,141,0.06);--p-tint2:rgba(97,125,141,0.11);--ink:#050a0e;--paper:#dce4e8;}
-body.path-stonesplit{--p:#c2826e;--p-lt:#e0a890;--p-dim:#7a3a2a;--p-glow:rgba(194,130,110,0.13);--p-border:rgba(194,130,110,0.24);--p-bg1:#100806;--p-bg2:#1c0e08;--p-tint:rgba(161,105,92,0.06);--p-tint2:rgba(161,105,92,0.11);--ink:#0e0705;--paper:#ede0dc;}
-body.path-silkbind{--p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#2a6b4a;--p-glow:rgba(74,170,120,0.14);--p-border:rgba(74,170,120,0.24);--p-bg1:#060f0c;--p-bg2:#0b1a13;--p-tint:rgba(74,170,120,0.06);--p-tint2:rgba(74,170,120,0.10);--ink:#050d09;--paper:#dce8dc;}
-body.path-bamboocut{--p:#b89cc0;--p-lt:#d4bce0;--p-dim:#6a4878;--p-glow:rgba(184,156,192,0.13);--p-border:rgba(184,156,192,0.24);--p-bg1:#0c090f;--p-bg2:#150e1c;--p-tint:rgba(159,138,166,0.06);--p-tint2:rgba(159,138,166,0.11);--ink:#0a0810;--paper:#e4dce8;}
+body.path-bellstrike{--p:#7a9db0;--p-lt:#a8c8d8;--p-dim:#4a7888;--p-glow:rgba(122,157,176,0.18);--p-border:rgba(122,157,176,0.32);--p-bg1:#101820;--p-bg2:#172230;--p-tint:rgba(97,125,141,0.09);--p-tint2:rgba(97,125,141,0.15);--ink:#0c1520;--paper:#dce6ec;}
+body.path-stonesplit{--p:#c8907a;--p-lt:#e8b090;--p-dim:#8a4838;--p-glow:rgba(200,144,122,0.18);--p-border:rgba(200,144,122,0.32);--p-bg1:#201410;--p-bg2:#2c1c14;--p-tint:rgba(200,144,122,0.09);--p-tint2:rgba(200,144,122,0.15);--ink:#1a1008;--paper:#f0e0d8;}
+body.path-silkbind{--p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#357a57;--p-glow:rgba(74,170,120,0.18);--p-border:rgba(74,170,120,0.32);--p-bg1:#0e1f19;--p-bg2:#152a20;--p-tint:rgba(74,170,120,0.09);--p-tint2:rgba(74,170,120,0.14);--ink:#0a1812;--paper:#e2eedf;}
+body.path-bamboocut{--p:#b89cc0;--p-lt:#d4bce0;--p-dim:#7a5888;--p-glow:rgba(184,156,192,0.18);--p-border:rgba(184,156,192,0.32);--p-bg1:#181020;--p-bg2:#22182e;--p-tint:rgba(184,156,192,0.09);--p-tint2:rgba(184,156,192,0.15);--ink:#140e1c;--paper:#ece4f0;}
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
@@ -85,33 +85,57 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
 .path-sel option{background:#0b1510;color:#dce8dc;}
 
 /* ══════════════ PAGE NAV WIDGET ══════════════ */
-.page-nav{
-  position:fixed;left:10px;top:50%;transform:translateY(-50%);
-  z-index:40;display:flex;flex-direction:column;gap:6px;
+/* ── PAGE NAV — sticky strip pinned to rpanel's left edge ── */
+/* The rpanel becomes a flex-row: nav strip (38px) + content column (1fr) */
+/* rpanel is flex-row: nav strip + content */
+.page-nav-wrap{
+  width:38px;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  height:100%;
+  background:var(--p-bg2);
+  border-right:1px solid var(--border);
+  z-index:10;
+}
+/* rpanel content goes in a flex-col wrapper beside the nav */
+.rpanel-content{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+  height:100%;
+  scrollbar-width:thin;
+  scrollbar-color:var(--p-dim) transparent;
 }
 .pn-btn{
-  width:28px;height:28px;border-radius:50%;
-  background:rgba(220,232,220,0.04);border:1px solid var(--border);
+  width:28px;height:28px;border-radius:5px;
+  background:rgba(226,238,223,0.04);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:all .2s;
-  font-family:'DM Mono',monospace;font-size:.5rem;color:rgba(220,232,220,.3);
-  title:'';position:relative;
+  color:rgba(226,238,223,.28);
+  position:relative;
+  flex-shrink:0;
 }
+.pn-btn svg{pointer-events:none;width:12px;height:12px;}
 .pn-btn:hover{background:var(--p-glow);border-color:var(--p-border);color:var(--p);}
 .pn-btn.active{background:var(--p-glow);border-color:var(--p);color:var(--p);}
-.pn-dot{width:5px;height:5px;border-radius:50%;background:currentColor;}
 .pn-tooltip{
-  position:absolute;left:36px;top:50%;transform:translateY(-50%);
-  background:rgba(5,13,9,.95);border:1px solid var(--p-border);
-  font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.12em;
-  color:var(--p);padding:4px 8px;white-space:nowrap;
+  position:absolute;left:34px;top:50%;transform:translateY(-50%);
+  background:rgba(14,31,25,.97);border:1px solid var(--p-border);
+  font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.12em;
+  color:var(--p);padding:3px 8px;white-space:nowrap;
   pointer-events:none;opacity:0;transition:opacity .15s;text-transform:uppercase;
+  z-index:200;
 }
 .pn-btn:hover .pn-tooltip{opacity:1;}
 
 /* ══════════════ STAT PANEL ══════════════ */
-.stat-panel{background:var(--p-bg2);border-bottom:1px solid var(--p-border);padding:12px 20px 10px;transition:background .4s,border-color .4s;}
-.sph{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.stat-panel{background:var(--p-bg2);border-bottom:1px solid var(--p-border);padding:10px 14px 8px;transition:background .4s,border-color .4s;flex-shrink:0;}.sph{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .sph-title{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.26em;color:rgba(220,232,220,.2);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
 .sph-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--p-border),transparent);}
 .sph-acts{display:flex;gap:5px;}
@@ -130,8 +154,8 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
 .sf{background:rgba(220,232,220,.035);border:1px solid var(--border);padding:5px 9px;transition:border-color .15s,background .15s;}
 .sf:hover{border-color:var(--p-border);}
 .sf:focus-within{border-color:var(--p);background:var(--p-glow);}
-.sf-lbl{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.16em;color:rgba(220,232,220,.28);text-transform:uppercase;margin-bottom:2px;display:flex;align-items:center;gap:3px;}
-.sf-lbl .tip{font-size:.58rem;color:rgba(220,232,220,.14);cursor:help;transition:color .15s;}
+.sf-lbl{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.16em;color:rgba(226,238,223,.42);text-transform:uppercase;margin-bottom:2px;display:flex;align-items:center;gap:3px;}
+.sf-lbl .tip{font-size:.58rem;color:rgba(226,238,223,.22);cursor:help;transition:color .15s;}
 .sf-lbl .tip:hover{color:var(--p);}
 .sf-row{display:flex;align-items:center;gap:4px;}
 .sf input[type=number]{background:transparent;border:none;outline:none;color:var(--p);
@@ -143,9 +167,35 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
   color:var(--p);background:var(--p-glow);border:1px solid var(--p-border);
   padding:1px 5px;margin-top:2px;display:inline-block;transition:color .3s;}
 .sf-derived{font-family:'DM Mono',monospace;font-size:.46rem;color:rgba(220,232,220,.22);margin-top:1px;}
+.sf-warn{font-family:'DM Mono',monospace;font-size:.44rem;color:var(--gold);margin-top:2px;letter-spacing:.06em;}
 
 /* ══════════════ MAIN ══════════════ */
-.main{flex:1;display:grid;grid-template-columns:1fr 296px;}
+/* ══════════════ LAYOUT ══════════════
+   app (flex-col)
+     hdr (fixed 54px)
+     content-area (flex:1, display:grid)
+       left-col (flex-col: stat-panel + skill-col)
+       rpanel   (sticky, full viewport height minus header)
+   ══════════════════════════════════ */
+.content-area{
+  flex:1;
+  display:grid;
+  grid-template-columns:1fr 320px;
+  min-height:0;
+  align-items:start;
+}
+.left-col{
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  border-right:1px solid var(--border);
+}
+.skill-col{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  overflow-y:auto;
+}
 
 /* ── SKILL COL ── */
 .skill-col{border-right:1px solid var(--border);display:flex;flex-direction:column;}
@@ -200,8 +250,8 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
 .wbar-fill.dmg{background:linear-gradient(to right,#5a1212,var(--crimson) 65%,#e05555);}
 .wbar-fill.dmg::after{background:#e05555;box-shadow:0 0 7px var(--crimson);}
 
-.se-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:.7rem;color:rgba(220,232,220,.26);}
-.se-meta strong{color:rgba(220,232,220,.6);}
+.se-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:.7rem;color:rgba(226,238,223,.40);}
+.se-meta strong{color:rgba(226,238,223,.75);}
 
 .se-out{padding:11px 13px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;border-left:1px solid var(--border);}
 .se-out-val{font-family:'Cinzel',serif;font-size:1rem;color:var(--p);letter-spacing:.04em;transition:color .3s;}
@@ -233,8 +283,17 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
 .ht-con{font-family:'DM Mono',monospace;font-size:.62rem;color:var(--p);text-align:right;}
 
 /* ══════════════ RIGHT PANEL ══════════════ */
-.rpanel{display:flex;flex-direction:column;background:rgba(5,13,9,.25);overflow-y:auto;
-  position:sticky;top:54px;height:calc(100vh - 54px);scrollbar-width:thin;scrollbar-color:var(--p-dim) transparent;}
+.rpanel{
+  display:flex;
+  flex-direction:row;
+  background:rgba(5,13,9,.25);
+  border-left:1px solid var(--border);
+  position:sticky;
+  top:54px;
+  height:calc(100vh - 54px);
+  align-self:start;
+  overflow:hidden;
+}
 .pb{padding:16px 16px;border-bottom:1px solid var(--border);}
 .pb-t{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.26em;text-transform:uppercase;
   color:rgba(220,232,220,.16);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
@@ -339,7 +398,15 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--p-tint2);border:1px solid var(--p-border);color:var(--p-lt);font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;padding:8px 16px;opacity:0;transition:all .3s;pointer-events:none;z-index:200;text-transform:uppercase;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-@media(max-width:900px){.main{grid-template-columns:1fr;}.rpanel{position:static;height:auto;}.hdr{padding:0 12px;}.page-nav{display:none;}.shafts{display:none;}.corner{display:none;}}
+@media(max-width:900px){
+  .content-area{grid-template-columns:1fr;}
+  .rpanel{position:static;height:auto;flex-direction:column;}
+  .rpanel-content{height:auto;overflow-y:visible;}
+  .page-nav-wrap{display:none;}
+  .hdr{padding:0 12px;}
+  .shafts{display:none;}
+  .corner{display:none;}
+}
 @media(max-width:580px){.stat-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));}.se-main{grid-template-columns:32px 1fr 118px;}}
 
 .rev{opacity:0;transform:translateY(7px);transition:opacity .4s,transform .4s;}
@@ -352,9 +419,6 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
 <div class="bg-layer"><div class="bg-grad"></div><div class="bg-noise"></div></div>
 <div class="shafts"><div class="shaft"></div><div class="shaft"></div><div class="shaft"></div><div class="shaft"></div></div>
 <div class="bubbles" id="bubbles"></div>
-
-<!-- PAGE NAV WIDGET -->
-<div class="page-nav" id="pageNav"></div>
 
 <div class="app">
 
@@ -384,21 +448,20 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
   </div>
 </header>
 
-<!-- STAT PANEL -->
-<div class="stat-panel" id="statPanelWrap">
-  <div class="sph">
-    <span class="sph-title">Character Stats</span>
-    <div class="sph-acts">
-      <button class="spa-btn" onclick="saveBuild()">Save</button>
-      <button class="spa-btn" onclick="loadBuild()">Load</button>
-      <button class="spa-btn" onclick="copyURL()">Share</button>
+<div class="content-area">
+  <div class="left-col">
+    <div class="stat-panel" id="statPanelWrap">
+      <div class="sph">
+        <span class="sph-title">Character Stats</span>
+        <div class="sph-acts">
+          <button class="spa-btn" onclick="saveBuild()">Save</button>
+          <button class="spa-btn" onclick="loadBuild()">Load</button>
+          <button class="spa-btn" onclick="copyURL()">Share</button>
+        </div>
+      </div>
+      <div id="statSections"></div>
     </div>
-  </div>
-  <div id="statSections"></div>
-</div>
-
-<div class="main">
-  <div class="skill-col" id="skillColAnchor">
+    <div class="skill-col" id="skillColAnchor">
     <div class="sc-hdr">
       <span class="sc-title" id="scTitle">Skill Output</span>
       <div class="sc-total"><span class="sc-total-n" id="totalHps">—</span><span class="sc-total-l" id="totalLbl">Total HPS</span></div>
@@ -413,9 +476,12 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
       <span class="ct-hps-note" id="ctNote">Party heals count once</span>
     </div>
     <div id="skillList"></div>
-  </div>
+  </div><!-- /skill-col -->
+  </div><!-- /left-col -->
 
   <div class="rpanel" id="rpanel">
+    <div class="page-nav-wrap" id="pageNav"></div>
+    <div class="rpanel-content" id="rpanelContent">
 
     <div class="pb rev" id="sec-total" data-nav="Total">
       <div class="pb-t">Total Output</div>
@@ -438,6 +504,12 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
           <div><input class="tgt-inp" type="number" id="t_tlvl" value="96" min="1" max="100" oninput="recalc()"></div></div>
         <div class="tgt-row"><span class="tgt-lbl">Base Defense</span>
           <div><input class="tgt-inp" id="t_def" type="number" value="405" min="0" oninput="recalc()"></div></div>
+        <div class="tgt-row" title="Your Physical Pen is compared against this. Default 50.">
+          <span class="tgt-lbl">Phys Resistance <span style="font-size:.6rem;color:rgba(226,238,223,.3);cursor:help">?</span></span>
+          <div><input class="tgt-inp" id="t_physRes" type="number" value="50" step="0.1" min="0" oninput="recalc()"></div></div>
+        <div class="tgt-row" title="Your Attribute Pen is compared against this. Default 50.">
+          <span class="tgt-lbl">Attr Resistance <span style="font-size:.6rem;color:rgba(226,238,223,.3);cursor:help">?</span></span>
+          <div><input class="tgt-inp" id="t_attrRes" type="number" value="50" step="0.1" min="0" oninput="recalc()"></div></div>
       </div>
       <div class="der-blk" id="derivedBlk"></div>
     </div>
@@ -474,12 +546,14 @@ body{background:var(--p-bg1);color:var(--paper);font-family:'Crimson Pro',Georgi
     </div>
 
     <div class="src-note" id="srcNote">
-      K_soak=390 (Silkbind-Deluge, empirical ⚠️) · Coefficients: EN-tested Lv.90<br>
-      Heal variance ±7.5% ✅ · Agility cap 225 (Lv.95 weapons) ✅ · Pen formula: WindsFromCN ✅
+      K_soak = 390 (Silkbind-Deluge, empirical ⚠️) · Coefficients: EN-tested Lv.90<br>
+      Heal variance ±7.5% ✅ · Agility soft cap 225 (Lv.95 weapons) ✅<br>
+      Pen formula: WindsFromCN ✅ · Heals bypass target resistance ✅
     </div>
 
-  </div>
-</div>
+  </div><!-- /rpanel-content -->
+  </div><!-- /rpanel -->
+</div><!-- /content-area -->
 
 <div class="ftr">
   <span class="ftr-txt">Fearsom's Calculator</span>
@@ -525,9 +599,10 @@ let currentContent = 'solo';
 const FIVE_ATTRS = [
   {id:'body',     lbl:'Body',     def:145, tip:'1=60 HP',        sec:'five'},
   {id:'defense',  lbl:'Defense',  def:110, tip:'1=17 HP + 0.5 DEF', sec:'five'},
-  {id:'agility',  lbl:'Agility',  def:207, tip:'1=0.9 Min ATK + 0.076% Crit · Double-value passive <225', sec:'five', showPassive:true},
+  {id:'agility',  lbl:'Agility',  def:207, tip:'1=0.9 Min ATK + 0.076% Crit · Weapon passive soft cap 225', sec:'five', showPassive:true},
   {id:'momentum', lbl:'Momentum', def:174, tip:'1=0.9 Max ATK + 0.038% Affinity', sec:'five'},
   {id:'power',    lbl:'Power',    def:174, tip:'1=0.225 Min ATK + 1.36 Max ATK', sec:'five'},
+  {id:'maxHp',    lbl:'Max HP',   def:153000, tip:'Enter your actual Max HP from character sheet. Used for Dew Regeneration calc.', sec:'five'},
 ];
 
 const SILKBIND_STATS = [
@@ -540,6 +615,7 @@ const SILKBIND_STATS = [
   {id:'critRate',lbl:'Crit Rate',   def:122.2,unit:'%',step:.1,sec:'rates',isTrait:true},
   {id:'dirCrit', lbl:'Direct Crit', def:9.2,  unit:'%',step:.1,sec:'rates',isTrait:false,tip:'Set bonus / inner way'},
   {id:'critHeal',lbl:'Crit Heal Bon',def:54.0,unit:'%',step:.1,sec:'rates',isTrait:false,tip:'Set bonus / inner way'},
+  {id:'critHealCap',lbl:'Crit Heal (Current Max)',def:1.69,step:.01,sec:'rates',isTrait:false,tip:'Current cap: 1.69 (150% base + 4% inner way + 15% 4pc Ivorybloom at full HP). Update when gear changes.'},
   {id:'precision',lbl:'Precision',  def:92.0, unit:'%',step:.1,sec:'rates',isTrait:true},
   {id:'affinity',lbl:'Affinity Rate',def:14.6,unit:'%',step:.1,sec:'rates',isTrait:true},
   {id:'dirAff',  lbl:'Direct Aff',  def:0.0,  unit:'%',step:.1,sec:'rates',isTrait:false},
@@ -553,8 +629,8 @@ const SILKBIND_STATS = [
   // Damage boosts
   {id:'artFanBoost',lbl:'Art of Fan Boost',def:0,unit:'%',step:.1,sec:'boost',isTrait:true,tip:'Capped at 1 trait'},
   {id:'artUmbBoost',lbl:'Art of Umb Boost',def:0,unit:'%',step:.1,sec:'boost',isTrait:true,tip:'Capped at 1 trait'},
-  {id:'allArtBoost',lbl:'All Art Skill Boost',def:0,unit:'%',step:.1,sec:'boost',isTrait:true},
-  {id:'bossDmg',    lbl:'DMG vs Boss',     def:0,unit:'%',step:.1,sec:'boost',isTrait:true},
+  {id:'allArtBoost',lbl:'All Arts Skill Boost',def:0,unit:'%',step:.1,sec:'boost',isTrait:true},
+  {id:'playerDmg',  lbl:'DMG vs Players',  def:0,unit:'%',step:.1,sec:'boost',isTrait:true,tip:'Up to 2 traits at ~2.4% each'},
 ];
 
 const BELLSTRIKE_STATS = [
@@ -587,29 +663,46 @@ const SEC_LABELS = {
 /* ═══════════════════════════════════════════
    SKILL DATABASE
    ═══════════════════════════════════════════ */
-/* Heavy attack chain: cd = 0.68 * 3 = 2.04s ✅ */
+/* ─── Silkbind · Deluge skill database ───
+   cd = cast/use period used for HPS calc
+   isParty = true means content multiplier applies
+   isSelfBoost = true means +50% on self (Umbrella special)
+   dewCost = dew spent per use (triggers 10% max HP self-heal per 50 dew)
+   isHoT = heal over time flag (affects notes)
+   Heavy attack chain: cd = 0.68 * 3 = 2.04s ✅ */
 const SD_SKILLS=[
-  {id:'fan-q',   name:'Martial Art Skill',  weapon:'Fan',     wtype:'path',slot:'Q',    cd:20.0,  type:'heal',isParty:false,
-   cp:15.1934,ca:15.1934,fp:351.2,fa:196.5, passiveMult:1.30,
-   note:'Clone skill — sustained ticking HPS. Core output.',rank:'一'},
-  {id:'fan-r',   name:'Heavy Attack Chain', weapon:'Fan',     wtype:'path',slot:'R×3',  cd:2.04,  type:'heal',isParty:false,
-   cp:6.7025, ca:6.7025, fp:155.0,fa:86.7,  passiveMult:1.30,
-   note:'3-hit chain (0.68s×3). Core rotation filler.',rank:'二'},
-  {id:'fan-spec',name:'Special Skill',      weapon:'Fan',     wtype:'path',slot:'~',    cd:6.0,   type:'heal',isParty:false,
-   cp:10.1977,ca:10.1977,fp:235.9,fa:131.8, critHealOverride:1.99,
-   note:'Enhanced Crit Heal 199%. High single-hit value.',rank:'三'},
-  {id:'umb-spec',name:'Special Skill',      weapon:'Umbrella',wtype:'umb', slot:'~',    cd:1.0,   type:'heal',isParty:false,
-   cp:0.7721, ca:0.7721, fp:17.8, fa:10.0,
-   note:'Quick top-up. Low cooldown.',rank:'四'},
-  {id:'umb-q',   name:'Martial Art Skill',  weapon:'Umbrella',wtype:'umb', slot:'Q',    cd:30.0,  type:'heal',isParty:false,
-   cp:4.9192, ca:4.9192, fp:113.9,fa:63.7,
-   note:'Heal + 20% DMG buff 12s. +5% vs exhausted.',rank:'五'},
-  {id:'fan-perc',name:'Perception Skill',   weapon:'Fan',     wtype:'path',slot:'Q·Pty',cd:20.0,  type:'heal',isParty:true,
+  // Fan Martial Art Q — 7s clone heals all in range every 1s; scales to all targets; burst Q2 on T6
+  {id:'fan-q',   name:'Martial Art Skill',  weapon:'Fan',  wtype:'path',slot:'Q',     cd:20.0, type:'heal',isParty:true,
+   cp:15.1934,ca:15.1934,fp:351.2,fa:196.5, passiveMult:1.30, dewCost:50, isHoT:true,
+   note:'7s clone heals all nearby every 1s (×7 ticks). +50% below 30% HP. T6: burst Q2 + attaches Fan special to a target. Scales to group.',rank:'一'},
+  // Fan Perception — party burst heal, cast right after Fan Q; ~5s window
+  {id:'fan-perc',name:'Perception Skill',   weapon:'Fan',  wtype:'path',slot:'Q②',   cd:20.0, type:'heal',isParty:true,
    cp:11.7766,ca:11.7766,fp:272.1,fa:152.2,
-   note:'Party-wide heal. Scales with content type.',rank:'六'},
-  {id:'fan-lmb', name:'Light Attack',       weapon:'Fan',     wtype:'path',slot:'LMB',  cd:0.70,  type:'dmg', isParty:false,
-   cp:0.4943, ca:0.4943, fp:11.4, fa:6.4,
-   note:'Damage only — precision → crit → affinity → abrasion.',rank:'七'},
+   note:'Burst party heal, cast within ~5s of Fan Q. Scales ×targets.',rank:'二'},
+  // Fan R heavy chain
+  {id:'fan-r',   name:'Heavy Attack Chain', weapon:'Fan',  wtype:'path',slot:'R×3',  cd:2.04,  type:'heal',isParty:false,
+   cp:6.7025,ca:6.7025,fp:155.0,fa:86.7,   passiveMult:1.30,
+   note:'3-hit chain (0.68s×3). Core rotation filler.',rank:'三'},
+  // Fan Special — HoT on self + injured player for 6s, consumes 50 dew
+  {id:'fan-spec',name:'Special Skill',      weapon:'Fan',  wtype:'path',slot:'~',    cd:6.0,  type:'heal',isParty:false,
+   cp:10.1977,ca:10.1977,fp:235.9,fa:131.8, critHealOverride:1.99, dewCost:50, isHoT:true,
+   note:'HoT: heals self + injured player every 1s for 6s. Consumes 50 dew. Crit heal ×1.99.',rank:'四'},
+  // Umbrella Special — flying umbrella ~95% uptime, heals every 1s; 50% stronger on self; T6 always hits self+1
+  {id:'umb-spec',name:'Special Skill',      weapon:'Umbrella',wtype:'umb',slot:'~',  cd:1.0,  type:'heal',isParty:false,
+   cp:0.7721,ca:0.7721,fp:17.8,fa:10.0, isUmbSpec:true,
+   note:'Flying umbrella ~95% uptime, heals every 1s. Self always gets +50% bonus.',rank:'五'},
+  // Umbrella Q
+  {id:'umb-q',   name:'Martial Art Skill',  weapon:'Umbrella',wtype:'umb',slot:'Q',  cd:30.0, type:'heal',isParty:false,
+   cp:4.9192,ca:4.9192,fp:113.9,fa:63.7,
+   note:'Heal + 20% DMG buff 12s. +5% vs exhausted enemies.',rank:'六'},
+  // Dew heal — every 50 dew spent heals self 10% max HP
+  {id:'dew-heal',name:'Dew Regeneration',   weapon:'—',    wtype:'passive',slot:'—', cd:1.0,  type:'heal',isParty:false,
+   cp:0,ca:0,fp:0,fa:0, isDewHeal:true,
+   note:'Every 50 dew spent heals self for 10% max HP. Triggered by Fan Q and Fan Special.',rank:'七'},
+  // Fan Light Attack — damage only
+  {id:'fan-lmb', name:'Light Attack',       weapon:'Fan',  wtype:'path',slot:'LMB',  cd:0.70, type:'dmg', isParty:false,
+   cp:0.4943,ca:0.4943,fp:11.4,fa:6.4,
+   note:'Damage only — precision → crit → affinity → abrasion.',rank:'八'},
 ];
 
 function pendingSkills(pk){
@@ -639,29 +732,35 @@ const SW_INC={
   silkMin:36.2, silkPen:10.8, physPen:9.0,
   physMin:54.8, physMax:54.8,
   physHeal:2.5, silkHeal:3.6,
-  affinity:3.5, artFanBoost:3.0, allArtBoost:2.0, bossDmg:2.0,
+  affinity:3.5, artFanBoost:3.0, artUmbBoost:3.0, allArtBoost:2.0, playerDmg:2.8,
 };
 const SW_IS_TRAIT={
   critRate:true,dirCrit:false,critHeal:false,agility:true,momentum:true,power:true,
   silkMin:true,silkPen:true,physPen:true,physMin:true,physMax:true,
-  physHeal:false,silkHeal:false,affinity:true,artFanBoost:true,allArtBoost:true,bossDmg:true,
+  physHeal:false,silkHeal:false,affinity:true,
+  artFanBoost:true,artUmbBoost:true,allArtBoost:true,playerDmg:true,
 };
+/* Stats capped at exactly 1 trait — showing +2t/+3t would be misleading */
+const SW_CAP_1=new Set(['artFanBoost','artUmbBoost']);
 const SW_LABELS={
   critRate:'Critical Rate',dirCrit:'Direct Crit',critHeal:'Crit Heal Bonus',
   agility:'Agility',momentum:'Momentum',power:'Power',
   silkMin:'Min Silk ATK',silkPen:'Silk Penetration',physPen:'Phys Penetration',
   physMin:'Min Physical ATK',physMax:'Max Physical ATK',
   physHeal:'Phys Heal Bonus',silkHeal:'Silk Heal Bonus',
-  affinity:'Affinity Rate',artFanBoost:'Art of Fan Boost',
-  allArtBoost:'All Art Boost',bossDmg:'DMG vs Boss',
+  affinity:'Affinity Rate',artFanBoost:'Art of Fan Boost',artUmbBoost:'Art of Umb Boost',
+  allArtBoost:'All Arts Boost',playerDmg:'DMG vs Players',
 };
 
 /* Buffs */
 const BUFFS=[
-  {id:'b_echoes',    lbl:'Echoes of 1000 Plants',val:'+15% heal', mult:0.15, on:true,  type:'healMult'},
-  {id:'b_umbBuff',   lbl:'Umbrella Q Buff',       val:'+20% DMG', mult:0.20, on:true,  type:'dmgMult'},
-  {id:'b_exhausted', lbl:'Exhausted Bonus',        val:'+5% DMG',  mult:0.05, on:false, type:'dmgMult'},
-  {id:'b_chill',     lbl:'Chill Beneath Cloak',    val:'+5% heal', mult:0.05, on:false, type:'healMult'},
+  {id:'b_echoes',    lbl:'Echoes of 1000 Plants',  val:'+15% heal',mult:0.15, on:true,  type:'healMult'},
+  {id:'b_umbBuff',   lbl:'Umbrella Q Buff',          val:'+20% DMG', mult:0.20, on:true,  type:'dmgMult'},
+  {id:'b_exhausted', lbl:'Exhausted Bonus',           val:'+10% DMG', mult:0.10, on:false, type:'dmgMult'},
+  {id:'b_chill',     lbl:'Chill Beneath Cloak',       val:'+5% heal', mult:0.05, on:false, type:'healMult'},
+  // Ivorybloom 4pc — only active at max HP ✅ (from screenshot: +5% Direct Crit, +15% Crit Heal/DMG)
+  {id:'b_ivy4pc',    lbl:'Ivorybloom 4pc (Max HP)',   val:'+5% DirectCrit +15% CritHeal', mult:0, on:true, type:'ivy4pc',
+   dirCritAdd:0.05, critHealAdd:15.0},
 ];
 const DEBUFFS=[
   {id:'d_defReduct',  lbl:'Enemy DEF Reduction',  def:0,  unit:'%', tip:'Multiplicative'},
@@ -689,7 +788,7 @@ function getStats(overrides={}){
   FIVE_ATTRS.forEach(d=>{if(s[d.id]===undefined)s[d.id]=gv(d.id,d.def);});
   ['physMin','physMax','silkMin','silkMax','critRate','dirCrit','critHeal','precision',
    'affinity','dirAff','resistance','agility','momentum','power','physPen','silkPen',
-   'physHeal','silkHeal','artFanBoost','artUmbBoost','allArtBoost','bossDmg',
+   'physHeal','silkHeal','artFanBoost','artUmbBoost','allArtBoost','playerDmg',
    'bellMin','bellMax','bambooMin','bambooMax','stoneMin','stoneMax','bambooDmg'].forEach(k=>{
     if(s[k]===undefined)s[k]=0;
   });
@@ -721,15 +820,16 @@ function getTarget(){
 }
 
 function getBuffMults(){
-  let healM=1, dmgM=1;
+  let healM=1, dmgM=1, dirCritAdd=0, critHealAdd=0;
   BUFFS.forEach(b=>{
     const el=document.getElementById(b.id);
     if(el&&el.dataset.on==='1'){
       if(b.type==='healMult')healM+=b.mult;
       if(b.type==='dmgMult')dmgM+=b.mult;
+      if(b.type==='ivy4pc'){dirCritAdd+=(b.dirCritAdd||0);critHealAdd+=(b.critHealAdd||0);}
     }
   });
-  return{healM,dmgM};
+  return{healM,dmgM,dirCritAdd,critHealAdd};
 }
 
 /* ═══════════════════════════════════════════
@@ -754,52 +854,97 @@ function computeDerived(s,tgt){
   const pNormPrec=(1-effAff)*effPrec*(1-effCrit);
   const pAbrasion=(1-effAff)*(1-effPrec);
 
-  function penM(pen,eres=0){const d=(pen+tgt.extraPen)-eres;return d>=0?1+d/100:1+d/200;}
-  const mPenPhys=penM(s.physPen);
-  const mPenSilk=penM(s.silkPen||0);
+  // Pen for DAMAGE compares against target resistance ✅
+  // Pen for HEALS: healing is NOT reduced by target resistance — use enemy resistance = 0 ✅
+  const tPhysRes=parseFloat(document.getElementById('t_physRes')?.value)||50;
+  const tAttrRes=parseFloat(document.getElementById('t_attrRes')?.value)||50;
+  function penM(pen,eres){const d=(pen+tgt.extraPen)-eres;return d>=0?1+d/100:1+d/200;}
+  const mPenPhys=penM(s.physPen,tPhysRes);       // for damage
+  const mPenSilk=penM(s.silkPen||0,tAttrRes);    // for damage
+  // Heals: pen still applies but with divisor 600 (reduced effectiveness vs damage) ✅
+  const mPenPhysHeal=1+(s.physPen+tgt.extraPen)/600;
+  const mPenSilkHeal=1+((s.silkPen||0)+tgt.extraPen)/600;
 
   const agiPhysBonus=s._agiMinPhys||0;
   const agiCritBonus=s._agiCrit||0;
   const physMinEff=s.physMin+agiPhysBonus;
   const physMaxEff=Math.max(physMinEff,s.physMax);
 
-  const critHealMult=1+0.5+(s.critHeal/100);
+  // Crit Heal Multiplier — sf_critHealCap is the max WITH ivy4pc active
+  // Without ivy4pc subtract the 0.15 it contributes so turning it off actually matters ✅
+  const fullCritHealCap = parseFloat(document.getElementById('sf_critHealCap')?.value) || 1.69;
+  const critHealCap = s._ivyCritHealActive ? fullCritHealCap : Math.max(1.5, fullCritHealCap - 0.15);
+  const rawCritHealMult = 1 + 0.5 + (s.critHeal/100);
+  const critHealMult = Math.min(critHealCap, rawCritHealMult);
   const physHealMod=1+(s.physHeal/100);
   const attrHealMod=1+((s.silkHeal||0)/100);
 
   return{res,effDef,mitigation,dmgThru,effCrit,effPrec,effAff,
     pAff,pCritPrec,pNormPrec,pAbrasion,mPenPhys,mPenSilk,
+    mPenPhysHeal,mPenSilkHeal,
     agiPhysBonus,agiCritBonus,physMinEff,physMaxEff,
     critHealMult,physHealMod,attrHealMod};
 }
 
 function calcHeal(sk,s,d,buffs){
+  // Dew heal — special case: heals self 10% max HP per 50 dew spent
+  if(sk.isDewHeal){
+    // Use directly entered Max HP — most accurate approach ✅
+    const maxHP=s.maxHp||153000;
+    const dewHealPerCycle=maxHP*0.10; // 10% of max HP per 50 dew
+    // Fan Q (50 dew) + Fan Special (50 dew) = 100 dew per ~20s rotation = 2 procs
+    const dewProcsPerSec=2/20;
+    const hps=R(dewHealPerCycle*dewProcsPerSec);
+    return{type:'heal',avgHeal:R(dewHealPerCycle),hps,
+      healMin:R(dewHealPerCycle*.925),healMax:R(dewHealPerCycle*1.075),
+      normalMin:R(dewHealPerCycle*.925),normalMax:R(dewHealPerCycle*1.075),normalAvg:R(dewHealPerCycle),
+      critMin:R(dewHealPerCycle*.925),critMax:R(dewHealPerCycle*1.075),critAvg:R(dewHealPerCycle),
+      critChance:0,normalChance:1,critMult:1,
+      physRollMin:0,physRollMax:0,attrRollMin:0,attrRollMax:0,
+      normalContrib:R(dewHealPerCycle),critContrib:0,isDewHeal:true};
+  }
+
   const pm=d.physMinEff, px=d.physMaxEff;
   const prMin=pm*sk.cp+sk.fp, prMax=px*sk.cp+sk.fp;
   const sm=s.silkMin||0, sx=s.silkMax||0;
   const arMin=sm*sk.ca+sk.fa, arMax=sx*sk.ca+sk.fa;
   const physM=d.physHealMod, attrM=d.attrHealMod;
-  const bMin=(prMin*physM)+(arMin*attrM);
-  const bMax=(prMax*physM)+(arMax*attrM);
+  // Apply pen multipliers to heals — resistance = 0 for heals ✅
+  const bMin=(prMin*physM*d.mPenPhysHeal)+(arMin*attrM*d.mPenSilkHeal);
+  const bMax=(prMax*physM*d.mPenPhysHeal)+(arMax*attrM*d.mPenSilkHeal);
   const pass=sk.passiveMult||1;
-  const artBoost=1+(((s.allArtBoost||0)+(sk.wtype==='path'?(s.artFanBoost||0):(s.artUmbBoost||0)))/100);
-  const nMin=bMin*pass*artBoost*buffs.healM;
-  const nMax=bMax*pass*artBoost*buffs.healM;
+
+  // Art boost: Art of Fan for Fan skills, Art of Umbrella for Umbrella skills ✅
+  // playerDmg boosts all outgoing (damage AND healing to friendlies) ✅
+  const artBoost=1+(((s.allArtBoost||0)+
+    (sk.wtype==='path'?(s.artFanBoost||0):0)+
+    (sk.wtype==='umb'?(s.artUmbBoost||0):0)+
+    (s.playerDmg||0))/100);
+
+  // Self-boost: Umbrella special is 50% stronger on self ✅
+  const selfMult=sk.isSelfBoost?1.5:1;
+
+  const nMin=bMin*pass*artBoost*selfMult*buffs.healM;
+  const nMax=bMax*pass*artBoost*selfMult*buffs.healM;
   const avgN=(nMin+nMax)/2;
   const critM=sk.critHealOverride||d.critHealMult;
   const avgC=avgN*critM;
   const crit=d.effCrit, norm=1-crit;
   const avgHeal=norm*avgN+crit*avgC;
   const hps=avgHeal/sk.cd;
+  // Apply ±7.5% variance to normal and crit ranges ✅
   return{
     type:'heal',avgHeal:R(avgHeal),hps:R(hps),
     healMin:R(avgHeal*(1-HEAL_VAR)),healMax:R(avgHeal*(1+HEAL_VAR)),
-    normalMin:R(nMin),normalMax:R(nMax),
-    critMin:R(nMin*critM),critMax:R(nMax*critM),
+    normalMin:R(nMin*(1-HEAL_VAR)),normalMax:R(nMax*(1+HEAL_VAR)),
+    normalAvg:R((nMin+nMax)/2),
+    critMin:R(nMin*critM*(1-HEAL_VAR)),critMax:R(nMax*critM*(1+HEAL_VAR)),
+    critAvg:R((nMin+nMax)/2*critM),
     critChance:crit,normalChance:norm,critMult:critM,
-    physRollMin:R(prMin),physRollMax:R(prMax),
-    attrRollMin:R(arMin),attrRollMax:R(arMax),
+    physRollMin:R(prMin*d.mPenPhysHeal),physRollMax:R(prMax*d.mPenPhysHeal),
+    attrRollMin:R(arMin*d.mPenSilkHeal),attrRollMax:R(arMax*d.mPenSilkHeal),
     normalContrib:R(norm*avgN),critContrib:R(crit*avgC),
+    artBoost,selfMult,pass,
   };
 }
 
@@ -807,7 +952,7 @@ function calcDmg(sk,s,d,buffs){
   const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
   const kSoak=PATH_DB[path]?.kSoak||390;
   const pm=d.physMinEff,px=d.physMaxEff;
-  const artBoost=1+(((s.allArtBoost||0)+(s.artFanBoost||0)+(s.bossDmg||0))/100)*buffs.dmgM;
+  const artBoost=1+(((s.allArtBoost||0)+(s.artFanBoost||0)+(s.playerDmg||0))/100)*buffs.dmgM;
   const psMin=Math.max(0,pm-kSoak)*sk.cp+sk.fp;
   const psMax=Math.max(0,px-kSoak)*sk.cp+sk.fp;
   const physMin=psMin*d.dmgThru*d.mPenPhys*artBoost;
@@ -841,8 +986,16 @@ function ppct(n,dec=2){return(n>=0?'+':'')+n.toFixed(dec)+'%';}
 function runCalc(overrides={}){
   const s=getStats(overrides);
   const t=getTarget();
-  const d=computeDerived(s,t);
   const buffs=getBuffMults();
+  // Apply Ivorybloom 4pc bonuses into stats before computeDerived
+  // Ivorybloom +5% is BASE crit rate (taxed by resistance, capped at 80%) ✅
+  // NOT Direct Crit — adds to critRate pool, not the post-cap direct pool
+  if(buffs.dirCritAdd) s.critRate=(s.critRate||0)+buffs.dirCritAdd*100;
+  // critHealAdd goes to critHeal bonus — BUT we also need to update the cap
+  // Cap without ivy4pc = sf_critHealCap - 0.15; with ivy4pc = sf_critHealCap as entered
+  if(buffs.critHealAdd) s.critHeal=(s.critHeal||0)+buffs.critHealAdd;
+  s._ivyCritHealActive=buffs.critHealAdd>0; // flag for computeDerived cap adjustment
+  const d=computeDerived(s,t);
   const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
   const skills=PATH_DB[path]?.skills||pendingSkills(path);
   const ct=CONTENT[currentContent];
@@ -850,7 +1003,26 @@ function runCalc(overrides={}){
   skills.forEach(sk=>{
     if(sk.pending){results[sk.id]=null;return;}
     const r=sk.type==='heal'?calcHeal(sk,s,d,buffs):calcDmg(sk,s,d,buffs);
-    if(sk.isParty&&sk.type==='heal'&&r)r.hps=R(r.hps*ct.partyMult);
+    if(r){
+      if(sk.isParty&&sk.type==='heal') r.hps=R(r.hps*ct.partyMult);
+      // Umbrella special: base calc has no self-boost multiplier applied
+      // solo = base × 1.5 (always healing self, +50% bonus)
+      // group = base × 1.5 (self) + base × 1.0 (one other target, T6 guaranteed) = base × 2.5 ✅
+      if(sk.isUmbSpec){
+        const base=r.hps;
+        if(currentContent==='solo'){
+          r.hps=R(base*1.5);
+          r._umbSelfHps=R(base*1.5);
+          r._umbOtherHps=0;
+          r._umbNote='Solo: self ×1.5';
+        } else {
+          r.hps=R(base*2.5);
+          r._umbSelfHps=R(base*1.5);
+          r._umbOtherHps=R(base*1.0);
+          r._umbNote=`Group: self ×1.5 + 1 other ×1.0`;
+        }
+      }
+    }
     results[sk.id]=r;
   });
   const totalHPS=skills.filter(sk=>sk.type==='heal').reduce((sum,sk)=>sum+(results[sk.id]?.hps||0),0);
@@ -858,47 +1030,143 @@ function runCalc(overrides={}){
 }
 
 /* ═══════════════════════════════════════════
-   STAT WEIGHTS — diminishing returns
-   threshold: only include increments where gain > 50% of first increment
+   STAT WEIGHTS — diminishing returns, merged bars, heal+dmg separate
    ═══════════════════════════════════════════ */
 let swTraitsOnly=true;
+let lastResults={};
 
-function computeSW(baseTotal){
+function computeSW(baseHPS,baseDPS){
   const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
   const statDefs=PATH_DB[path]?.stats||[...FIVE_ATTRS,...SILKBIND_STATS];
   const availIds=new Set(statDefs.map(d=>d.id));
   const weights=[];
+  const skills=PATH_DB[path]?.skills||pendingSkills(path);
 
   for(const[stat,inc]of Object.entries(SW_INC)){
     if(!inc)continue;
     if(!availIds.has(stat)&&!FIVE_ATTRS.find(a=>a.id===stat))continue;
     const isTrait=SW_IS_TRAIT[stat]??false;
+    const isCap1=SW_CAP_1.has(stat);
+    const maxIncrements=isCap1?1:3;
+    const curVal=gv(stat,0);
 
-    // 3 increments
-    const gains=[];
-    for(let i=1;i<=3;i++){
-      const curVal=gv(stat,0);
+    const gainHPS=[],gainDPS=[];
+    for(let i=1;i<=maxIncrements;i++){
       const alt=runCalc({[stat]:curVal+inc*i});
-      gains.push(alt.totalHPS-baseTotal);
+      gainHPS.push(alt.totalHPS-baseHPS);
+      const altDmg=skills.filter(sk=>sk.type==='dmg').reduce((s2,sk)=>s2+(alt.results[sk.id]?.dps||0),0);
+      const baseDmg=skills.filter(sk=>sk.type==='dmg').reduce((s2,sk)=>s2+(lastResults[sk.id]?.dps||0),0);
+      gainDPS.push(altDmg-baseDmg);
     }
 
-    // Threshold: only average increments where gain > 50% of first gain
-    const g0=gains[0];
-    let sumW=0,sumG=0;
-    const dimW=[0.60,0.25,0.15];
-    gains.forEach((g,i)=>{
-      if(g0>0&&g/g0>=0.5){sumG+=g*dimW[i];sumW+=dimW[i];}
-      else if(i===0){sumG+=g*dimW[0];sumW+=dimW[0];} // always include first
-    });
-    const weightedGain=sumW>0?sumG/sumW*dimW[0]+sumG*(1-dimW[0]):gains[0]*dimW[0]; // normalize
-    // simpler: just use weighted sum capped by threshold
-    const finalGain=sumW>0?sumG:gains[0]*dimW[0];
-    const pctGain=baseTotal>0?finalGain/baseTotal*100:0;
+    function wg(gains,base){
+      if(base<=0||gains[0]===0)return gains[0]||0;
+      if(gains.length===1)return gains[0]; // cap-1 stat — single increment is full value
+      let sumW=0,sumG=0;const dw=[0.60,0.25,0.15];
+      gains.forEach((g,i)=>{
+        if(i===0||Math.abs(g/gains[0])>=0.5){sumG+=g*dw[i];sumW+=dw[i];}
+      });
+      return sumW>0?sumG/sumW:gains[0];
+    }
 
-    weights.push({stat,gains,finalGain,pctGain,isTrait,label:SW_LABELS[stat]||stat,inc});
+    const wgHPS=wg(gainHPS,baseHPS);
+    const wgDPS=wg(gainDPS,baseDPS||1);
+    weights.push({stat,gainHPS,gainDPS,wgHPS,wgDPS,
+      pctHPS:baseHPS>0?wgHPS/baseHPS*100:0,
+      pctDPS:(baseDPS||0)>0?wgDPS/baseDPS*100:0,
+      isTrait,label:SW_LABELS[stat]||stat,inc});
   }
-  weights.sort((a,b)=>b.finalGain-a.finalGain);
+  // Sort: primarily by first-increment gain, but if +2t of B > +1t of A, B ranks higher
+  weights.sort((a,b)=>{
+    const ag0=Math.abs(a.gainHPS[0]), bg0=Math.abs(b.gainHPS[0]);
+    const bg1=b.gainHPS[1]!==undefined?Math.abs(b.gainHPS[1]):0;
+    const ag1=a.gainHPS[1]!==undefined?Math.abs(a.gainHPS[1]):0;
+    // If B's +2t > A's +1t by meaningful margin (>5%), rank B higher
+    if(bg1>ag0*1.05)return 1;
+    if(ag1>bg0*1.05)return -1;
+    return bg0-ag0;
+  });
   return weights;
+}
+
+function renderSW(baseHPS,baseDPS){
+  const weights=computeSW(baseHPS,baseDPS);
+  const visible=swTraitsOnly?weights.filter(w=>w.isTrait):weights;
+  const maxPct=Math.max(0.001,...visible.map(w=>Math.abs(w.pctHPS)));
+
+  function mergedBar(gains,color){
+    const maxG=Math.max(0.001,...gains.map(g=>Math.abs(g)));
+    return gains.map((g,i)=>{
+      const w=Math.max(0,Math.round((Math.abs(g)/maxG)*100));
+      const op=i===0?1:i===1?0.6:0.3;
+      return`<div style="flex:${w};height:100%;background:${color};opacity:${op};border-radius:1px;min-width:${w>0?2:0}px"></div>`;
+    }).join('');
+  }
+
+  const tierOf=(pct,max)=>{const r=Math.abs(pct)/max;return r>0.55?'S':r>0.3?'A':r>0.1?'B':'C';};
+
+  const rowHtml=(w,color,pctVal,gains,base)=>{
+    const tier=tierOf(pctVal,maxPct);
+    const pctStr=(pctVal>=0?'+':'')+pctVal.toFixed(2)+'%';
+    const isCap1=SW_CAP_1.has(w.stat);
+    const tooltip=isCap1
+      ? `1 trait max — +${R(gains[0])} (${pctStr})`
+      : `+1 trait: ${gains[0]>=0?'+':''}${R(gains[0])} | +2 traits: ${gains[1]>=0?'+':''}${R(gains[1])} | +3 traits: ${gains[2]>=0?'+':''}${R(gains[2])}`;
+
+    let barHtml;
+    if(isCap1){
+      // Single full bar — no multi-segment, just shows the one increment value
+      barHtml=`
+        <div style="display:flex;height:4px;width:100%;background:rgba(226,238,223,.05);border-radius:2px;overflow:hidden;">
+          <div style="flex:${Math.max(0,Math.round((Math.abs(gains[0])/Math.max(1,Math.abs(gains[0])))*100))};height:100%;background:${color};border-radius:2px;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px;align-items:center;">
+          <span style="font-family:'DM Mono',monospace;font-size:.42rem;color:rgba(226,238,223,.32);border:1px solid rgba(226,238,223,.15);padding:1px 4px">1 trait max</span>
+          <span style="font-family:'DM Mono',monospace;font-size:.46rem;color:${color}">${pctStr}</span>
+        </div>`;
+    } else {
+      const maxG=Math.max(0.001,...gains.map(g=>Math.abs(g)));
+      const segs=gains.map((g,i)=>{
+        const w2=Math.max(0,Math.round((Math.abs(g)/maxG)*100));
+        const op=i===0?1:i===1?0.6:0.3;
+        return`<div style="flex:${w2};height:100%;background:${color};opacity:${op};border-radius:1px;min-width:${w2>0?2:0}px"></div>`;
+      }).join('');
+      barHtml=`
+        <div style="display:flex;height:4px;width:100%;background:rgba(226,238,223,.05);border-radius:2px;overflow:hidden;gap:1px;">${segs}</div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px;">
+          ${gains.map((g,i)=>`<span style="font-family:'DM Mono',monospace;font-size:.43rem;color:rgba(226,238,223,${i===0?.42:i===1?.26:.18})">${g>=0?'+':''}${R(g)}</span>`).join('')}
+          <span style="font-family:'DM Mono',monospace;font-size:.46rem;color:${color};margin-left:auto;padding-left:4px">${pctStr}</span>
+        </div>`;
+    }
+
+    return`<div class="sw-row${w.isTrait?'':' non-trait'}" title="${tooltip}">
+      <span class="sw-name">${w.label}${!w.isTrait?`<span class="sw-nt-badge">✦</span>`:''}</span>
+      <div style="flex:1;min-width:0;">${barHtml}</div>
+      <span class="sw-tier ${tier}" style="margin-left:6px">${tier}</span>
+    </div>`;
+  };
+
+  let html=`<div style="font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.2em;color:rgba(226,238,223,.28);text-transform:uppercase;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid var(--border)">Healing HPS</div>`;
+  html+=visible.map(w=>rowHtml(w,'var(--p)',w.pctHPS,w.gainHPS,baseHPS)).join('');
+
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const hasDmg=(PATH_DB[path]?.skills||[]).some(sk=>sk.type==='dmg');
+  if(hasDmg){
+    const maxPctD=Math.max(0.001,...visible.map(w=>Math.abs(w.pctDPS)));
+    html+=`<div style="font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.2em;color:rgba(226,238,223,.28);text-transform:uppercase;margin:10px 0 5px;padding-bottom:4px;border-bottom:1px solid var(--border)">Damage DPS</div>`;
+    html+=visible.map(w=>rowHtml(w,'#d04040',w.pctDPS,w.gainDPS,baseDPS||1)).join('');
+  }
+
+  if(!swTraitsOnly){
+    const hidden=weights.filter(w=>!w.isTrait);
+    if(hidden.length){
+      html+=`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <div style="font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.2em;color:rgba(226,238,223,.2);text-transform:uppercase;margin-bottom:5px">✦ Set / Inner Way Bonuses</div>
+        ${hidden.map(w=>rowHtml(w,'var(--p)',w.pctHPS,w.gainHPS,baseHPS)).join('')}
+      </div>`;
+    }
+  }
+  document.getElementById('swRows').innerHTML=html;
 }
 
 /* ═══════════════════════════════════════════
@@ -913,15 +1181,19 @@ function renderStatSections(pathKey){
     sections[d.sec].push(d);
   });
   const container=document.getElementById('statSections');
-  container.innerHTML=Object.entries(sections).map(([sec,fields])=>`
+  container.innerHTML=Object.entries(sections).map(([sec,fields])=>{
+    const isOpen=sec==='five'||sec==='attack'; // open by default
+    return`
     <div class="stat-section" id="statSec_${sec}">
-      <div class="stat-sec-title"><span class="sec-icon">◆</span>${SEC_LABELS[sec]||sec}</div>
-      <div class="stat-grid">
+      <div class="stat-sec-title" onclick="toggleStatSec('${sec}')" style="cursor:pointer;user-select:none">
+        <span class="sec-icon">◆</span>${SEC_LABELS[sec]||sec}
+        <span id="secChev_${sec}" style="margin-left:auto;font-size:.6rem;color:var(--p);transition:transform .2s;display:inline-block;${isOpen?'':'transform:rotate(-90deg)'}"">▾</span>
+      </div>
+      <div class="stat-grid" id="secGrid_${sec}" style="${isOpen?'':'display:none'}">
         ${fields.map(d=>{
           const passBadge=d.showPassive?`<div class="sf-passive" id="agiPassive">—</div>`:'';
-          const notTrait=d.isTrait===false?`<div class="sf-derived" id="nt_${d.id}">non-trait</div>`:'';
           return`<div class="sf">
-            <div class="sf-lbl">${d.lbl}${d.tip?`<span class="tip" title="${d.tip}">?</span>`:''}${d.isTrait===false?`<span style="font-size:.44rem;color:rgba(220,232,220,.18);margin-left:2px">✦</span>`:''}</div>
+            <div class="sf-lbl">${d.lbl}${d.tip?`<span class="tip" title="${d.tip}">?</span>`:''}${d.isTrait===false?`<span style="font-size:.44rem;color:rgba(226,238,223,.2);margin-left:2px" title="Not a trait stat">✦</span>`:''}</div>
             <div class="sf-row">
               <input type="number" id="sf_${d.id}" value="${d.def}" ${d.step?`step="${d.step}"`:''}  min="0" oninput="recalc()">
               ${d.unit?`<span class="sf-unit">${d.unit}</span>`:''}
@@ -930,8 +1202,17 @@ function renderStatSections(pathKey){
           </div>`;
         }).join('')}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
+}
+
+function toggleStatSec(sec){
+  const grid=document.getElementById('secGrid_'+sec);
+  const chev=document.getElementById('secChev_'+sec);
+  if(!grid)return;
+  const open=grid.style.display!=='none';
+  grid.style.display=open?'none':'grid';
+  if(chev)chev.style.transform=open?'rotate(-90deg)':'rotate(0deg)';
 }
 
 function renderBuffs(){
@@ -977,7 +1258,10 @@ function renderSkills(results,totalHPS,derived){
         <span>Aff <strong>${pct(r.effAff)}</strong></span>`)
       :`<span style="color:rgba(220,232,220,.16);font-style:italic">Coefficients pending</span>`;
     const detHtml=r?buildDetailHtml(sk,r,derived):'';
-    const effNote=sk.isParty&&ct.partyMult>1?`<div class="se-out-eff">×${ct.partyMult} party</div>`:'';
+    const effNote=sk.isParty&&ct.partyMult>1
+      ?`<div class="se-out-eff">×${ct.partyMult} party</div>`
+      :sk.isUmbSpec&&r?`<div class="se-out-eff">${r._umbNote||''}</div>`
+      :'';
     return`<div class="se${isSel?' sel':''}${sk.type==='dmg'?' tdmg':''}" data-id="${sk.id}">
       <div class="se-main">
         <div class="se-rank">${sk.rank}</div>
@@ -987,7 +1271,7 @@ function renderSkills(results,totalHPS,derived){
             <span class="${tagCls}">${sk.weapon}</span>
             <span class="se-cd">${sk.slot} · ${sk.cd}s</span>
           </div>
-          <div class="se-note">${sk.note}</div>
+          <div class="se-note">${sk.isHoT?'<span style="font-family:\'DM Mono\',monospace;font-size:.44rem;border:1px solid var(--p-border);color:var(--p);padding:1px 4px;margin-right:4px">HoT</span>':''}${sk.isDewHeal?'<span style="font-family:\'DM Mono\',monospace;font-size:.44rem;border:1px solid var(--gold-dim);color:var(--gold);padding:1px 4px;margin-right:4px">Passive</span>':''}${sk.note}</div>
           <div class="wbar"><div class="wbar-bg"></div><div class="wbar-fill${sk.type==='dmg'?' dmg':''}" style="width:${barW}%"></div></div>
           <div class="se-meta">${metaHtml}</div>
         </div>
@@ -1007,11 +1291,40 @@ function renderSkills(results,totalHPS,derived){
   });
 }
 
+// Attribute colors matching path themes
+const ATTR_COLORS={silkbind:'#4aaa78',bellstrike:'#7a9db0',stonesplit:'#c8906a',bamboocut:'#b89cc0',phys:'#9baaa0'};
+
 function buildDetailHtml(sk,r,d){
+  const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
+  const s=getStats();
+  const mainAttr=PATH_DB[path]?.attrKey||'silkbind';
+  const mainColor=ATTR_COLORS[mainAttr]||'var(--p)';
+
   if(sk.type==='heal'){
+    // Per-attribute breakdown rows (heals: only main path attr is active)
+    const attrRows=`
+      <div style="margin-top:8px;margin-bottom:4px;font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(226,238,223,.22)">Attribute Breakdown</div>
+      <div class="ht-row">
+        <span class="ht-type" style="color:var(--phys)">Physical</span>
+        <span class="ht-ch">active</span>
+        <span class="ht-rng">${fmt(r.physRollMin)}–${fmt(r.physRollMax)}</span>
+        <span class="ht-con" style="color:var(--phys)">${fmt(r.physRollMin)}–${fmt(r.physRollMax)}</span>
+      </div>
+      <div class="ht-row">
+        <span class="ht-type" style="color:${mainColor}">${mainAttr.charAt(0).toUpperCase()+mainAttr.slice(1)}</span>
+        <span class="ht-ch">active</span>
+        <span class="ht-rng">${fmt(r.attrRollMin)}–${fmt(r.attrRollMax)}</span>
+        <span class="ht-con" style="color:${mainColor}">${fmt(r.attrRollMin)}–${fmt(r.attrRollMax)}</span>
+      </div>
+      ${['bellstrike','stonesplit','bamboocut'].filter(a=>a!==mainAttr).map(a=>`
+      <div class="ht-row">
+        <span class="ht-type" style="color:${ATTR_COLORS[a]};opacity:.4">${a.charAt(0).toUpperCase()+a.slice(1)}</span>
+        <span class="ht-ch" style="color:rgba(226,238,223,.18)">heal only</span>
+        <span class="ht-rng" style="color:rgba(226,238,223,.22)">—</span>
+        <span class="ht-con" style="color:rgba(226,238,223,.18)">—</span>
+      </div>`).join('')}
+    `;
     return`<div class="dg">
-      <div class="dc"><div class="dc-l">Phys Roll</div><div class="dc-v n">${fmt(r.physRollMin)}–${fmt(r.physRollMax)}</div></div>
-      <div class="dc"><div class="dc-l">Attr Roll</div><div class="dc-v">${fmt(r.attrRollMin)}–${fmt(r.attrRollMax)}</div></div>
       <div class="dc"><div class="dc-l">Crit Multiplier</div><div class="dc-v g">${(r.critMult*100).toFixed(0)}%</div></div>
       <div class="dc"><div class="dc-l">Avg Heal</div><div class="dc-v">${fmt(r.avgHeal)}</div></div>
     </div>
@@ -1019,13 +1332,49 @@ function buildDetailHtml(sk,r,d){
       <div class="ht-hd"><span>Hit Type</span><span>Chance</span><span>Range</span><span>Contrib</span></div>
       <div class="ht-row"><span class="ht-type">Normal</span><span class="ht-ch">${pct(r.normalChance)}</span><span class="ht-rng">${fmt(r.normalMin)}–${fmt(r.normalMax)}</span><span class="ht-con">${fmt(r.normalContrib)}</span></div>
       <div class="ht-row"><span class="ht-type">Critical</span><span class="ht-ch">${pct(r.critChance)}</span><span class="ht-rng">${fmt(r.critMin)}–${fmt(r.critMax)}</span><span class="ht-con">${fmt(r.critContrib)}</span></div>
-    </div>`;
-  }else{
+      <div class="ht-row"><span class="ht-type" style="color:rgba(226,238,223,.3)">±7.5% variance</span><span class="ht-ch"></span><span class="ht-rng" style="color:rgba(226,238,223,.3)">${fmt(r.healMin)}–${fmt(r.healMax)}</span><span class="ht-con" style="color:rgba(226,238,223,.3)">avg ${fmt(r.avgHeal)}</span></div>
+    </div>
+    <div class="ht">${attrRows}</div>`;
+  } else {
+    // Damage — show all attribute contributions including off-path fixed values
+    const offPathAttrs=[
+      {key:'bellstrike',  minK:'bellMin', maxK:'bellMax'},
+      {key:'stonesplit',  minK:'stoneMin',maxK:'stoneMax'},
+      {key:'bamboocut',   minK:'bambooMin',maxK:'bambooMax'},
+      {key:'silkbind',    minK:'silkMin', maxK:'silkMax'},
+    ].filter(a=>a.key!==mainAttr);
+
+    const allAttrsHtml=[
+      `<div class="ht-row">
+        <span class="ht-type" style="color:var(--phys)">Physical</span>
+        <span class="ht-ch">active</span>
+        <span class="ht-rng">${fmt(r.physMin)}–${fmt(r.physMax)}</span>
+        <span class="ht-con" style="color:var(--phys)">${fmt(r.physMin)}–${fmt(r.physMax)}</span>
+      </div>`,
+      `<div class="ht-row">
+        <span class="ht-type" style="color:${mainColor}">${mainAttr.charAt(0).toUpperCase()+mainAttr.slice(1)}</span>
+        <span class="ht-ch">active</span>
+        <span class="ht-rng">${fmt(r.attrMin)}–${fmt(r.attrMax)}</span>
+        <span class="ht-con" style="color:${mainColor}">${fmt(r.attrMin)}–${fmt(r.attrMax)}</span>
+      </div>`,
+      ...offPathAttrs.map(a=>{
+        const mn=s[a.minK]||0, mx=s[a.maxK]||0;
+        const isFixed=mn>=mx&&mn>0;
+        const val=isFixed?`${fmt(R(mn*sk.ca+sk.fa))} fixed`:`${fmt(R(mn*sk.ca+sk.fa))}–${fmt(R(mx*sk.ca+sk.fa))}`;
+        return`<div class="ht-row">
+          <span class="ht-type" style="color:${ATTR_COLORS[a.key]}">${a.key.charAt(0).toUpperCase()+a.key.slice(1)}</span>
+          <span class="ht-ch" style="color:rgba(226,238,223,.32)">${isFixed?'fixed (min>max)':mn>0?'active':'—'}</span>
+          <span class="ht-rng" style="color:rgba(226,238,223,.4)">${mn>0?val:'—'}</span>
+          <span class="ht-con" style="color:${ATTR_COLORS[a.key]};opacity:${mn>0?0.85:0.25}">${mn>0?fmt(R(((mn+mx)/2)*sk.ca+sk.fa)):'—'}</span>
+        </div>`;
+      })
+    ].join('');
+
     return`<div class="dg">
-      <div class="dc"><div class="dc-l">Phys Dmg</div><div class="dc-v n">${fmt(r.physMin)}–${fmt(r.physMax)}</div></div>
-      <div class="dc"><div class="dc-l">Attr Dmg</div><div class="dc-v">${fmt(r.attrMin)}–${fmt(r.attrMax)}</div></div>
-      <div class="dc"><div class="dc-l">K_soak</div><div class="dc-v sm n">${r.kSoak} <span style="color:rgba(220,232,220,.16)">est.</span></div></div>
+      <div class="dc"><div class="dc-l">K_soak</div><div class="dc-v sm n">${r.kSoak} <span style="color:rgba(226,238,223,.2)">est.</span></div></div>
       <div class="dc"><div class="dc-l">Affinity Hit</div><div class="dc-v g">${fmt(r.affHit)}</div></div>
+      <div class="dc"><div class="dc-l">Abrasion</div><div class="dc-v n">${fmt(r.abrasionBase)}</div></div>
+      <div class="dc"><div class="dc-l">Avg Dmg</div><div class="dc-v">${fmt(r.avgDmg)}</div></div>
     </div>
     <div class="ht">
       <div class="ht-hd"><span>Hit Type</span><span>Chance</span><span>Value</span><span>Contrib</span></div>
@@ -1033,7 +1382,9 @@ function buildDetailHtml(sk,r,d){
       <div class="ht-row"><span class="ht-type">Crit·Prec</span><span class="ht-ch">${pct(r.pCritPrec)}</span><span class="ht-rng">${fmt(r.dmgMin*2)}–${fmt(r.dmgMax*2)}</span><span class="ht-con">${fmt(r.critContrib)}</span></div>
       <div class="ht-row"><span class="ht-type">Normal·Prec</span><span class="ht-ch">${pct(r.pNormPrec)}</span><span class="ht-rng">${fmt(r.dmgMin)}–${fmt(r.dmgMax)}</span><span class="ht-con">${fmt(r.normContrib)}</span></div>
       <div class="ht-row"><span class="ht-type">Abrasion</span><span class="ht-ch">${pct(r.pAbrasion)}</span><span class="ht-rng">${fmt(r.abrasionBase)}</span><span class="ht-con">${fmt(r.abrasionContrib)}</span></div>
-    </div>`;
+    </div>
+    <div style="margin-top:6px;margin-bottom:2px;font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(226,238,223,.22)">Attribute Breakdown (pre-modifiers)</div>
+    <div class="ht">${allAttrsHtml}</div>`;
   }
 }
 
@@ -1049,69 +1400,40 @@ function selectSkill(id){
 }
 
 function renderDerived(d){
+  const physRes=parseFloat(document.getElementById('t_physRes')?.value)||50;
+  const attrRes=parseFloat(document.getElementById('t_attrRes')?.value)||50;
+  const s=getStats();
   document.getElementById('derivedBlk').innerHTML=`
     <div class="der-row"><span class="der-l">Effective Defense</span><span class="der-v">${fmt(R(d.effDef))}</span></div>
     <div class="der-row"><span class="der-l">Mitigation</span><span class="der-v">${pct(d.mitigation)}</span></div>
     <div class="der-row"><span class="der-l">Eff. Crit Rate</span><span class="der-v">${pct(d.effCrit)}</span></div>
     <div class="der-row"><span class="der-l">Eff. Precision</span><span class="der-v">${pct(d.effPrec)}</span></div>
     <div class="der-row"><span class="der-l">Eff. Affinity</span><span class="der-v">${pct(d.effAff)}</span></div>
-    <div class="der-row"><span class="der-l">Phys Pen Mult</span><span class="der-v">${(d.mPenPhys*100).toFixed(1)}%</span></div>
-    <div class="der-row"><span class="der-l">Silk Pen Mult</span><span class="der-v">${(d.mPenSilk*100).toFixed(1)}%</span></div>
+    <div class="der-row" title="DMG: Phys Pen (${s.physPen}) vs target Phys Resistance (${physRes}). Heals bypass target resistance entirely (vs 0).">
+      <span class="der-l">Phys Pen (DMG) <span style="font-size:.6rem;color:rgba(226,238,223,.3);cursor:help">?</span></span>
+      <span class="der-v" style="color:${s.physPen>=physRes?'var(--p)':'var(--gold)'}">${(d.mPenPhys*100).toFixed(1)}% ${s.physPen>=physRes?'✓':'⚠'}</span>
+    </div>
+    <div class="der-row" title="Heals bypass target resistance (vs 0). Pen still matters for heals.">
+      <span class="der-l">Phys Pen (Heal)</span>
+      <span class="der-v">${(d.mPenPhysHeal*100).toFixed(1)}% ✅</span>
+    </div>
+    <div class="der-row" title="DMG: Attr Pen (${s.silkPen||0}) vs target Attr Resistance (${attrRes}). Heals bypass target resistance.">
+      <span class="der-l">Attr Pen (DMG) <span style="font-size:.6rem;color:rgba(226,238,223,.3);cursor:help">?</span></span>
+      <span class="der-v" style="color:${(s.silkPen||0)>=attrRes?'var(--p)':'var(--gold)'}">${(d.mPenSilk*100).toFixed(1)}% ${(s.silkPen||0)>=attrRes?'✓':'⚠'}</span>
+    </div>
+    <div class="der-row" title="Heals bypass target resistance (vs 0). Pen still benefits heals.">
+      <span class="der-l">Attr Pen (Heal)</span>
+      <span class="der-v">${(d.mPenSilkHeal*100).toFixed(1)}% ✅</span>
+    </div>
     <div class="der-row"><span class="der-l">Agi→Min Phys</span><span class="der-v">+${d.agiPhysBonus.toFixed(1)}</span></div>
     <div class="der-row"><span class="der-l">Agi→Crit</span><span class="der-v">+${(d.agiCritBonus*100).toFixed(2)}%</span></div>
+    <div class="der-row"><span class="der-l">Crit Heal Mult</span><span class="der-v">${(d.critHealMult*100).toFixed(0)}% <span style="font-size:.55rem;color:rgba(226,238,223,.3)">(cap ${(parseFloat(document.getElementById('sf_critHealCap')?.value)||1.69)*100}%)</span></span></div>
   `;
   const badge=document.getElementById('agiPassive');
-  if(badge){const s=getStats();badge.textContent=`passive → +${d.agiPhysBonus.toFixed(1)} min phys, +${(d.agiCritBonus*100).toFixed(2)}% crit`;}
+  if(badge)badge.textContent=`passive → +${d.agiPhysBonus.toFixed(1)} min phys, +${(d.agiCritBonus*100).toFixed(2)}% crit`;
 }
 
-function renderSW(baseTotal){
-  const weights=computeSW(baseTotal);
-  const visible=swTraitsOnly?weights.filter(w=>w.isTrait):weights;
-  const hidden=swTraitsOnly?weights.filter(w=>!w.isTrait):[];
-  const maxG=Math.max(1,...visible.map(w=>Math.abs(w.finalGain)));
-  const tierOf=(i,max,all)=>{
-    if(all.length===0)return'C';
-    const rank=i/all.length;
-    return rank<0.15?'S':rank<0.35?'A':rank<0.6?'B':'C';
-  };
-  const rowHtml=(w,i,arr)=>{
-    const maxIncG=Math.max(1,...w.gains.map(g=>Math.abs(g)));
-    const bars=w.gains.map((g,j)=>{
-      const bw=Math.max(0,Math.round((g/maxG)*100));
-      return`<div class="sw-bar-row">
-        <span class="sw-bar-lbl">+${j+1}t</span>
-        <div class="sw-track"><div class="sw-fill${j>0?' f'+(j):''}" style="width:${bw}%"></div></div>
-        <span class="sw-gain">${ppct(baseTotal>0?g/baseTotal*100:0)}</span>
-      </div>`;
-    }).join('');
-    const tier=tierOf(i,maxG,arr);
-    return`<div class="sw-row${w.isTrait?'':' non-trait'}">
-      <span class="sw-name">${w.label}${!w.isTrait?`<span class="sw-nt-badge">✦non-trait</span>`:''}</span>
-      <div class="sw-bars">${bars}</div>
-      <span class="sw-tier ${tier}">${tier}</span>
-    </div>`;
-  };
-  let html=visible.map((w,i)=>rowHtml(w,i,visible)).join('');
-  if(!swTraitsOnly&&hidden.length){
-    html+=`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
-      <div style="font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.2em;color:rgba(220,232,220,.18);text-transform:uppercase;margin-bottom:6px;">✦ Non-Trait Bonuses</div>
-      ${hidden.map((w,i)=>rowHtml(w,i,hidden)).join('')}
-    </div>`;
-  }
-  document.getElementById('swRows').innerHTML=html;
-}
-
-function renderBP(s,d){
-  const agiPct=Math.min(100,(s.agility/AGI_CAP)*100).toFixed(0);
-  const physGap=Math.max(0,d.physMaxEff-d.physMinEff);
-  const silkGap=Math.max(0,(s.silkMax||0)-(s.silkMin||0));
-  document.getElementById('bpRows').innerHTML=`
-    <div class="bp-row"><span class="bp-l">Agility Passive Cap</span><span class="bp-v ${s.agility>=AGI_CAP?'ok':'warn'}">${agiPct}% (${s.agility}/${AGI_CAP})</span></div>
-    <div class="bp-row"><span class="bp-l">Phys Min ≥ Max</span><span class="bp-v ${physGap<=0?'ok':'far'}">${physGap<=0?'✓ Fixed':'Gap −'+fmt(R(physGap))}</span></div>
-    <div class="bp-row"><span class="bp-l">Silk Min ≥ Max</span><span class="bp-v ${silkGap<=0?'ok':'far'}">${silkGap<=0?'✓ Fixed':'Gap −'+fmt(R(silkGap))}</span></div>
-    <div class="bp-row"><span class="bp-l">Crit Cap (80%+DC)</span><span class="bp-v ${d.effCrit>=0.80?'ok':'warn'}">${pct(d.effCrit)} / 80%+DC</span></div>
-  `;
-}
+/* duplicate stubs removed — canonical versions above */
 
 function renderCompBar(results,skills){
   const colors=['var(--p)','var(--p-lt)','var(--p-dim)','rgba(74,170,120,.35)','rgba(74,170,120,.2)','rgba(74,170,120,.1)'];
@@ -1122,19 +1444,72 @@ function renderCompBar(results,skills){
   }).join('');
 }
 
+function renderBP(s,d){
+  const agiPct=Math.min(100,(s.agility/AGI_CAP)*100).toFixed(0);
+  const physGap=Math.max(0,d.physMaxEff-d.physMinEff);
+  const silkGap=Math.max(0,(s.silkMax||0)-(s.silkMin||0));
+  const bpTooltip='When Min ATK ≥ Max ATK, every hit deals a fixed amount equal to Min. Every extra Min ATK point is then double-valued — once to Min ATK, once to the fixed output. Off-path attributes start at 0/0 so the breakpoint is crossed immediately.';
+  document.getElementById('bpRows').innerHTML=`
+    <div class="bp-row"><span class="bp-l">Agility Passive Cap</span>
+      <span class="bp-v ${s.agility>=AGI_CAP?'ok':'warn'}">${agiPct}% (${s.agility}/${AGI_CAP})</span></div>
+    <div class="bp-row" title="${bpTooltip}" style="cursor:help">
+      <span class="bp-l">Phys Min ≥ Max <span style="font-size:.58rem;color:rgba(226,238,223,.3)">?</span></span>
+      <span class="bp-v ${physGap<=0?'ok':'far'}">${physGap<=0?'✓ Fixed — +2× value':'Gap −'+fmt(R(physGap))}</span></div>
+    <div class="bp-row" title="${bpTooltip}" style="cursor:help">
+      <span class="bp-l">Silk Min ≥ Max <span style="font-size:.58rem;color:rgba(226,238,223,.3)">?</span></span>
+      <span class="bp-v ${silkGap<=0?'ok':'far'}">${silkGap<=0?'✓ Fixed — +2× value':'Gap −'+fmt(R(silkGap))}</span></div>
+    <div class="bp-row"><span class="bp-l">Crit Cap (80% + Direct)</span>
+      <span class="bp-v ${d.effCrit>=0.80?'ok':'warn'}">${pct(d.effCrit)} / 80%+DC</span></div>
+  `;
+}
+
+/* ═══════════════════════════════════════════
+   INPUT GUARDRAILS — soft warnings for unrealistic values
+   ═══════════════════════════════════════════ */
+const GUARDRAILS={
+  physMin:{max:3500,  msg:'Exceeds current top-end gear (~3500)'},
+  physMax:{max:5000,  msg:'Exceeds current top-end gear (~5000)'},
+  silkMin:{max:1500,  msg:'Unusually high attribute attack'},
+  silkMax:{max:2500,  msg:'Unusually high attribute attack'},
+  critRate:{max:200,  msg:'Effective crit already hard-caps at 80%+DC'},
+  agility: {max:350,  msg:'Well above soft cap 225 — passive no longer scales'},
+  physPen: {max:200,  msg:'No gear path reaches this penetration'},
+  silkPen: {max:200,  msg:'No gear path reaches this penetration'},
+};
+// Max realistic HPS per skill — flag if something is wildly off
+const MAX_SANE_HPS = 2000000; // 2M HPS is clearly broken input
+
+function checkGuardrails(){
+  Object.entries(GUARDRAILS).forEach(([id,rule])=>{
+    const el=document.getElementById('sf_'+id);
+    if(!el)return;
+    const v=parseFloat(el.value)||0;
+    const lbl=el.closest('.sf');
+    if(!lbl)return;
+    let warn=lbl.querySelector('.sf-warn');
+    if(v>rule.max){
+      if(!warn){warn=document.createElement('div');warn.className='sf-warn';lbl.appendChild(warn);}
+      warn.textContent='⚠ '+rule.msg;
+    } else if(warn){warn.remove();}
+  });
+}
+
 /* ═══════════════════════════════════════════
    MAIN RECALC
    ═══════════════════════════════════════════ */
 function recalc(){
   const{results,totalHPS,derived,stats}=runCalc();
+  lastResults=results; // store for SW delta calculations
   const path=document.getElementById('pathSel')?.value||'silkbind-deluge';
   const skills=PATH_DB[path]?.skills||pendingSkills(path);
   const ct=CONTENT[currentContent];
+  const baseDPS=skills.filter(sk=>sk.type==='dmg').reduce((s,sk)=>s+(results[sk.id]?.dps||0),0);
 
+  checkGuardrails();
   renderSkills(results,totalHPS,derived);
   renderDerived(derived);
   renderCompBar(results,skills);
-  renderSW(totalHPS);
+  renderSW(totalHPS,baseDPS);
   renderBP(stats,derived);
 
   const ts=fmt(R(totalHPS));
@@ -1142,12 +1517,6 @@ function recalc(){
   document.getElementById('panelTotal').textContent=ts;
   document.getElementById('panelTotalSub').textContent=`Heals Per Second · ${ct.label}`;
   document.getElementById('ctNote').textContent=ct.note;
-
-  // Effective HPS note for group
-  if(currentContent!=='solo'){
-    const soloTotal=runCalc().totalHPS; // approximate — just show current
-    document.getElementById('panelTotalEff').textContent='';
-  }
 }
 
 /* ═══════════════════════════════════════════
@@ -1162,7 +1531,7 @@ function switchPath(val){
   renderStatSections(val);
   selectedId=null;
   document.getElementById('srcNote').innerHTML=cfg.skills
-    ?`K_soak=${cfg.kSoak} (${cfg.tag}, empirical ⚠️) · Coefficients: EN-tested Lv.90<br>Heal variance ±7.5% ✅ · Agility cap 225 ✅ · Pen formula: WindsFromCN ✅`
+    ?`K_soak=${cfg.kSoak} (${cfg.tag}, empirical ⚠️) · Coefficients: EN-tested Lv.90<br>Heal variance ±7.5% ✅ · Agility soft cap 225 ✅ · Pen formula: WindsFromCN ✅`
     :`⚠ Coefficients for ${cfg.tag} not yet verified.<br>K_soak estimate = ${cfg.kSoak} (unconfirmed). Output will show zeroes.`;
   recalc();
 }
@@ -1193,28 +1562,40 @@ function toggleSwFilter(){
 }
 
 /* ═══════════════════════════════════════════
-   PAGE NAV WIDGET
+   PAGE NAV WIDGET — icon buttons
    ═══════════════════════════════════════════ */
+const NAV_ICONS={
+  'Total':   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>`,
+  'Target':  `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/></svg>`,
+  'Buffs':   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-6 4 2 7-6-4-6 4 2-7-6-4h7z"/></svg>`,
+  'Stat Weights':`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h12M3 18h8"/></svg>`,
+  'Breakpoints':`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  'Build':   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>`,
+};
+
 function buildPageNav(){
   const sections=document.querySelectorAll('[data-nav]');
   const nav=document.getElementById('pageNav');
   nav.innerHTML='';
   sections.forEach((sec,i)=>{
+    const label=sec.dataset.nav;
+    const icon=NAV_ICONS[label]||`<div class="pn-dot"></div>`;
     const btn=document.createElement('div');
     btn.className='pn-btn';
-    btn.innerHTML=`<div class="pn-dot"></div><div class="pn-tooltip">${sec.dataset.nav}</div>`;
+    btn.innerHTML=`${icon}<div class="pn-tooltip">${label}</div>`;
     btn.addEventListener('click',()=>{
-      sec.scrollIntoView({behavior:'smooth',block:'start'});
+      const rc=document.getElementById('rpanelContent');
+      if(rc) rc.scrollTo({top:sec.offsetTop-4,behavior:'smooth'});
     });
     nav.appendChild(btn);
   });
-  // Scroll spy
-  const rp=document.getElementById('rpanel');
-  if(rp){
-    rp.addEventListener('scroll',()=>{
+  // Scroll spy on rpanelContent
+  const rc=document.getElementById('rpanelContent');
+  if(rc){
+    rc.addEventListener('scroll',()=>{
       let active=0;
       sections.forEach((sec,i)=>{
-        if(sec.offsetTop-rp.scrollTop<=50)active=i;
+        if(sec.offsetTop-rc.scrollTop<=60) active=i;
       });
       nav.querySelectorAll('.pn-btn').forEach((b,i)=>b.classList.toggle('active',i===active));
     });
@@ -1271,6 +1652,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   recalc();
   selectedId=SD_SKILLS[0].id;
   buildPageNav();
+
   setTimeout(()=>{
     const obs=new IntersectionObserver(es=>{es.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('vis'),i*60);obs.unobserve(e.target);}});},{threshold:.05});
     document.querySelectorAll('.rev').forEach(el=>obs.observe(el));
