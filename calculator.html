@@ -727,29 +727,46 @@ const PATH_DB={
 
 /* SW increments — one full trait slot ✅ */
 const SW_INC={
-  critRate:7.4, dirCrit:2.0, critHeal:4.0,
-  agility:10, momentum:10, power:10,
-  silkMin:36.2, silkPen:10.8, physPen:9.0,
-  physMin:54.8, physMax:54.8,
-  physHeal:2.5, silkHeal:3.6,
-  affinity:3.5, artFanBoost:3.0, artUmbBoost:3.0, allArtBoost:2.0, playerDmg:2.8,
+  // Trait stats (gear tuning slots)
+  critRate:7.4,       // 1 tuning slot
+  agility:10,         // 1 five-attribute point
+  momentum:10,        // 1 five-attribute point  
+  power:10,           // 1 five-attribute point
+  silkMin:36.2,       // 1 tuning slot
+  silkMax:36.2,       // 1 tuning slot (missing before — added)
+  silkPen:10.8,       // 1 tuning slot
+  physPen:9.0,        // 1 tuning slot
+  physMin:54.8,       // 1 tuning slot
+  physMax:54.8,       // 1 tuning slot
+  artFanBoost:5.2,    // 1 trait, cap-1
+  artUmbBoost:5.2,    // 1 trait, cap-1
+  allArtBoost:2.0,    // 1 trait, cap-2
+  playerDmg:2.8,      // 1 trait, cap-2
+  // Non-trait stats (set bonuses / inner ways)
+  dirCrit:2.0,        // set/inner way only
+  critHeal:4.0,       // inner way only
+  physHeal:2.5,       // inner way only
+  silkHeal:3.6,       // inner way only
+  // affinity intentionally omitted — no effect on healing
 };
 const SW_IS_TRAIT={
-  critRate:true,dirCrit:false,critHeal:false,agility:true,momentum:true,power:true,
-  silkMin:true,silkPen:true,physPen:true,physMin:true,physMax:true,
-  physHeal:false,silkHeal:false,affinity:true,
-  artFanBoost:true,artUmbBoost:true,allArtBoost:true,playerDmg:true,
+  critRate:true, agility:true, momentum:true, power:true,
+  silkMin:true, silkMax:true, silkPen:true, physPen:true, physMin:true, physMax:true,
+  artFanBoost:true, artUmbBoost:true, allArtBoost:true, playerDmg:true,
+  dirCrit:false, critHeal:false, physHeal:false, silkHeal:false,
 };
 /* Stats capped at exactly 1 trait — showing +2t/+3t would be misleading */
 const SW_CAP_1=new Set(['artFanBoost','artUmbBoost']);
+/* Stats capped at exactly 2 traits */
+const SW_CAP_2=new Set(['allArtBoost','playerDmg']);
 const SW_LABELS={
-  critRate:'Critical Rate',dirCrit:'Direct Crit',critHeal:'Crit Heal Bonus',
-  agility:'Agility',momentum:'Momentum',power:'Power',
-  silkMin:'Min Silk ATK',silkPen:'Silk Penetration',physPen:'Phys Penetration',
-  physMin:'Min Physical ATK',physMax:'Max Physical ATK',
-  physHeal:'Phys Heal Bonus',silkHeal:'Silk Heal Bonus',
-  affinity:'Affinity Rate',artFanBoost:'Art of Fan Boost',artUmbBoost:'Art of Umb Boost',
-  allArtBoost:'All Arts Boost',playerDmg:'DMG vs Players',
+  critRate:'Critical Rate',      dirCrit:'Direct Crit',        critHeal:'Crit Heal Bonus',
+  agility:'Agility',             momentum:'Momentum',           power:'Power',
+  silkMin:'Min Silk ATK',        silkMax:'Max Silk ATK',        silkPen:'Silk Penetration',
+  physPen:'Phys Penetration',    physMin:'Min Physical ATK',    physMax:'Max Physical ATK',
+  physHeal:'Phys Heal Bonus',    silkHeal:'Silk Heal Bonus',
+  artFanBoost:'Art of Fan',      artUmbBoost:'Art of Umbrella',
+  allArtBoost:'All Arts Boost',  playerDmg:'DMG vs Players',
 };
 
 /* Buffs */
@@ -1047,45 +1064,42 @@ function computeSW(baseHPS,baseDPS){
     if(!availIds.has(stat)&&!FIVE_ATTRS.find(a=>a.id===stat))continue;
     const isTrait=SW_IS_TRAIT[stat]??false;
     const isCap1=SW_CAP_1.has(stat);
-    const maxIncrements=isCap1?1:3;
+    const isCap2=SW_CAP_2.has(stat);
+    const maxIncrements=isCap1?1:isCap2?2:3;
     const curVal=gv(stat,0);
 
     const gainHPS=[],gainDPS=[];
     for(let i=1;i<=maxIncrements;i++){
-      const alt=runCalc({[stat]:curVal+inc*i});
+      // For capped traits: only simulate up to the cap, not beyond
+      // e.g. if artFanBoost=5.2 already, adding another 5.2 would exceed cap-1
+      let effectiveInc=inc*i;
+      if(isCap1){
+        // Already have it: remaining gain = cap - current (could be 0)
+        const remaining=Math.max(0,inc-curVal);
+        effectiveInc=remaining;
+      }
+      const alt=runCalc({[stat]:curVal+effectiveInc});
       gainHPS.push(alt.totalHPS-baseHPS);
       const altDmg=skills.filter(sk=>sk.type==='dmg').reduce((s2,sk)=>s2+(alt.results[sk.id]?.dps||0),0);
       const baseDmg=skills.filter(sk=>sk.type==='dmg').reduce((s2,sk)=>s2+(lastResults[sk.id]?.dps||0),0);
       gainDPS.push(altDmg-baseDmg);
     }
 
-    function wg(gains,base){
-      if(base<=0||gains[0]===0)return gains[0]||0;
-      if(gains.length===1)return gains[0]; // cap-1 stat — single increment is full value
-      let sumW=0,sumG=0;const dw=[0.60,0.25,0.15];
-      gains.forEach((g,i)=>{
-        if(i===0||Math.abs(g/gains[0])>=0.5){sumG+=g*dw[i];sumW+=dw[i];}
-      });
-      return sumW>0?sumG/sumW:gains[0];
+    // Score is based on first increment only — most honest "next trait" value
+    // +2t and +3t bars are visual context, not weighted into the ranking score
+    function wg(gains){
+      return gains[0]||0;
     }
 
-    const wgHPS=wg(gainHPS,baseHPS);
-    const wgDPS=wg(gainDPS,baseDPS||1);
+    const wgHPS=wg(gainHPS);
+    const wgDPS=wg(gainDPS);
     weights.push({stat,gainHPS,gainDPS,wgHPS,wgDPS,
       pctHPS:baseHPS>0?wgHPS/baseHPS*100:0,
       pctDPS:(baseDPS||0)>0?wgDPS/baseDPS*100:0,
       isTrait,label:SW_LABELS[stat]||stat,inc});
   }
-  // Sort: primarily by first-increment gain, but if +2t of B > +1t of A, B ranks higher
-  weights.sort((a,b)=>{
-    const ag0=Math.abs(a.gainHPS[0]), bg0=Math.abs(b.gainHPS[0]);
-    const bg1=b.gainHPS[1]!==undefined?Math.abs(b.gainHPS[1]):0;
-    const ag1=a.gainHPS[1]!==undefined?Math.abs(a.gainHPS[1]):0;
-    // If B's +2t > A's +1t by meaningful margin (>5%), rank B higher
-    if(bg1>ag0*1.05)return 1;
-    if(ag1>bg0*1.05)return -1;
-    return bg0-ag0;
-  });
+  // Sort by first-increment HPS gain — cleanest "next trait value" signal
+  weights.sort((a,b)=>b.gainHPS[0]-a.gainHPS[0]);
   return weights;
 }
 
@@ -1103,25 +1117,52 @@ function renderSW(baseHPS,baseDPS){
     }).join('');
   }
 
-  const tierOf=(pct,max)=>{const r=Math.abs(pct)/max;return r>0.55?'S':r>0.3?'A':r>0.1?'B':'C';};
+  const tierOf=(pct,max,stat)=>{
+    if(SW_CAP_1.has(stat))return'S+';
+    if(SW_CAP_2.has(stat))return'S+';
+    const r=Math.abs(pct)/max;
+    return r>0.55?'S':r>0.3?'A':r>0.1?'B':'C';
+  };
 
   const rowHtml=(w,color,pctVal,gains,base)=>{
-    const tier=tierOf(pctVal,maxPct);
+    const tier=tierOf(pctVal,maxPct,w.stat);
     const pctStr=(pctVal>=0?'+':'')+pctVal.toFixed(2)+'%';
     const isCap1=SW_CAP_1.has(w.stat);
+    const isCap2=SW_CAP_2.has(w.stat);
     const tooltip=isCap1
       ? `1 trait max — +${R(gains[0])} (${pctStr})`
+      : isCap2 ? `2 trait max — +1t: ${R(gains[0])} | +2t: ${R(gains[1]||0)}`
       : `+1 trait: ${gains[0]>=0?'+':''}${R(gains[0])} | +2 traits: ${gains[1]>=0?'+':''}${R(gains[1])} | +3 traits: ${gains[2]>=0?'+':''}${R(gains[2])}`;
 
     let barHtml;
+    // Zero gain — stat is at cap or has no effect here
+    const isZero = Math.abs(gains[0]) < 0.5;
+    const zeroNote = isZero
+      ? (w.stat==='critRate'?'at 80% cap':'no effect on healing')
+      : '';
+
     if(isCap1){
-      // Single full bar — no multi-segment, just shows the one increment value
       barHtml=`
         <div style="display:flex;height:4px;width:100%;background:rgba(226,238,223,.05);border-radius:2px;overflow:hidden;">
-          <div style="flex:${Math.max(0,Math.round((Math.abs(gains[0])/Math.max(1,Math.abs(gains[0])))*100))};height:100%;background:${color};border-radius:2px;"></div>
+          <div style="flex:${isZero?0:100};height:100%;background:${color};border-radius:2px;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:2px;align-items:center;">
-          <span style="font-family:'DM Mono',monospace;font-size:.42rem;color:rgba(226,238,223,.32);border:1px solid rgba(226,238,223,.15);padding:1px 4px">1 trait max</span>
+          <span style="font-family:'DM Mono',monospace;font-size:.42rem;color:rgba(226,238,223,.32);border:1px solid rgba(226,238,223,.15);padding:1px 4px">${isZero?zeroNote:'1 trait max'}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:.46rem;color:${isZero?'rgba(226,238,223,.2)':color}">${pctStr}</span>
+        </div>`;
+    } else if(isCap2){
+      // Two-segment bar for cap-2 stats
+      const g0=gains[0]||0, g1=gains[1]||0;
+      const maxG2=Math.max(1,Math.abs(g0),Math.abs(g1));
+      const w0=Math.max(0,Math.round((Math.abs(g0)/maxG2)*100));
+      const w1=Math.max(0,Math.round((Math.abs(g1)/maxG2)*100));
+      barHtml=`
+        <div style="display:flex;height:4px;width:100%;background:rgba(226,238,223,.05);border-radius:2px;overflow:hidden;gap:1px;">
+          <div style="flex:${w0};height:100%;background:${color};border-radius:1px;min-width:${w0>0?2:0}px"></div>
+          <div style="flex:${w1};height:100%;background:${color};opacity:.55;border-radius:1px;min-width:${w1>0?2:0}px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px;align-items:center;">
+          <span style="font-family:'DM Mono',monospace;font-size:.42rem;color:rgba(226,238,223,.3)">+1t: ${g0>=0?'+':''}${R(g0)} / +2t: ${g1>=0?'+':''}${R(g1)}</span>
           <span style="font-family:'DM Mono',monospace;font-size:.46rem;color:${color}">${pctStr}</span>
         </div>`;
     } else {
@@ -1142,7 +1183,7 @@ function renderSW(baseHPS,baseDPS){
     return`<div class="sw-row${w.isTrait?'':' non-trait'}" title="${tooltip}">
       <span class="sw-name">${w.label}${!w.isTrait?`<span class="sw-nt-badge">✦</span>`:''}</span>
       <div style="flex:1;min-width:0;">${barHtml}</div>
-      <span class="sw-tier ${tier}" style="margin-left:6px">${tier}</span>
+      <span class="sw-tier ${tier==='S+'?'Sp':tier}" style="margin-left:6px">${tier}</span>
     </div>`;
   };
 
@@ -1390,9 +1431,11 @@ function buildDetailHtml(sk,r,d){
 
 let selectedId=null;
 function selectSkill(id){
-  selectedId=id;
+  // Toggle: clicking already-selected skill collapses it
+  const wasSelected = selectedId===id;
+  selectedId = wasSelected ? null : id;
   document.querySelectorAll('.se').forEach(el=>{
-    const isSel=el.dataset.id===id;
+    const isSel=el.dataset.id===selectedId;
     el.classList.toggle('sel',isSel);
     const det=el.querySelector('.se-detail');
     if(det)det.classList.toggle('open',isSel);
