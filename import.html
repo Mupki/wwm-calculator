@@ -3,725 +3,544 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fearsom's Calculator — Import Character</title>
+<title>Fearsom's Calculator — Import</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@400;500&family=Noto+Serif+SC:wght@400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#2a6b4a;
-  --p-glow:rgba(74,170,120,0.15);--p-border:rgba(74,170,120,0.28);
-  --bg:#071410;--bg2:#0d1f17;--paper:#dce8dc;--mist:rgba(220,232,220,0.42);
-  --border:rgba(220,232,220,0.09);--gold:#c8a84a;--gold-dim:rgba(200,168,74,0.2);
-  --crimson:#c0392b;--warn:#e0a020;
-}
+:root{--p:#4aaa78;--p-lt:#7dd4a0;--p-dim:#2a6b4a;--p-glow:rgba(74,170,120,0.14);--p-border:rgba(74,170,120,0.26);--bg:#071410;--bg2:#0d1f17;--paper:#dce8dc;--mist:rgba(220,232,220,0.42);--border:rgba(220,232,220,0.09);--gold:#c8a84a;--gold-dim:rgba(200,168,74,0.2);--crimson:#c0392b;--warn:#d4900a;}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--paper);font-family:'Crimson Pro',Georgia,serif;
-  font-size:16px;line-height:1.6;min-height:100vh;}
-
-/* bg */
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:radial-gradient(ellipse 60% 50% at 20% 10%,rgba(74,170,120,0.08) 0%,transparent 55%),
-             radial-gradient(ellipse 40% 60% at 80% 90%,rgba(74,170,120,0.05) 0%,transparent 50%);}
-body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");}
-
+body{background:var(--bg);color:var(--paper);font-family:'Crimson Pro',Georgia,serif;font-size:16px;line-height:1.6;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 60% 50% at 20% 10%,rgba(74,170,120,0.07) 0%,transparent 55%),radial-gradient(ellipse 40% 60% at 80% 90%,rgba(74,170,120,0.04) 0%,transparent 50%);}
 .app{position:relative;z-index:2;}
 
-/* header */
-.hdr{background:rgba(7,20,16,0.92);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--p-border);padding:0 28px;height:54px;
-  display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;}
-.hdr-seal{width:36px;height:36px;border-radius:50%;border:1px solid var(--gold-dim);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  background:radial-gradient(circle,rgba(200,168,74,0.1) 0%,transparent 70%);}
+/* ─ HEADER ─ */
+.hdr{background:rgba(7,20,16,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--p-border);padding:0 28px;height:54px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;}
+.hdr-seal{width:36px;height:36px;border-radius:50%;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:radial-gradient(circle,rgba(200,168,74,0.1) 0%,transparent 70%);}
 .hdr-seal span{font-family:'Noto Serif SC',serif;font-size:.9rem;color:var(--gold);}
-.hdr-title{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.1em;color:var(--paper);}
+.hdr-title{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.1em;}
 .hdr-title .ac{color:var(--p);}
-.hdr-pill{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;
-  padding:3px 7px;border:1px solid var(--gold-dim);color:var(--gold);}
+.hdr-pill{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.16em;padding:3px 7px;border:1px solid var(--gold-dim);color:var(--gold);}
 .hdr-nav{margin-left:auto;display:flex;gap:6px;}
-.nav-btn{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;
-  padding:5px 12px;background:transparent;border:1px solid var(--p-border);color:var(--mist);
-  cursor:pointer;transition:all .2s;text-decoration:none;}
-.nav-btn:hover{border-color:var(--p);color:var(--p);}
-.nav-btn.primary{background:var(--p-glow);color:var(--p-lt);border-color:var(--p);}
+.nav-btn{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;background:transparent;border:1px solid var(--p-border);color:var(--mist);cursor:pointer;transition:all .2s;text-decoration:none;}
+.nav-btn:hover,.nav-btn.primary{border-color:var(--p);color:var(--p);}
+.nav-btn.primary{background:var(--p-glow);color:var(--p-lt);}
 
-/* layout */
-.content{max-width:1100px;margin:0 auto;padding:32px 24px 64px;}
+/* ─ LAYOUT ─ */
+.content{max-width:960px;margin:0 auto;padding:36px 24px 80px;}
+.page-title{font-family:'Cinzel',serif;font-size:1.5rem;letter-spacing:.08em;margin-bottom:4px;}
+.page-sub{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(220,232,220,.26);margin-bottom:32px;}
 
-/* section */
-.section{margin-bottom:40px;}
-.section-title{font-family:'Cinzel',serif;font-size:1.1rem;letter-spacing:.1em;color:var(--paper);
-  margin-bottom:4px;}
-.section-sub{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.18em;
-  color:rgba(220,232,220,.28);text-transform:uppercase;margin-bottom:16px;}
-.section-title::after{display:none;}
+/* ─ BOOKMARKLET CARD ─ */
+.bm-card{background:var(--bg2);border:1px solid var(--p-border);padding:24px 28px;margin-bottom:28px;}
+.bm-title{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.08em;margin-bottom:6px;}
+.bm-sub{font-size:.85rem;color:var(--mist);margin-bottom:20px;line-height:1.7;}
+.steps{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.step{display:flex;gap:14px;align-items:flex-start;padding:10px 14px;background:rgba(220,232,220,.03);border:1px solid var(--border);}
+.step-n{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--p-dim);width:22px;flex-shrink:0;text-align:center;line-height:1.5;}
+.step-body .step-title{font-size:.9rem;color:var(--paper);margin-bottom:2px;}
+.step-body .step-note{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.08em;color:rgba(220,232,220,.30);line-height:1.8;}
 
-/* method tabs */
-.method-tabs{display:flex;gap:2px;margin-bottom:24px;}
-.method-tab{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
-  padding:8px 18px;background:rgba(220,232,220,.04);border:1px solid var(--border);
-  color:var(--mist);cursor:pointer;transition:all .2s;}
-.method-tab.active{background:var(--p-glow);border-color:var(--p);color:var(--p-lt);}
-.method-tab:hover:not(.active){border-color:var(--p-border);color:var(--p);}
-
-/* method panels */
-.method-panel{display:none;}
-.method-panel.active{display:block;}
-
-/* instruction steps */
-.steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
-.step{display:flex;gap:14px;align-items:flex-start;
-  padding:12px 16px;background:rgba(220,232,220,.03);border:1px solid var(--border);}
-.step-num{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--p-dim);
-  flex-shrink:0;width:24px;text-align:center;line-height:1.4;}
-.step-body{}
-.step-title{font-size:.9rem;color:var(--paper);font-weight:400;margin-bottom:2px;}
-.step-note{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;
-  color:rgba(220,232,220,.32);line-height:1.7;}
-.step-code{font-family:'DM Mono',monospace;font-size:.58rem;
-  background:rgba(74,170,120,.08);border:1px solid var(--p-border);
-  color:var(--p);padding:6px 10px;margin-top:6px;word-break:break-all;
-  display:block;cursor:pointer;transition:background .15s;}
-.step-code:hover{background:rgba(74,170,120,.15);}
-
-/* input areas */
-.input-area{
-  width:100%;min-height:120px;max-height:240px;
-  background:rgba(220,232,220,.04);border:1px solid var(--border);
-  color:var(--paper);font-family:'DM Mono',monospace;font-size:.62rem;
-  padding:12px 14px;resize:vertical;outline:none;transition:border-color .2s;
-  line-height:1.6;
+/* bookmarklet drag target */
+.bm-drag-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:10px;}
+.bm-drag-note{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;color:rgba(220,232,220,.28);}
+.bm-link{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:9px 18px;
+  background:linear-gradient(135deg,var(--p-dim) 0%,rgba(74,170,120,.25) 100%);
+  border:1px solid var(--p);color:var(--p-lt);
+  text-decoration:none;cursor:grab;
+  transition:all .2s;position:relative;
+  box-shadow:0 0 20px var(--p-glow);
 }
-.input-area:focus{border-color:var(--p);}
-.input-area::placeholder{color:rgba(220,232,220,.2);}
+.bm-link:hover{background:rgba(74,170,120,.3);box-shadow:0 0 30px var(--p-glow);}
+.bm-link svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;}
+.bm-link-note{font-size:.72rem;color:rgba(220,232,220,.28);font-style:italic;}
 
-.token-input{
-  width:100%;background:rgba(220,232,220,.04);border:1px solid var(--border);
-  color:var(--p);font-family:'DM Mono',monospace;font-size:.62rem;
-  padding:10px 14px;outline:none;transition:border-color .2s;
-}
-.token-input:focus{border-color:var(--p);}
-.token-input::placeholder{color:rgba(220,232,220,.2);}
+/* ─ PASTE METHOD ─ */
+.divider{display:flex;align-items:center;gap:14px;margin:28px 0 24px;}
+.divider-line{flex:1;height:1px;background:var(--border);}
+.divider-txt{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(220,232,220,.2);}
 
-.import-btn{
-  margin-top:10px;
-  font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;
-  padding:11px 28px;background:var(--p-dim);border:1px solid var(--p);
-  color:var(--p-lt);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;
-}
-.import-btn:hover{background:rgba(74,170,120,.3);}
-.import-btn:disabled{opacity:.4;cursor:not-allowed;}
-.import-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;}
+.paste-area{width:100%;min-height:110px;max-height:200px;background:rgba(220,232,220,.04);border:1px solid var(--border);color:var(--paper);font-family:'DM Mono',monospace;font-size:.6rem;padding:12px 14px;resize:vertical;outline:none;transition:border-color .2s;line-height:1.6;}
+.paste-area:focus{border-color:var(--p);}
+.paste-area::placeholder{color:rgba(220,232,220,.18);}
+.parse-btn{margin-top:8px;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;padding:10px 24px;background:var(--p-dim);border:1px solid var(--p);color:var(--p-lt);cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
+.parse-btn:hover{background:rgba(74,170,120,.28);}
+.parse-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;}
 
-/* status */
-.status-bar{margin-top:10px;padding:10px 14px;
-  font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;
-  display:none;}
-.status-bar.show{display:block;}
-.status-bar.ok{background:rgba(74,170,120,.08);border:1px solid var(--p-border);color:var(--p);}
-.status-bar.err{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.3);color:#e05555;}
-.status-bar.warn{background:rgba(224,160,32,.08);border:1px solid rgba(224,160,32,.3);color:var(--warn);}
+/* ─ STATUS ─ */
+.status{margin-top:8px;padding:9px 13px;font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.1em;display:none;}
+.status.show{display:block;}
+.status.ok{background:rgba(74,170,120,.08);border:1px solid var(--p-border);color:var(--p);}
+.status.err{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.28);color:#e05555;}
+.status.warn{background:rgba(212,144,10,.08);border:1px solid rgba(212,144,10,.28);color:var(--warn);}
 
-/* gear panel */
-.gear-section{margin-top:32px;display:none;}
-.gear-section.show{display:block;}
-.gear-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.gear-header-title{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.08em;color:var(--paper);}
-.send-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
-  padding:9px 22px;background:var(--p-dim);border:1px solid var(--p);
-  color:var(--p-lt);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
-.send-btn:hover{background:rgba(74,170,120,.3);}
-.send-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;}
-
-/* stat summary */
-.stat-summary-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:2px;margin-bottom:24px;
-}
-.stat-sum-card{background:rgba(220,232,220,.04);border:1px solid var(--border);padding:10px 14px;}
-.stat-sum-label{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.18em;
-  text-transform:uppercase;color:rgba(220,232,220,.28);margin-bottom:3px;}
-.stat-sum-val{font-family:'Cinzel',serif;font-size:1rem;color:var(--p);}
-.stat-sum-val.warn{color:var(--warn);}
-.stat-sum-val.neutral{color:var(--paper);}
+/* ─ RESULTS ─ */
+.results{display:none;margin-top:32px;}
+.results.show{display:block;}
+.results-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+.char-name{font-family:'Cinzel',serif;font-size:1.3rem;letter-spacing:.06em;}
+.char-meta{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.16em;color:rgba(220,232,220,.28);margin-top:3px;}
+.send-btn{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;padding:9px 22px;background:var(--p-dim);border:1px solid var(--p);color:var(--p-lt);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;}
+.send-btn:hover{background:rgba(74,170,120,.28);}
+.send-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;}
 
 /* set badges */
-.set-badges{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
-.set-badge{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.12em;
-  padding:4px 10px;text-transform:uppercase;}
-.set-badge.active4{background:rgba(74,170,120,.1);border:1px solid var(--p-border);color:var(--p);}
-.set-badge.active2{background:rgba(200,168,74,.08);border:1px solid var(--gold-dim);color:var(--gold);}
-.set-badge.inactive{background:rgba(220,232,220,.04);border:1px solid var(--border);color:rgba(220,232,220,.3);}
+.set-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:18px;}
+.set-badge{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;}
+.set-badge.s4{background:rgba(74,170,120,.1);border:1px solid var(--p-border);color:var(--p);}
+.set-badge.s2{background:rgba(200,168,74,.08);border:1px solid var(--gold-dim);color:var(--gold);}
+.set-badge.s1{background:rgba(220,232,220,.04);border:1px solid var(--border);color:rgba(220,232,220,.25);}
 
-/* gear slots */
-.gear-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:6px;}
-.gear-slot{background:rgba(220,232,220,.03);border:1px solid var(--border);
-  padding:14px 16px;transition:border-color .15s;}
-.gear-slot:hover{border-color:var(--p-border);}
-.gear-slot-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.gear-slot-name{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.06em;color:var(--paper);}
-.gear-slot-set{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.12em;
-  padding:2px 7px;text-transform:uppercase;}
-.gear-slot-set.s29{background:rgba(74,170,120,.08);border:1px solid var(--p-border);color:var(--p);}
-.gear-slot-set.s30{background:rgba(200,168,74,.08);border:1px solid var(--gold-dim);color:var(--gold);}
-.gear-slot-set.s45{background:rgba(220,232,220,.04);border:1px solid var(--border);color:rgba(220,232,220,.3);}
-.gear-slot-set.other{background:rgba(220,232,220,.04);border:1px solid var(--border);color:rgba(220,232,220,.3);}
+/* stat totals */
+.totals-title{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(220,232,220,.22);margin-bottom:8px;}
+.totals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:2px;margin-bottom:24px;}
+.total-card{background:rgba(220,232,220,.04);border:1px solid var(--border);padding:9px 13px;}
+.total-lbl{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(220,232,220,.26);margin-bottom:2px;}
+.total-val{font-family:'Cinzel',serif;font-size:.95rem;color:var(--p);}
+.total-val.pvp{color:rgba(220,232,220,.28);}
+.total-val.warn{color:var(--warn);}
 
-.affix-list{display:flex;flex-direction:column;gap:3px;}
-.affix-row{display:grid;grid-template-columns:1fr auto 80px auto;gap:8px;
-  align-items:center;padding:4px 0;border-bottom:1px solid rgba(220,232,220,.04);}
+/* notes */
+.notes{margin-bottom:20px;}
+.note-row{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.08em;color:var(--warn);line-height:1.9;padding:4px 0;}
+
+/* gear grid */
+.gear-title{font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(220,232,220,.22);margin-bottom:8px;}
+.gear-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:5px;}
+.gear-card{background:rgba(220,232,220,.03);border:1px solid var(--border);padding:13px 15px;}
+.gear-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+.gear-card-name{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.05em;}
+.gear-set-badge{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;}
+.gear-set-badge.s29{background:rgba(74,170,120,.08);border:1px solid var(--p-border);color:var(--p);}
+.gear-set-badge.s30{background:rgba(200,168,74,.07);border:1px solid var(--gold-dim);color:var(--gold);}
+.gear-set-badge.s45{background:rgba(220,232,220,.04);border:1px solid var(--border);color:rgba(220,232,220,.22);}
+
+.base-attrs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px;}
+.base-attr{font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;background:rgba(220,232,220,.05);border:1px solid var(--border);color:rgba(220,232,220,.4);}
+
+.affix-list{display:flex;flex-direction:column;gap:0;}
+.affix-row{display:grid;grid-template-columns:1fr auto 60px 28px;gap:7px;align-items:center;padding:4px 0;border-bottom:1px solid rgba(220,232,220,.04);}
 .affix-row:last-child{border-bottom:none;}
-.affix-name{font-size:.78rem;color:var(--mist);font-style:italic;}
-.affix-val{font-family:'Cinzel',serif;font-size:.82rem;color:var(--p);}
-.affix-val.inactive{color:rgba(220,232,220,.25);}
-.affix-tier{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.1em;
-  padding:1px 5px;text-align:center;}
-.affix-tier.t3{background:rgba(74,170,120,.08);border:1px solid var(--p-border);color:var(--p);}
+.affix-label{font-size:.76rem;color:var(--mist);font-style:italic;}
+.affix-label.pvp{color:rgba(220,232,220,.22);}
+.affix-label.skill{color:var(--gold);}
+.affix-label.unknown{color:rgba(220,232,220,.2);}
+.affix-val{font-family:'Cinzel',serif;font-size:.8rem;text-align:right;}
+.affix-val.active{color:var(--p);}
+.affix-val.inactive{color:rgba(220,232,220,.2);}
+.qual-bar{height:3px;background:rgba(220,232,220,.08);border-radius:2px;overflow:hidden;}
+.qual-fill{height:100%;border-radius:2px;}
+.qual-fill.hi{background:var(--p);}
+.qual-fill.md{background:var(--gold);}
+.qual-fill.lo{background:#c03030;}
+.affix-tier{font-family:'DM Mono',monospace;font-size:.44rem;text-align:center;padding:1px 3px;border-radius:2px;}
+.affix-tier.t3{background:rgba(74,170,120,.1);border:1px solid var(--p-border);color:var(--p);}
 .affix-tier.t2{background:rgba(200,168,74,.08);border:1px solid var(--gold-dim);color:var(--gold);}
-.affix-tier.t1{background:rgba(220,232,220,.04);border:1px solid var(--border);color:rgba(220,232,220,.3);}
+.affix-tier.t1{background:rgba(220,232,220,.04);border:1px solid var(--border);color:rgba(220,232,220,.2);}
 
-/* quality bar */
-.quality-bar{width:60px;height:3px;background:rgba(220,232,220,.08);border-radius:2px;overflow:hidden;}
-.quality-fill{height:100%;border-radius:2px;transition:width .6s ease;}
-.quality-fill.q-high{background:var(--p);}
-.quality-fill.q-mid{background:var(--gold);}
-.quality-fill.q-low{background:rgba(192,57,43,.7);}
-
-/* base attrs */
-.base-attrs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
-.base-attr-badge{font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.1em;
-  padding:2px 7px;background:rgba(220,232,220,.05);border:1px solid var(--border);
-  color:rgba(220,232,220,.45);text-transform:uppercase;}
-
-/* warn note */
-.warn-note{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;
-  color:var(--warn);margin-top:6px;padding:6px 10px;
-  background:rgba(224,160,32,.06);border:1px solid rgba(224,160,32,.2);}
-.info-note{font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;
-  color:rgba(220,232,220,.32);margin-top:8px;line-height:1.8;}
-
-/* cors warning */
-.cors-box{padding:14px 18px;background:rgba(224,160,32,.06);border:1px solid rgba(224,160,32,.25);
-  margin-bottom:20px;}
-.cors-box-title{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.2em;
-  color:var(--warn);text-transform:uppercase;margin-bottom:6px;}
-.cors-box-body{font-size:.85rem;color:var(--mist);line-height:1.7;}
-
-/* footer */
-.ftr{padding:20px 28px;border-top:1px solid var(--border);margin-top:48px;
-  font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.16em;
-  color:rgba(220,232,220,.1);text-transform:uppercase;}
-
-@media(max-width:640px){
-  .content{padding:20px 14px 48px;}
-  .gear-slots{grid-template-columns:1fr;}
-  .stat-summary-grid{grid-template-columns:1fr 1fr;}
-}
+.ftr{padding:20px 28px;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:.46rem;letter-spacing:.14em;color:rgba(220,232,220,.1);text-transform:uppercase;}
 </style>
 </head>
 <body>
 <div class="app">
-
 <header class="hdr">
   <div class="hdr-seal"><span>風</span></div>
   <div class="hdr-title">Character <span class="ac">Import</span></div>
   <span class="hdr-pill">v1.5</span>
   <nav class="hdr-nav">
     <a href="calculator.html" class="nav-btn primary">← Calculator</a>
-    <a href="index.html" class="nav-btn">Overview</a>
   </nav>
 </header>
 
 <div class="content">
+  <div class="page-title">Import Character Gear</div>
+  <div class="page-sub">Parses your gear from the official WWM site and sends stats to the calculator</div>
 
-  <div class="section">
-    <div class="section-title">Import Your Character</div>
-    <div class="section-sub">Parse gear from the official site or paste JSON directly</div>
+  <!-- BOOKMARKLET -->
+  <div class="bm-card">
+    <div class="bm-title">Step 1 — Install the Gear Fetcher Bookmarklet</div>
+    <div class="bm-sub">A bookmarklet runs on the official game site — bypassing CORS entirely — grabs your character data, and copies it to your clipboard in one click. Drag the button below to your bookmarks bar.</div>
 
-    <div class="method-tabs">
-      <div class="method-tab active" onclick="setMethod('paste')">Paste JSON</div>
-      <div class="method-tab" onclick="setMethod('token')">Access Token</div>
-    </div>
-
-    <!-- METHOD 1: Paste JSON -->
-    <div class="method-panel active" id="panel-paste">
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Log in to the official Where Winds Meet site</div>
-            <div class="step-note">Open in Chrome or Edge. Must be logged in to your account.</div>
-            <span class="step-code" onclick="copyText('https://www.wherewindsmeetgame.com/m/2025h5sjgj/en/')">https://www.wherewindsmeetgame.com/m/2025h5sjgj/en/</span>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Open DevTools → Network tab</div>
-            <div class="step-note">Press F12, click Network, then refresh the page (F5)</div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-title">Find the roleInfo request</div>
-            <div class="step-note">In the filter box type: <strong style="color:var(--p)">roleInfo</strong> — click the result, go to Response tab, copy all text</div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">4</div>
-          <div class="step-body">
-            <div class="step-title">Paste below and click Parse</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-n">1</div>
+        <div class="step-body">
+          <div class="step-title">Drag this button to your bookmarks bar</div>
+          <div class="step-note">In Chrome/Edge: View → Bookmarks bar (Ctrl+Shift+B to show it)</div>
+          <div class="bm-drag-wrap" style="margin-top:10px">
+            <a class="bm-link" id="bmLink" href="#" onclick="return false;">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              WWM Gear Fetch
+            </a>
+            <span class="bm-link-note">← drag this to your bookmarks bar</span>
           </div>
         </div>
       </div>
-      <textarea class="input-area" id="jsonPaste" placeholder='{"status":true,"data":{"roleId":"...","wearEquipsDetailed":{...}}}'></textarea>
-      <br>
-      <button class="import-btn" onclick="parseJSON()">
-        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Parse Character Data
-      </button>
-      <div class="status-bar" id="status-paste"></div>
-    </div>
-
-    <!-- METHOD 2: Token -->
-    <div class="method-panel" id="panel-token">
-      <div class="cors-box">
-        <div class="cors-box-title">⚠ CORS Restriction</div>
-        <div class="cors-box-body">The game's API only allows requests from <strong>wherewindsmeetgame.com</strong>. Your browser will block a direct fetch from this page. To use token import, you need a CORS proxy or browser extension.<br><br>
-        <strong>Recommended:</strong> Use the JSON paste method instead — it's one extra copy step and always works.</div>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-title">Get your access_token</div>
-            <div class="step-note">DevTools → Network → roleInfo request → Request Headers → copy access_token value</div>
-          </div>
-        </div>
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-title">Install a CORS browser extension (optional)</div>
-            <div class="step-note">e.g. "CORS Unblock" for Chrome. Enable it, then try the fetch below.</div>
-          </div>
+      <div class="step">
+        <div class="step-n">2</div>
+        <div class="step-body">
+          <div class="step-title">Log in to the official WWM site and open your character page</div>
+          <div class="step-note"><a href="https://www.wherewindsmeetgame.com/m/2025h5sjgj/en/" target="_blank" style="color:var(--p);font-family:'DM Mono',monospace;font-size:.52rem">https://www.wherewindsmeetgame.com/m/2025h5sjgj/en/</a></div>
         </div>
       </div>
-      <input class="token-input" id="tokenInput" type="password" placeholder="Paste your access_token here (starts with eyJ...)">
-      <br>
-      <button class="import-btn" style="margin-top:10px" onclick="fetchWithToken()">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Attempt Fetch (may fail due to CORS)
-      </button>
-      <div class="status-bar" id="status-token"></div>
+      <div class="step">
+        <div class="step-n">3</div>
+        <div class="step-body">
+          <div class="step-title">Click the bookmarklet — a popup appears, click Copy</div>
+          <div class="step-note">The popup shows your character name and level as confirmation. Click Copy to Clipboard.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-n">4</div>
+        <div class="step-body">
+          <div class="step-title">Paste below and click Parse</div>
+          <div class="step-note">Come back to this page and paste (Ctrl+V) in the box below.</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- GEAR RESULTS -->
-  <div class="gear-section" id="gearSection">
+  <!-- MANUAL FALLBACK -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-txt">Or paste JSON manually from DevTools</div>
+    <div class="divider-line"></div>
+  </div>
+  <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.1em;color:rgba(220,232,220,.28);margin-bottom:10px;line-height:1.8">
+    DevTools (F12) → Network → filter <strong style="color:var(--p)">roleInfo</strong> → right-click → Copy → Copy response → paste below
+  </div>
 
-    <div class="gear-header">
+  <textarea class="paste-area" id="jsonPaste" placeholder='Paste your character JSON here — either from the bookmarklet popup or from DevTools → Copy response'></textarea>
+  <button class="parse-btn" onclick="parseData()">
+    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    Parse Gear Data
+  </button>
+  <div class="status" id="statusMsg"></div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results">
+    <div class="results-header">
       <div>
-        <div class="gear-header-title" id="charName">—</div>
-        <div style="font-family:'DM Mono',monospace;font-size:.52rem;letter-spacing:.18em;color:rgba(220,232,220,.28);margin-top:2px" id="charMeta">—</div>
+        <div class="char-name" id="rCharName">—</div>
+        <div class="char-meta" id="rCharMeta">—</div>
       </div>
-      <button class="send-btn" onclick="sendToCalculator()">
+      <button class="send-btn" onclick="sendToCalc()">
         <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         Send to Calculator
       </button>
     </div>
-
-    <div class="set-badges" id="setBadges"></div>
-
-    <div class="section-sub" style="margin-bottom:10px">Computed Stat Totals</div>
-    <div class="stat-summary-grid" id="statSummary"></div>
-
-    <div class="info-note" id="importNotes"></div>
-
-    <div class="section-sub" style="margin-top:24px;margin-bottom:10px">Gear Slots</div>
-    <div class="gear-slots" id="gearSlots"></div>
-
+    <div class="set-row" id="rSetRow"></div>
+    <div class="totals-title">Computed Stats from Gear Affixes</div>
+    <div class="totals-grid" id="rTotals"></div>
+    <div class="notes" id="rNotes"></div>
+    <div class="gear-title">Gear Slots</div>
+    <div class="gear-grid" id="rGear"></div>
   </div>
 
-</div><!-- /content -->
-
+</div>
 <div class="ftr">Fearsom's Calculator · Where Winds Meet · EN Theorycrafting · Not affiliated with NetEase</div>
-</div><!-- /app -->
+</div>
 
 <script>
 'use strict';
 
 /* ═══════════════════════════════════════════════
-   AFFIX ID MAP — confirmed from Fearsom's gear data
+   CORRECTED AFFIX MAP — verified from Fearsom's data + wherewindsmath labels
    ═══════════════════════════════════════════════ */
-const AFFIX_MAP = {
-  // ── Physical Attack (Min) ── multiple IDs = different slot types
-  9213002: {stat:'physMin',  label:'Min Phys ATK',  mult:1,   category:'attack'},
-  9223001: {stat:'physMin',  label:'Min Phys ATK',  mult:1,   category:'attack'},
-  9233001: {stat:'physMin',  label:'Min Phys ATK',  mult:1,   category:'attack'},
-  9233002: {stat:'physMax',  label:'Max Phys ATK',  mult:1,   category:'attack'}, // confirmed: 56.5 on acc
-  9293008: {stat:'physMin',  label:'Min Phys ATK',  mult:1,   category:'attack'}, // largest contributor ~63.8
-  // ── Physical Attack (Max) ──
-  9293007: {stat:'physMax',  label:'Max Phys ATK',  mult:1,   category:'attack'}, // 63.2, 62.7
-  9293014: {stat:'physMax',  label:'Max Phys ATK',  mult:1,   category:'attack'}, // 34.7, 34.0, 33.6
-  // ── Silkbind Attack ──
-  9293015: {stat:'silkMin',  label:'Min Silk ATK',  mult:1,   category:'attack'}, // 34–36
-  9293004: {stat:'silkMax',  label:'Max Silk ATK',  mult:1,   category:'attack'}, // 37–40
-  9293002: {stat:'silkMax',  label:'Max Silk ATK',  mult:1,   category:'attack'}, // 37.976 on acc slot
-  9293006: {stat:'silkMaxRaw',label:'Max Silk ATK (raw)',mult:1,category:'attack'}, // large int 2219-2426 — needs investigation
-  // ── Rates ──
-  9293019: {stat:'critRate', label:'Critical Rate', mult:100, category:'rates'},  // ×100: 0.068→6.8%
-  9243004: {stat:'critRate', label:'Critical Rate', mult:100, category:'rates'},  // armor crit
-  9253004: {stat:'critRate', label:'Critical Rate', mult:100, category:'rates'},  // armor crit alt
-  9293029: {stat:'dirCrit',  label:'Direct Crit Rate',mult:100,category:'rates'}, // 0.077→7.7%
-  9293020: {stat:'affinity', label:'Affinity Rate', mult:100, category:'rates'},  // 0.036→3.6%
+const AFFIX = {
+  // ── Min Physical ATK ──
+  9213002:{stat:'physMin',  label:'Min Phys ATK',   mult:1,   cat:'attack'},
+  9223001:{stat:'physMin',  label:'Min Phys ATK',   mult:1,   cat:'attack'},
+  9233001:{stat:'physMin',  label:'Min Phys ATK',   mult:1,   cat:'attack'},
+  9293008:{stat:'physMin',  label:'Min Phys ATK',   mult:1,   cat:'attack'},
+  // ── Max Physical ATK ──
+  9233002:{stat:'physMax',  label:'Max Phys ATK',   mult:1,   cat:'attack'},
+  9293007:{stat:'physMax',  label:'Max Phys ATK',   mult:1,   cat:'attack'},
+  9293014:{stat:'physMax',  label:'Max Phys ATK',   mult:1,   cat:'attack'},
+  // ── Silkbind ATK ──
+  9293015:{stat:'silkMin',  label:'Min Silk ATK',   mult:1,   cat:'attack'},
+  9293004:{stat:'agility',  label:'Agility',        mult:1,   cat:'fiveattr'}, // CORRECTED: Agility not silk max
+  9293002:{stat:'momentum', label:'Momentum',       mult:1,   cat:'fiveattr'}, // CORRECTED: Momentum
+  // ── Max HP (from gear base, large int affix) ──
+  9293006:{stat:'gearHp',   label:'Max HP (gear)',  mult:1,   cat:'hp'},       // CORRECTED: HP not silk ATK
+  // ── Five Attributes ──
+  9293010:{stat:'physPen',  label:'Phys Penetration',mult:1,  cat:'pen'},      // 29.9
+  9293011:{stat:'bellMax',  label:'Max Bellstrike', mult:1,   cat:'attack'},   // CORRECTED: Bellstrike max
+  // ── Crit / Rates ──
+  9293019:{stat:'critRate', label:'Crit Rate',      mult:100, cat:'rates'},    // ×100: 0.068→6.8%
+  9243004:{stat:'critRate', label:'Crit Rate',      mult:100, cat:'rates'},
+  9253004:{stat:'critRate', label:'Crit Rate',      mult:100, cat:'rates'},
+  9293029:{stat:'dirCrit',  label:'Direct Crit Rate',mult:100,cat:'rates'},
+  9293020:{stat:'affinity', label:'Affinity Rate',  mult:100, cat:'rates'},
   // ── Penetration ──
-  9293005: {stat:'silkPen',  label:'Silk Penetration',mult:1, category:'pen'},   // 38.5, 36.97
-  9293009: {stat:'physPen',  label:'Phys Penetration',mult:1, category:'pen'},   // 31
-  9293011: {stat:'physPen',  label:'Phys Penetration',mult:1, category:'pen'},   // 32.9
-  // ── Healing Bonuses ──
-  270401: {stat:'physHeal',  label:'Phys Heal Bonus',mult:100,category:'heal'},   // 0.049→4.9%
-  270402: {stat:'physHeal',  label:'Phys Heal Bonus',mult:100,category:'heal'},   // set bonus heal? 0.044-0.045
-  270405: {stat:'silkHeal',  label:'Silk Heal Bonus',mult:100,category:'heal'},   // 0.045
-  // ── Art Boosts ──
-  270701: {stat:'artFanBoost',label:'Art of Fan Boost',mult:1,category:'boost'},  // confirmed 14.9 total = physPen ⚠️ or art?
-  270703: {stat:'artUmbBoost',label:'Art of Umb Boost',mult:1,category:'boost'},  // 20.5 total
-  // ── PvP / Accessory stats (flagged, not fed to calculator) ──
-  9273002: {stat:'_pvp_atk_res', label:'Attr ATK Resist (PvP)',mult:100,category:'pvp'},
-  9283002: {stat:'_pvp_phys_res',label:'Phys Resist (PvP)',    mult:100,category:'pvp'},
-  9283006: {stat:'_pvp_aff_rate',label:'Affinity Rate (PvP)',  mult:100,category:'pvp'},
-  9283009: {stat:'_pvp_attr_dmg',label:'Attr DMG (PvP)',       mult:100,category:'pvp'},
-  9283010: {stat:'_pvp_aff_dmg', label:'Affinity DMG (PvP)',   mult:100,category:'pvp'},
-  9283011: {stat:'_pvp_dir_aff', label:'Direct Affinity (PvP)',mult:100,category:'pvp'},
-  // ── Unknown / needs more data ──
-  9293010: {stat:'_unknown_29310',label:'Unknown (29310)',mult:1,category:'unknown'},
+  9293005:{stat:'silkPen',  label:'Silk Penetration',mult:1,  cat:'pen'},      // 38.5
+  9293009:{stat:'physPen',  label:'Phys Penetration',mult:1,  cat:'pen'},      // 31.0
+  270701: {stat:'physPen',  label:'Phys Penetration',mult:1,  cat:'pen'},      // CORRECTED: physPen not artFan (6.9 confirmed)
+  270703: {stat:'silkPen',  label:'Silk Penetration',mult:1,  cat:'pen'},      // CORRECTED: silkPen not artUmb (10.0,10.5)
+  // ── Skill-specific boosts (highlight separately — not fed to main calc stats) ──
+  270401:{stat:'_fanQBoost',  label:'Fan Q Boost %',   mult:100,cat:'skill'},  // panaceaFanQ
+  270402:{stat:'_fanSpecBoost',label:'Fan Spec Boost %',mult:100,cat:'skill'}, // panaceaFanSpecial
+  270405:{stat:'_umbSpecBoost',label:'Umb Special Boost %',mult:100,cat:'skill'}, // soulshadeUmbSpecial
+  270703:{stat:'silkPen',  label:'Silk Penetration',mult:1,  cat:'pen'},
+  // ── PvP accessories — flagged, not fed to calculator ──
+  9273002:{stat:'_pvpAtkRes', label:'Attr ATK Resist', mult:100,cat:'pvp'},
+  9283002:{stat:'_pvpPhysRes',label:'Phys Resist',     mult:100,cat:'pvp'},
+  9283006:{stat:'_pvpAffRate',label:'Affinity Rate',   mult:100,cat:'pvp'},
+  9283009:{stat:'_pvpAttrDmg',label:'Attr DMG',        mult:100,cat:'pvp'},
+  9283010:{stat:'_pvpAffDmg', label:'Affinity DMG',    mult:100,cat:'pvp'},
+  9283011:{stat:'_pvpDirAff', label:'Direct Affinity', mult:100,cat:'pvp'},
 };
 
-const SLOT_NAMES = {
-  '11': 'Primary Weapon',
-  '1':  'Secondary Weapon',
-  '2':  'Tertiary Weapon',
-  '3':  'Armor — Head',
-  '4':  'Armor — Chest',
-  '5':  'Armor — Hands',
-  '8':  'Armor — Legs',
-  '10': 'Accessory 1',
-  '21': 'Accessory 2',
-  '9':  'Accessory 3',
-  '105':'Cosmetic / Mount',
-};
+const SLOT_NAMES = {'11':'Primary Weapon','1':'Weapon 2','2':'Weapon 3','3':'Helm','4':'Chest','5':'Hands','8':'Legs','10':'Accessory 1','21':'Accessory 2','9':'Accessory 3','105':'Cosmetic'};
+const SLOT_ORDER = ['11','1','2','3','4','5','8','10','21','9'];
+const SET_NAMES  = {29:'Silkbind Set',30:'Ivorybloom Set',45:'PvP Set'};
 
-const SET_NAMES = {
-  29: 'Silkbind Set',
-  30: 'Ivorybloom Set',
-  45: 'PvP Set',
-};
+let _parsed = null;
 
 /* ═══════════════════════════════════════════════
-   PARSE ENGINE
+   PARSE
    ═══════════════════════════════════════════════ */
-let parsedData = null;
-
-function parseJSON() {
+function parseData() {
   const raw = document.getElementById('jsonPaste').value.trim();
-  const st = document.getElementById('status-paste');
-  if (!raw) { showStatus(st, 'err', 'Paste the JSON response first.'); return; }
-
+  const st = document.getElementById('statusMsg');
+  if (!raw) { showSt(st,'err','Paste your character JSON first.'); return; }
   let json;
-  try { json = JSON.parse(raw); }
-  catch(e) { showStatus(st, 'err', `Invalid JSON: ${e.message}`); return; }
-
+  try { json = JSON.parse(raw); } catch(e) { showSt(st,'err',`Invalid JSON — ${e.message}`); return; }
   const data = json.data || json;
-  if (!data.wearEquipsDetailed) {
-    showStatus(st, 'err', 'Could not find wearEquipsDetailed in the response. Make sure you copied the full response body.');
-    return;
-  }
+  if (!data.wearEquipsDetailed) { showSt(st,'err','Missing wearEquipsDetailed — make sure you copied the full response.'); return; }
 
-  parsedData = processCharacter(data);
-  showStatus(st, 'ok', `✓ Parsed ${parsedData.charName} — Lv.${parsedData.level} · ${Object.keys(parsedData.slots).length} gear slots`);
-  renderGear(parsedData);
+  _parsed = process(data);
+  showSt(st,'ok',`✓ ${_parsed.name} · Lv.${_parsed.level} · ${Object.keys(_parsed.slots).length} gear slots parsed`);
+  render(_parsed);
 }
 
-async function fetchWithToken() {
-  const token = document.getElementById('tokenInput').value.trim();
-  const st = document.getElementById('status-token');
-  if (!token) { showStatus(st, 'err', 'Paste your access_token first.'); return; }
-
-  showStatus(st, 'warn', 'Attempting fetch... (will likely fail due to CORS)');
-
-  try {
-    const res = await fetch('https://s2.easebar.com/78ae9d90792a3e9b/role/roleInfo', {
-      method: 'GET',
-      headers: {
-        'accept': 'application/json, text/plain, */*',
-        'access_token': token,
-        'origin': 'https://www.wherewindsmeetgame.com',
-        'referer': 'https://www.wherewindsmeetgame.com/m/2025h5sjgj/en/',
-      },
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    document.getElementById('jsonPaste').value = JSON.stringify(json, null, 2);
-    setMethod('paste');
-    parseJSON();
-    showStatus(st, 'ok', '✓ Fetch successful — switched to parse view');
-  } catch(e) {
-    showStatus(st, 'err', `Fetch blocked: ${e.message}. Use the JSON paste method instead.`);
-  }
-}
-
-function processCharacter(data) {
+function process(data) {
   const slots = {};
-  const statTotals = {};
-  const setSuffix = {};
+  const totals = {};
+  const setCounts = {};
   const notes = [];
 
-  for (const [slotId, slotData] of Object.entries(data.wearEquipsDetailed || {})) {
-    const exvo = slotData?.exVo;
+  for (const [sid, sd] of Object.entries(data.wearEquipsDetailed || {})) {
+    const exvo = sd?.exVo;
     if (!exvo) continue;
-
     const suffix = exvo.suffix;
-    setSuffix[suffix] = (setSuffix[suffix] || 0) + 1;
+    setCounts[suffix] = (setCounts[suffix]||0)+1;
 
     const slot = {
-      id: slotId,
-      name: SLOT_NAMES[slotId] || `Slot ${slotId}`,
-      itemNo: slotData.no,
-      suffix,
-      setName: SET_NAMES[suffix] || `Set ${suffix}`,
-      durability: exvo.durability,
-      baseAttrs: exvo.baseAttrs || {},
-      affixes: [],
+      id:sid, name:SLOT_NAMES[sid]||`Slot ${sid}`,
+      suffix, setName:SET_NAMES[suffix]||`Set ${suffix}`,
+      dur:exvo.durability,
+      baseAttrs:exvo.baseAttrs||{},
+      affixes:[],
     };
 
-    // Process affixes
-    for (const aff of exvo.baseAffixes || []) {
-      const [id, value, quality, tier, active] = aff.equipmentDetails;
-      const def = AFFIX_MAP[id];
-      const displayVal = def ? value * def.mult : value;
-
-      slot.affixes.push({
-        id, value, quality, tier, active,
-        label: def?.label || `Unknown (${id})`,
-        stat: def?.stat,
-        category: def?.category || 'unknown',
-        displayVal,
-        displayStr: formatAffixVal(def?.stat, displayVal),
+    for (const aff of exvo.baseAffixes||[]) {
+      const [id,value,quality,tier,active] = aff.equipmentDetails;
+      const def = AFFIX[id];
+      const displayMult = def?.mult||1;
+      const dispVal = value * displayMult;
+      slot.affixes.push({id,value,quality,tier,active,
+        label:def?.label||`ID ${id}`,
+        stat:def?.stat,cat:def?.cat||'unknown',
+        dispVal, dispStr:fmtVal(def?.stat,dispVal),
       });
-
-      // Sum into totals (skip PvP and unknown)
-      if (def && !def.stat.startsWith('_')) {
-        // Only count active tuned affixes? No — count all, flag inactive separately
-        const key = def.stat;
-        statTotals[key] = (statTotals[key] || 0) + displayVal;
+      // Sum active stats (skip pvp, skill-specific, unknown)
+      if (def && !def.stat.startsWith('_') && active) {
+        totals[def.stat] = (totals[def.stat]||0) + dispVal;
       }
     }
-
-    // Add base attrs
-    for (const [k, v] of Object.entries(slot.baseAttrs)) {
-      const key = `base_${k}`;
-      statTotals[key] = (statTotals[key] || 0) + v;
+    // Base attrs sum for HP
+    for (const [k,v] of Object.entries(slot.baseAttrs)) {
+      totals[`base_${k}`] = (totals[`base_${k}`]||0)+v;
     }
-
-    slots[slotId] = slot;
+    slots[sid] = slot;
   }
 
-  // 270701 maps to physPen (14.9 total matches!) — correction needed
-  // Actually cross-check: physPen showed 14.9 in calculator AND 270701 sums to 14.9
-  // But 270701 label says "Art of Fan" — could it be physPen?
-  // 9293009 + 9293011 = 31 + 32.9 = 63.9 — that's way more than 14.9 physPen
-  // So 270701 = 14.9 = physPen affix ✅, and 9293009/9293011 may be a different pen stat
-  // Let's note this ambiguity
-  if ((statTotals['physPen'] || 0) > 40) {
-    notes.push('⚠ Physical penetration total seems high — affix 9293009/9293011 mapping may overlap with silk pen. Review manually.');
-  }
+  // Notes
+  if ((totals['gearHp']||0) > 0)
+    notes.push(`ℹ Affix 9293006 (Max HP from gear): ${Math.round(totals['gearHp'])} — added to HP total`);
+  if ((totals['agility']||0) > 0)
+    notes.push(`ℹ Gear Agility affixes: +${(totals['agility']||0).toFixed(1)} — add to Five Attributes > Agility in calculator`);
+  if ((totals['momentum']||0) > 0)
+    notes.push(`ℹ Gear Momentum affixes: +${(totals['momentum']||0).toFixed(1)} — add to Five Attributes > Momentum`);
 
-  // silkMaxRaw (9293006) is a large number — needs divisor
-  // 7040 / some factor... if silkMax from calculator is 653, and we have 116 from 9293004+9293002
-  // 653 - 116 = 537 from base weapon + 9293006? 7040/537≈13.1 — unclear
-  // Flag as requiring manual confirmation
-  if (statTotals['silkMaxRaw']) {
-    notes.push('⚠ Affix 9293006 (large integer Silk ATK) divisor unconfirmed — excluded from Silk Max total. May represent raw base attr ATK.');
-    delete statTotals['silkMaxRaw'];
-  }
-
-  return {
-    charName: data.roleName || 'Unknown',
-    level: data.level || '?',
-    roleId: data.roleId,
-    slots,
-    statTotals,
-    setSuffix,
-    notes,
-  };
+  return { name:data.roleName||'Unknown', level:data.level||'?',
+    roleId:data.roleId, slots, totals, setCounts, notes };
 }
 
-function formatAffixVal(stat, val) {
+function fmtVal(stat, val) {
   if (!stat) return val.toFixed(2);
-  if (['critRate','dirCrit','affinity','physHeal','silkHeal','artFanBoost','artUmbBoost',
-       '_pvp_atk_res','_pvp_phys_res','_pvp_aff_rate','_pvp_attr_dmg','_pvp_aff_dmg','_pvp_dir_aff'].includes(stat)) {
-    return val.toFixed(2) + '%';
-  }
-  return val.toFixed(1);
+  const pctStats = ['critRate','dirCrit','affinity','physHeal','silkHeal',
+    '_fanQBoost','_fanSpecBoost','_umbSpecBoost',
+    '_pvpAtkRes','_pvpPhysRes','_pvpAffRate','_pvpAttrDmg','_pvpAffDmg','_pvpDirAff'];
+  return pctStats.includes(stat) ? val.toFixed(2)+'%' : val.toFixed(1);
 }
 
 /* ═══════════════════════════════════════════════
    RENDER
    ═══════════════════════════════════════════════ */
-function renderGear(d) {
-  document.getElementById('charName').textContent = `${d.charName}`;
-  document.getElementById('charMeta').textContent = `Lv.${d.level} · Role ${d.roleId}`;
+function render(d) {
+  document.getElementById('rCharName').textContent = d.name;
+  document.getElementById('rCharMeta').textContent = `Level ${d.level} · Role ID ${d.roleId}`;
 
   // Set badges
-  const badgeHtml = Object.entries(d.setSuffix).map(([suffix, count]) => {
-    const name = SET_NAMES[suffix] || `Set ${suffix}`;
-    const cls = count >= 4 ? 'active4' : count >= 2 ? 'active2' : 'inactive';
-    const label = count >= 4 ? `${name} 4pc ✓` : count >= 2 ? `${name} 2pc ✓` : `${name} ×${count}`;
-    return `<span class="set-badge ${cls}">${label}</span>`;
-  }).join('');
-  document.getElementById('setBadges').innerHTML = badgeHtml;
+  document.getElementById('rSetRow').innerHTML = Object.entries(d.setCounts)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([s,c])=>{
+      const cls = c>=4?'s4':c>=2?'s2':'s1';
+      const name = SET_NAMES[s]||`Set ${s}`;
+      const label = c>=4?`${name} ✦ 4pc`:c>=2?`${name} ✦ 2pc`:`${name} ×${c}`;
+      return `<span class="set-badge ${cls}">${label}</span>`;
+    }).join('');
 
-  // Stat summary
+  // Totals
   const statOrder = [
     ['physMin','Min Phys ATK'],['physMax','Max Phys ATK'],
-    ['silkMin','Min Silk ATK'],['silkMax','Max Silk ATK'],
-    ['critRate','Crit Rate %'],['dirCrit','Direct Crit %'],
-    ['affinity','Affinity Rate %'],
+    ['silkMin','Min Silk ATK'],
+    ['agility','Agility (gear)'],['momentum','Momentum (gear)'],
+    ['critRate','Crit Rate %'],['dirCrit','Direct Crit %'],['affinity','Affinity Rate %'],
     ['physPen','Phys Penetration'],['silkPen','Silk Penetration'],
-    ['physHeal','Phys Heal Bonus %'],['silkHeal','Silk Heal Bonus %'],
-    ['artFanBoost','Art of Fan Boost %'],['artUmbBoost','Art of Umb Boost %'],
-    ['base_HP_MAX','Base Max HP'],['base_MIN_W_ATK','Base Min ATK'],['base_MAX_W_ATK','Base Max ATK'],
+    ['gearHp','Gear Max HP'],
+    ['base_HP_MAX','Base HP (gear)'],['base_MIN_W_ATK','Base Min ATK'],['base_MAX_W_ATK','Base Max ATK'],
+    ['bellMax','Max Bellstrike'],
   ];
-  document.getElementById('statSummary').innerHTML = statOrder.map(([key, label]) => {
-    const val = d.statTotals[key];
-    if (!val && val !== 0) return '';
-    const display = formatAffixVal(key, val);
-    return `<div class="stat-sum-card">
-      <div class="stat-sum-label">${label}</div>
-      <div class="stat-sum-val">${display}</div>
-    </div>`;
+  document.getElementById('rTotals').innerHTML = statOrder.map(([k,lbl])=>{
+    const v = d.totals[k];
+    if (!v && v!==0) return '';
+    return `<div class="total-card"><div class="total-lbl">${lbl}</div><div class="total-val">${fmtVal(k,v)}</div></div>`;
   }).filter(Boolean).join('');
 
   // Notes
-  document.getElementById('importNotes').innerHTML = d.notes.length
-    ? d.notes.map(n => `<div style="margin-bottom:4px">${n}</div>`).join('')
-    : '';
+  document.getElementById('rNotes').innerHTML = d.notes.map(n=>
+    `<div class="note-row">${n}</div>`).join('');
 
   // Gear slots
-  const slotOrder = ['11','1','2','3','4','5','8','10','21','9'];
-  document.getElementById('gearSlots').innerHTML = slotOrder
-    .filter(id => d.slots[id])
-    .map(id => renderSlot(d.slots[id]))
-    .join('');
+  document.getElementById('rGear').innerHTML = SLOT_ORDER
+    .filter(id=>d.slots[id])
+    .map(id=>renderSlot(d.slots[id])).join('');
 
-  document.getElementById('gearSection').classList.add('show');
+  document.getElementById('results').classList.add('show');
 }
 
 function renderSlot(slot) {
-  const setCls = `s${slot.suffix}`;
-  const baseAttrHtml = Object.entries(slot.baseAttrs).map(([k,v]) =>
-    `<span class="base-attr-badge">${k.replace('_',' ')}: ${v}</span>`
-  ).join('');
+  const sc = `s${slot.suffix}`;
+  const baseHtml = Object.entries(slot.baseAttrs).map(([k,v])=>
+    `<span class="base-attr">${k.replace(/_/g,' ')}: ${v}</span>`).join('');
 
-  const affixRows = slot.affixes.map(aff => {
-    const qPct = Math.round(aff.quality * 100);
-    const qCls = qPct >= 95 ? 'q-high' : qPct >= 80 ? 'q-mid' : 'q-low';
-    const tierCls = aff.tier === 3 ? 't3' : aff.tier === 2 ? 't2' : 't1';
-    const valCls = aff.active ? '' : 'inactive';
-    const pvpBadge = aff.category === 'pvp'
-      ? `<span style="font-family:'DM Mono',monospace;font-size:.44rem;padding:1px 4px;border:1px solid rgba(220,232,220,.15);color:rgba(220,232,220,.25)">PvP</span> ` : '';
+  const affHtml = slot.affixes.map(aff=>{
+    const qp = Math.round(aff.quality*100);
+    const qc = qp>=95?'hi':qp>=80?'md':'lo';
+    const tc = `t${aff.tier}`;
+    const lc = aff.cat==='pvp'?'pvp':aff.cat==='skill'?'skill':aff.cat==='unknown'?'unknown':'';
+    const vc = aff.active?'active':'inactive';
     return `<div class="affix-row">
-      <span class="affix-name">${pvpBadge}${aff.label}</span>
-      <span class="affix-val ${valCls}">${aff.displayStr}</span>
-      <div class="quality-bar"><div class="quality-fill ${qCls}" style="width:${qPct}%"></div></div>
-      <span class="affix-tier ${tierCls}">T${aff.tier}</span>
+      <span class="affix-label ${lc}">${aff.label}</span>
+      <span class="affix-val ${vc}">${aff.dispStr}</span>
+      <div class="qual-bar"><div class="qual-fill ${qc}" style="width:${qp}%"></div></div>
+      <span class="affix-tier ${tc}">T${aff.tier}</span>
     </div>`;
   }).join('');
 
-  return `<div class="gear-slot">
-    <div class="gear-slot-header">
-      <span class="gear-slot-name">${slot.name}</span>
-      <span class="gear-slot-set ${setCls}">${slot.setName}</span>
+  return `<div class="gear-card">
+    <div class="gear-card-hdr">
+      <span class="gear-card-name">${slot.name}</span>
+      <span class="gear-set-badge ${sc}">${slot.setName}</span>
     </div>
-    ${baseAttrHtml ? `<div class="base-attrs">${baseAttrHtml}</div>` : ''}
-    <div class="affix-list">${affixRows}</div>
+    ${baseHtml?`<div class="base-attrs">${baseHtml}</div>`:''}
+    <div class="affix-list">${affHtml}</div>
   </div>`;
 }
 
 /* ═══════════════════════════════════════════════
    SEND TO CALCULATOR
    ═══════════════════════════════════════════════ */
-function sendToCalculator() {
-  if (!parsedData) return;
-  const t = parsedData.statTotals;
-
-  // Build URL params for calculator — maps to sf_* input IDs
-  const params = {
-    // Note: these are gear affixes only — five attribute contributions
-    // (agility, momentum, power) come from the Five Attributes section, not gear
-    // The user still needs to enter their five attributes manually
-    sf_physMin:   round1(t.physMin || 0),
-    sf_physMax:   round1(t.physMax || 0),
-    sf_silkMin:   round1(t.silkMin || 0),
-    sf_silkMax:   round1((t.silkMax || 0)),
-    sf_critRate:  round2((t.critRate || 0)),
-    sf_dirCrit:   round2(t.dirCrit || 0),
-    sf_affinity:  round2(t.affinity || 0),
-    sf_physPen:   round2(t.physPen || 0),
-    sf_silkPen:   round2(t.silkPen || 0),
-    sf_physHeal:  round2(t.physHeal || 0),
-    sf_silkHeal:  round2(t.silkHeal || 0),
-    sf_artFanBoost: round2(t.artFanBoost || 0),
-    sf_artUmbBoost: round2(t.artUmbBoost || 0),
-  };
-
-  // Encode and navigate
-  const qs = new URLSearchParams(params).toString();
-  const url = `calculator.html?import=1&${qs}`;
-  window.location.href = url;
+function sendToCalc() {
+  if (!_parsed) return;
+  const t = _parsed.totals;
+  const params = new URLSearchParams({
+    import:'1',
+    sf_physMin:   r1(t.physMin||0),
+    sf_physMax:   r1(t.physMax||0),
+    sf_silkMin:   r1(t.silkMin||0),
+    sf_critRate:  r2(t.critRate||0),
+    sf_dirCrit:   r2(t.dirCrit||0),
+    sf_affinity:  r2(t.affinity||0),
+    sf_physPen:   r2(t.physPen||0),
+    sf_silkPen:   r2(t.silkPen||0),
+  });
+  window.location.href = `calculator.html?${params}`;
 }
+function r1(n){return Math.round(n*10)/10;}
+function r2(n){return Math.round(n*100)/100;}
 
-function round1(n){return Math.round(n*10)/10;}
-function round2(n){return Math.round(n*100)/100;}
+function showSt(el,type,msg){el.textContent=msg;el.className=`status show ${type}`;}
 
 /* ═══════════════════════════════════════════════
-   UI HELPERS
+   BOOKMARKLET — builds the href dynamically
+   Clean implementation: no external deps, no obfuscation
    ═══════════════════════════════════════════════ */
-function setMethod(m) {
-  document.querySelectorAll('.method-tab').forEach((t,i) => {
-    t.classList.toggle('active', (i===0&&m==='paste')||(i===1&&m==='token'));
-  });
-  document.getElementById('panel-paste').classList.toggle('active', m==='paste');
-  document.getElementById('panel-token').classList.toggle('active', m==='token');
+function buildBookmarklet() {
+  // The bookmarklet source — runs on wherewindsmeetgame.com domain so CORS is not an issue
+  const src = `(function(){
+    var T=localStorage.getItem('h72na_data_token')||localStorage.getItem('token');
+    if(!T){var c=document.cookie.match(/access_token=([^;]+)/);if(c)T=decodeURIComponent(c[1]);}
+    if(!T){alert('WWM Gear Fetch: Could not find login token. Make sure you are logged in.');return;}
+    var x=new XMLHttpRequest();
+    x.open('GET','https://s2.easebar.com/78ae9d90792a3e9b/role/roleInfo',true);
+    x.withCredentials=true;
+    x.setRequestHeader('access_token',T);
+    x.setRequestHeader('accept','application/json');
+    x.onload=function(){
+      try{
+        var j=JSON.parse(x.responseText);
+        if(!j.data||!j.data.wearEquipsDetailed){alert('WWM Gear Fetch: No gear data found.');return;}
+        var name=j.data.roleName,level=j.data.level,payload=JSON.stringify(j.data);
+        var overlay=document.createElement('div');
+        overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999999;display:flex;align-items:center;justify-content:center;font-family:system-ui,-apple-system,sans-serif';
+        var box=document.createElement('div');
+        box.style.cssText='background:#0d1f17;border:1px solid rgba(74,170,120,0.4);border-radius:4px;padding:28px 32px;max-width:380px;width:90%;text-align:center;color:#dce8dc';
+        box.innerHTML='<div style="font-size:1.2rem;margin-bottom:4px;color:#fff">'+name+'</div>'
+          +'<div style="font-size:.75rem;color:rgba(220,232,220,.4);margin-bottom:20px;font-family:monospace">Level '+level+' · Gear data ready</div>'
+          +'<button id="wwmCopyBtn" style="background:#2a6b4a;border:1px solid #4aaa78;color:#7dd4a0;padding:12px 32px;font-size:.85rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:monospace;width:100%">Copy to Clipboard</button>'
+          +'<div id="wwmCopyNote" style="margin-top:10px;font-size:.7rem;color:rgba(220,232,220,.3);min-height:18px"></div>'
+          +'<div style="margin-top:14px;font-size:.65rem;color:rgba(220,232,220,.2)">Click outside to close</div>';
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.remove();});
+        document.getElementById('wwmCopyBtn').onclick=function(){
+          navigator.clipboard.writeText(payload).then(function(){
+            document.getElementById('wwmCopyNote').textContent='Copied! Go to the calculator and paste in the Import page.';
+            document.getElementById('wwmCopyBtn').textContent='✓ Copied!';
+            document.getElementById('wwmCopyBtn').style.background='#357a57';
+          }).catch(function(){prompt('Copy this:',payload);});
+        };
+      }catch(e){alert('WWM Gear Fetch: Parse error — '+e.message);}
+    };
+    x.onerror=function(){alert('WWM Gear Fetch: Network error. Make sure you are on the official WWM site and logged in.');};
+    x.send();
+  })();`;
+
+  // Encode for href
+  const encoded = 'javascript:' + encodeURIComponent(src);
+  document.getElementById('bmLink').href = encoded;
 }
 
-function showStatus(el, type, msg) {
-  el.textContent = msg;
-  el.className = `status-bar show ${type}`;
-}
+// Build on load
+buildBookmarklet();
 
-function copyText(txt) {
-  navigator.clipboard.writeText(txt).then(() => {
-    // brief flash
-  });
-}
-
-/* ═══════════════════════════════════════════════
-   CALCULATOR IMPORT HANDLER
-   (run this on calculator.html load to apply params)
-   ═══════════════════════════════════════════════ */
-// This function is called from calculator.html when ?import=1 is in the URL
+// Wire calculator import params
 window.applyImportParams = function() {
-  const params = new URLSearchParams(location.search);
-  if (!params.get('import')) return;
-  params.forEach((val, key) => {
+  const p = new URLSearchParams(location.search);
+  if (!p.get('import')) return;
+  p.forEach((val,key) => {
     if (key.startsWith('sf_')) {
       const el = document.getElementById(key);
-      if (el) { el.value = val; }
+      if (el) el.value = val;
     }
   });
+  if (typeof recalc === 'function') recalc();
 };
 </script>
 </body>
